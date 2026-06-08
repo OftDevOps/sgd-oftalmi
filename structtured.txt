@@ -1,0 +1,533 @@
+.
+├── AGENTS.md
+├── backend
+│   ├── apps
+│   │   ├── accounts
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── audit
+│   │   │   ├── __init__.py
+│   │   │   ├── middleware.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── controlled_copies
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── document_requests
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   ├── views.py
+│   │   │   └── workflows.py
+│   │   ├── documents
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── document_types
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── implementation_records
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── notifications
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── organizational_units
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   └── reports
+│   │       ├── exporters.py
+│   │       ├── __init__.py
+│   │       ├── models.py
+│   │       ├── permissions.py
+│   │       ├── selectors.py
+│   │       ├── serializers.py
+│   │       ├── services.py
+│   │       ├── tests
+│   │       │   └── __init__.py
+│   │       ├── urls.py
+│   │       └── views.py
+│   ├── config
+│   │   ├── asgi.py
+│   │   ├── __init__.py
+│   │   ├── settings
+│   │   │   ├── base.py
+│   │   │   ├── dev.py
+│   │   │   ├── __init__.py
+│   │   │   ├── prod.py
+│   │   │   └── test.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── locale
+│   ├── manage.py
+│   ├── media
+│   ├── requirements
+│   │   ├── base.txt
+│   │   ├── dev.txt
+│   │   └── prod.txt
+│   ├── static
+│   └── templates
+├── backups
+│   ├── database
+│   ├── logs
+│   └── media
+├── CHANGELOG.md
+├── ci_cd
+│   ├── github-actions
+│   │   ├── build.yml
+│   │   ├── deploy.yml
+│   │   └── test.yml
+│   └── gitlab-ci
+├── docker-compose.override.yml
+├── docker-compose.yml
+├── docs
+│   ├── 00_gobierno_proyecto
+│   │   ├── alcance_mvp.md
+│   │   ├── decisiones_arquitectura.md
+│   │   ├── matriz_riesgos.md
+│   │   └── roadmap.md
+│   ├── 01_levantamiento_oym
+│   │   ├── conclusiones
+│   │   ├── documentos_recibidos
+│   │   │   ├── archivos_complementarios_gd
+│   │   │   └── documentos_que_rigen_gd
+│   │   ├── matrices
+│   │   ├── minutas
+│   │   └── paquete_levantamiento
+│   ├── 02_requerimientos
+│   │   ├── casos_uso.md
+│   │   ├── historias_usuario.md
+│   │   ├── reglas_negocio.md
+│   │   ├── requerimientos_funcionales.md
+│   │   └── requerimientos_no_funcionales.md
+│   ├── 03_diseno_funcional
+│   │   ├── flujos_proceso
+│   │   ├── matriz_trazabilidad.md
+│   │   ├── prototipos_pantalla
+│   │   └── roles_permisos.md
+│   ├── 04_diseno_tecnico
+│   │   ├── api_spec.md
+│   │   ├── arquitectura_aplicacion.md
+│   │   ├── auditoria.md
+│   │   ├── modelo_datos.md
+│   │   └── seguridad.md
+│   └── 05_operacion
+│       ├── backup_restore.md
+│       ├── manual_administrador.md
+│       ├── manual_instalacion.md
+│       ├── manual_usuario.md
+│       └── plan_contingencia.md
+├── frontend
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   ├── src
+│   │   ├── app
+│   │   │   └── App.jsx
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── hooks
+│   │   ├── layouts
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── admin
+│   │   │   ├── auth
+│   │   │   ├── controlled-copies
+│   │   │   ├── dashboard
+│   │   │   ├── documents
+│   │   │   ├── implementation
+│   │   │   ├── reports
+│   │   │   └── requests
+│   │   ├── routes
+│   │   │   └── index.jsx
+│   │   ├── services
+│   │   └── utils
+│   └── vite.config.js
+├── infrastructure
+│   ├── docker
+│   │   ├── backend.Dockerfile
+│   │   ├── frontend.Dockerfile
+│   │   └── nginx.Dockerfile
+│   ├── nginx
+│   │   ├── nginx.conf
+│   │   └── sites
+│   │       └── sgd-oftalmi.conf
+│   ├── postgres
+│   │   ├── backups
+│   │   └── init
+│   ├── scripts
+│   │   ├── backup_db.sh
+│   │   ├── backup_media.sh
+│   │   ├── deploy.sh
+│   │   ├── healthcheck.sh
+│   │   └── restore_db.sh
+│   └── systemd
+│       └── sgd-oftalmi.service
+├── Makefile
+├── README.md
+├── storage
+│   ├── documents
+│   │   ├── controlled
+│   │   ├── obsolete
+│   │   └── temporary
+│   ├── exports
+│   ├── reports
+│   └── signatures
+├── structtured.txt
+└── tests
+    ├── e2e
+    ├── fixtures
+    └── integration
+
+94 directories, 155 files
+.
+├── AGENTS.md
+├── backend
+│   ├── apps
+│   │   ├── accounts
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── audit
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── middleware.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── controlled_copies
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── document_requests
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   ├── views.py
+│   │   │   └── workflows.py
+│   │   ├── documents
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── document_types
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── implementation_records
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── __init__.py
+│   │   ├── notifications
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── organizational_units
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── migrations
+│   │   │   │   └── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── permissions.py
+│   │   │   ├── selectors.py
+│   │   │   ├── serializers.py
+│   │   │   ├── services.py
+│   │   │   ├── tests
+│   │   │   │   └── __init__.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   └── reports
+│   │       ├── apps.py
+│   │       ├── exporters.py
+│   │       ├── __init__.py
+│   │       ├── migrations
+│   │       │   └── __init__.py
+│   │       ├── models.py
+│   │       ├── permissions.py
+│   │       ├── selectors.py
+│   │       ├── serializers.py
+│   │       ├── services.py
+│   │       ├── tests
+│   │       │   └── __init__.py
+│   │       ├── urls.py
+│   │       └── views.py
+│   ├── config
+│   │   ├── asgi.py
+│   │   ├── __init__.py
+│   │   ├── settings
+│   │   │   ├── base.py
+│   │   │   ├── dev.py
+│   │   │   ├── __init__.py
+│   │   │   ├── prod.py
+│   │   │   └── test.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── locale
+│   ├── manage.py
+│   ├── media
+│   ├── requirements
+│   │   ├── base.txt
+│   │   ├── dev.txt
+│   │   └── prod.txt
+│   ├── static
+│   └── templates
+├── backups
+│   ├── database
+│   ├── logs
+│   └── media
+├── CHANGELOG.md
+├── ci_cd
+│   ├── github-actions
+│   │   ├── build.yml
+│   │   ├── deploy.yml
+│   │   └── test.yml
+│   └── gitlab-ci
+├── docker-compose.override.yml
+├── docker-compose.yml
+├── docs
+│   ├── 00_gobierno_proyecto
+│   │   ├── alcance_mvp.md
+│   │   ├── decisiones_arquitectura.md
+│   │   ├── matriz_riesgos.md
+│   │   └── roadmap.md
+│   ├── 01_levantamiento_oym
+│   │   ├── conclusiones
+│   │   ├── documentos_recibidos
+│   │   │   ├── archivos_complementarios_gd
+│   │   │   └── documentos_que_rigen_gd
+│   │   ├── matrices
+│   │   ├── minutas
+│   │   └── paquete_levantamiento
+│   ├── 02_requerimientos
+│   │   ├── casos_uso.md
+│   │   ├── historias_usuario.md
+│   │   ├── reglas_negocio.md
+│   │   ├── requerimientos_funcionales.md
+│   │   └── requerimientos_no_funcionales.md
+│   ├── 03_diseno_funcional
+│   │   ├── flujos_proceso
+│   │   ├── matriz_trazabilidad.md
+│   │   ├── prototipos_pantalla
+│   │   └── roles_permisos.md
+│   ├── 04_diseno_tecnico
+│   │   ├── api_spec.md
+│   │   ├── arquitectura_aplicacion.md
+│   │   ├── auditoria.md
+│   │   ├── modelo_datos.md
+│   │   └── seguridad.md
+│   └── 05_operacion
+│       ├── backup_restore.md
+│       ├── manual_administrador.md
+│       ├── manual_instalacion.md
+│       ├── manual_usuario.md
+│       └── plan_contingencia.md
+├── frontend
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   ├── src
+│   │   ├── app
+│   │   │   └── App.jsx
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── hooks
+│   │   ├── layouts
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── admin
+│   │   │   ├── auth
+│   │   │   ├── controlled-copies
+│   │   │   ├── dashboard
+│   │   │   ├── documents
+│   │   │   ├── implementation
+│   │   │   ├── reports
+│   │   │   └── requests
+│   │   ├── routes
+│   │   │   └── index.jsx
+│   │   ├── services
+│   │   └── utils
+│   └── vite.config.js
+├── infrastructure
+│   ├── docker
+│   │   ├── backend.Dockerfile
+│   │   ├── frontend.Dockerfile
+│   │   └── nginx.Dockerfile
+│   ├── nginx
+│   │   ├── nginx.conf
+│   │   └── sites
+│   │       └── sgd-oftalmi.conf
+│   ├── postgres
+│   │   ├── backups
+│   │   └── init
+│   ├── scripts
+│   │   ├── backup_db.sh
+│   │   ├── backup_media.sh
+│   │   ├── deploy.sh
+│   │   ├── healthcheck.sh
+│   │   └── restore_db.sh
+│   └── systemd
+│       └── sgd-oftalmi.service
+├── Makefile
+├── README.md
+├── storage
+│   ├── documents
+│   │   ├── controlled
+│   │   ├── obsolete
+│   │   └── temporary
+│   ├── exports
+│   ├── reports
+│   └── signatures
+├── structtured.txt
+└── tests
+    ├── e2e
+    ├── fixtures
+    └── integration
+
+104 directories, 176 files

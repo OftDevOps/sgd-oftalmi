@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.env
+.env.*
+!.env.example
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+
+# Node
+node_modules/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups and generated files
+backups/database/*
+backups/media/*
+backups/logs/*
+storage/documents/controlled/*
+storage/documents/obsolete/*
+storage/documents/temporary/*
+storage/reports/*
+storage/exports/*
+storage/signatures/*
+
+!backups/database/.gitkeep
+!backups/media/.gitkeep
+!backups/logs/.gitkeep
+!storage/documents/controlled/.gitkeep
+!storage/documents/obsolete/.gitkeep
+!storage/documents/temporary/.gitkeep
+!storage/reports/.gitkeep
+!storage/exports/.gitkeep
+!storage/signatures/.gitkeep
