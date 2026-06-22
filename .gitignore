@@ -38,6 +38,8 @@ storage/documents/temporary/*
 storage/reports/*
 storage/exports/*
 storage/signatures/*
+storage/media/*
+backend/staticfiles/
 
 !backups/database/.gitkeep
 !backups/media/.gitkeep
@@ -48,3 +50,5 @@ storage/signatures/*
 !storage/reports/.gitkeep
 !storage/exports/.gitkeep
 !storage/signatures/.gitkeep
+!storage/media/
+!storage/media/.gitkeep
