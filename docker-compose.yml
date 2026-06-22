@@ -22,8 +22,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./backend:/app
-      - ./storage:/storage
+      - ./backend:/app:Z
+      - ./storage:/storage:Z
     depends_on:
       db:
         condition: service_healthy
