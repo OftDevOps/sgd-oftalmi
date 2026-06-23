@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 
@@ -139,3 +140,46 @@ class DocumentFile(models.Model):
 
     def __str__(self):
         return self.original_filename
+
+
+class DocumentCodeSequence(models.Model):
+    document_type = models.ForeignKey(
+        "document_types.DocumentType",
+        verbose_name=_("document type"),
+        on_delete=models.PROTECT,
+        related_name="code_sequences",
+    )
+    organizational_unit = models.ForeignKey(
+        "organizational_units.OrganizationalUnit",
+        verbose_name=_("organizational unit"),
+        on_delete=models.PROTECT,
+        related_name="document_code_sequences",
+        blank=True,
+        null=True,
+    )
+    prefix = models.CharField(_("prefix"), max_length=50)
+    current_number = models.PositiveIntegerField(_("current number"))
+    padding = models.PositiveSmallIntegerField(_("padding"))
+    is_active = models.BooleanField(_("active"), default=True)
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["document_type", "organizational_unit", "prefix"],
+                condition=Q(organizational_unit__isnull=False),
+                name="unique_code_sequence_with_unit",
+            ),
+            models.UniqueConstraint(
+                fields=["document_type", "prefix"],
+                condition=Q(organizational_unit__isnull=True),
+                name="unique_code_sequence_without_unit",
+            ),
+        ]
+        ordering = ["document_type__code", "organizational_unit__code", "prefix"]
+        verbose_name = "document code sequence"
+        verbose_name_plural = "document code sequences"
+
+    def __str__(self):
+        unit_code = self.organizational_unit.code if self.organizational_unit else "GLOBAL"
+        return f"{self.document_type.code}-{unit_code}-{self.prefix}"

@@ -3,7 +3,13 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase
 
 from apps.document_types.models import DocumentType
-from apps.documents.models import Document, DocumentFile, DocumentStatus, DocumentVersion
+from apps.documents.models import (
+    Document,
+    DocumentCodeSequence,
+    DocumentFile,
+    DocumentStatus,
+    DocumentVersion,
+)
 from apps.organizational_units.models import OrganizationalUnit
 
 
@@ -122,3 +128,75 @@ class DocumentModelTests(TestCase):
         self.assertEqual(document_file.uploaded_by, self.user)
         self.assertTrue(document_file.is_active)
         self.assertEqual(str(document_file), "for-gghd-010.pdf")
+
+    def test_create_document_code_sequence(self):
+        sequence = DocumentCodeSequence.objects.create(
+            document_type=self.document_type,
+            organizational_unit=self.owner_unit,
+            prefix="GGHD",
+            current_number=10,
+            padding=3,
+        )
+
+        self.assertEqual(sequence.document_type, self.document_type)
+        self.assertEqual(sequence.organizational_unit, self.owner_unit)
+        self.assertEqual(sequence.prefix, "GGHD")
+        self.assertEqual(sequence.current_number, 10)
+        self.assertEqual(sequence.padding, 3)
+
+    def test_document_code_sequence_defaults_to_active(self):
+        sequence = DocumentCodeSequence.objects.create(
+            document_type=self.document_type,
+            prefix="GLOBAL",
+            current_number=0,
+            padding=3,
+        )
+
+        self.assertTrue(sequence.is_active)
+
+    def test_document_code_sequence_string_representation(self):
+        sequence = DocumentCodeSequence.objects.create(
+            document_type=self.document_type,
+            organizational_unit=self.owner_unit,
+            prefix="GGHD",
+            current_number=10,
+            padding=3,
+        )
+
+        self.assertEqual(str(sequence), "FOR-OYM-GGHD")
+
+    def test_document_code_sequence_is_unique_with_unit(self):
+        DocumentCodeSequence.objects.create(
+            document_type=self.document_type,
+            organizational_unit=self.owner_unit,
+            prefix="GGHD",
+            current_number=10,
+            padding=3,
+        )
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                DocumentCodeSequence.objects.create(
+                    document_type=self.document_type,
+                    organizational_unit=self.owner_unit,
+                    prefix="GGHD",
+                    current_number=11,
+                    padding=3,
+                )
+
+    def test_document_code_sequence_is_unique_without_unit(self):
+        DocumentCodeSequence.objects.create(
+            document_type=self.document_type,
+            prefix="GLOBAL",
+            current_number=0,
+            padding=3,
+        )
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                DocumentCodeSequence.objects.create(
+                    document_type=self.document_type,
+                    prefix="GLOBAL",
+                    current_number=1,
+                    padding=3,
+                )

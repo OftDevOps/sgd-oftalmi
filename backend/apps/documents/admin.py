@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Document, DocumentFile, DocumentVersion
+from .models import Document, DocumentCodeSequence, DocumentFile, DocumentVersion
 
 
 @admin.register(Document)
@@ -43,3 +43,26 @@ class DocumentFileAdmin(admin.ModelAdmin):
     ordering = ("-uploaded_at",)
     raw_id_fields = ("document_version", "uploaded_by")
     list_select_related = ("document_version", "uploaded_by")
+
+
+@admin.register(DocumentCodeSequence)
+class DocumentCodeSequenceAdmin(admin.ModelAdmin):
+    list_display = (
+        "document_type",
+        "organizational_unit",
+        "prefix",
+        "current_number",
+        "padding",
+        "is_active",
+        "updated_at",
+    )
+    list_filter = ("is_active", "document_type", "organizational_unit")
+    search_fields = (
+        "prefix",
+        "document_type__code",
+        "document_type__name",
+        "organizational_unit__code",
+        "organizational_unit__name",
+    )
+    ordering = ("document_type__code", "organizational_unit__code", "prefix")
+    list_select_related = ("document_type", "organizational_unit")
