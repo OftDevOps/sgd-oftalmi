@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import ROLE_GROUP_NAMES, User
 
 
 class UserCreationForm(forms.ModelForm):
@@ -20,6 +20,9 @@ class UserCreationForm(forms.ModelForm):
             "email",
             "first_name",
             "last_name",
+            "role",
+            "organizational_unit",
+            "is_technical_user",
             "is_active",
             "is_staff",
             "is_superuser",
@@ -58,6 +61,9 @@ class UserChangeForm(forms.ModelForm):
             "password",
             "first_name",
             "last_name",
+            "role",
+            "organizational_unit",
+            "is_technical_user",
             "is_active",
             "is_staff",
             "is_superuser",
@@ -76,17 +82,34 @@ class UserAdmin(DjangoUserAdmin):
         "email",
         "first_name",
         "last_name",
+        "role",
+        "organizational_unit",
+        "is_technical_user",
         "is_active",
         "is_staff",
         "is_superuser",
     )
-    list_filter = ("is_active", "is_staff", "is_superuser", "groups")
+    list_filter = (
+        "role",
+        "organizational_unit",
+        "is_technical_user",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "groups",
+    )
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
+    raw_id_fields = ("organizational_unit",)
+    list_select_related = ("organizational_unit",)
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name", "organizational_unit")},
+        ),
+        (_("Role"), {"fields": ("role", "is_technical_user")}),
         (
             _("Permissions"),
             {
@@ -111,6 +134,9 @@ class UserAdmin(DjangoUserAdmin):
                     "email",
                     "first_name",
                     "last_name",
+                    "role",
+                    "organizational_unit",
+                    "is_technical_user",
                     "password1",
                     "password2",
                     "is_active",
@@ -120,3 +146,14 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
     )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        group_name = obj.get_role_group_name()
+        if not group_name:
+            return
+
+        group, _ = obj.groups.model.objects.get_or_create(name=group_name)
+        managed_group_names = set(ROLE_GROUP_NAMES.values())
+        obj.groups.remove(*obj.groups.filter(name__in=managed_group_names))
+        obj.groups.add(group)

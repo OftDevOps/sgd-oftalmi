@@ -5,6 +5,25 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+class UserRole(models.TextChoices):
+    OYM_ADMIN = "oym_admin", _("O&M functional administrator")
+    OYM_ANALYST = "oym_analyst", _("O&M analyst")
+    EXECUTING_UNIT = "executing_unit", _("Executing unit")
+    READER = "reader", _("Reader")
+    SYSTEMS_TECH_ADMIN = "systems_tech_admin", _("Systems technical administrator")
+    AUDITOR = "auditor", _("Auditor")
+
+
+ROLE_GROUP_NAMES = {
+    UserRole.OYM_ADMIN: "OYM_ADMIN",
+    UserRole.OYM_ANALYST: "OYM_ANALYST",
+    UserRole.EXECUTING_UNIT: "EXECUTING_UNIT",
+    UserRole.READER: "READER",
+    UserRole.SYSTEMS_TECH_ADMIN: "SYSTEMS_TECH_ADMIN",
+    UserRole.AUDITOR: "AUDITOR",
+}
+
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -38,6 +57,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=150, blank=True)
     last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    role = models.CharField(
+        _("role"),
+        max_length=50,
+        choices=UserRole.choices,
+        default=UserRole.READER,
+    )
+    organizational_unit = models.ForeignKey(
+        "organizational_units.OrganizationalUnit",
+        verbose_name=_("organizational unit"),
+        on_delete=models.PROTECT,
+        related_name="users",
+        blank=True,
+        null=True,
+    )
+    is_technical_user = models.BooleanField(_("technical user"), default=False)
     is_active = models.BooleanField(_("active"), default=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
@@ -67,3 +101,33 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name or self.email
+
+    def get_role_group_name(self):
+        return ROLE_GROUP_NAMES.get(self.role)
+
+    def has_role(self, role):
+        return self.role == role
+
+    @property
+    def is_oym_admin(self):
+        return self.role == UserRole.OYM_ADMIN
+
+    @property
+    def is_oym_analyst(self):
+        return self.role == UserRole.OYM_ANALYST
+
+    @property
+    def is_executing_unit_user(self):
+        return self.role == UserRole.EXECUTING_UNIT
+
+    @property
+    def is_reader(self):
+        return self.role == UserRole.READER
+
+    @property
+    def is_systems_tech_admin(self):
+        return self.role == UserRole.SYSTEMS_TECH_ADMIN
+
+    @property
+    def is_auditor(self):
+        return self.role == UserRole.AUDITOR
