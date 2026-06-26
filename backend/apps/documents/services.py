@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 
 from .models import Document, DocumentFile, DocumentVersion
+from .workflows import validate_document_status_transition
 
 
 def document_create(
@@ -51,6 +52,15 @@ def document_set_current_version(*, document, document_version):
     document.current_version = document_version
     document.full_clean()
     document.save(update_fields=["current_version", "updated_at"])
+    return document
+
+
+def document_transition_status(*, document, target_status):
+    validate_document_status_transition(document.status, target_status)
+
+    document.status = target_status
+    document.full_clean()
+    document.save(update_fields=["status", "updated_at"])
     return document
 
 
