@@ -1,4 +1,4 @@
-.PHONY: help up down logs build shell check test test-base migrate makemigrations showmigrations createsuperuser backup-db restore-db backup-media healthcheck deploy
+.PHONY: help up down logs build shell check test test-base migrate makemigrations showmigrations createsuperuser seed-base-catalogs backup-db restore-db backup-media healthcheck deploy
 
 help:
 	@echo "Comandos disponibles:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make makemigrations  Crear migraciones"
 	@echo "  make showmigrations  Ver migraciones"
 	@echo "  make createsuperuser Crear superusuario"
+	@echo "  make seed-base-catalogs Cargar catalogos base"
 	@echo "  make backup-db       Crear respaldo de PostgreSQL"
 	@echo "  make restore-db      Restaurar respaldo DB=archivo.sql"
 	@echo "  make backup-media    Crear respaldo de storage/media"
@@ -55,6 +56,9 @@ showmigrations:
 
 createsuperuser:
 	docker compose exec backend python manage.py createsuperuser
+
+seed-base-catalogs:
+	docker compose exec backend python manage.py seed_base_catalogs
 
 backup-db:
 	bash infrastructure/scripts/backup_db.sh

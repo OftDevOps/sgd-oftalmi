@@ -50,6 +50,12 @@ make test-base
 make healthcheck
 ```
 
+Ejecutar carga inicial controlada de catalogos base:
+
+```bash
+make seed-base-catalogs
+```
+
 Crear superusuario usando correo institucional:
 
 ```bash
