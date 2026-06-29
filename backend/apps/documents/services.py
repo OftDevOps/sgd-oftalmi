@@ -1,5 +1,8 @@
 from django.core.exceptions import ValidationError
 
+from apps.audit.models import AuditAction
+from apps.audit.services import audit_event_create_if_requested
+
 from .models import Document, DocumentFile, DocumentVersion
 from .workflows import validate_document_status_transition
 
@@ -13,6 +16,7 @@ def document_create(
     created_by,
     status=None,
     is_active=True,
+    audit_context=None,
 ):
     document = Document(
         code=code,
@@ -27,6 +31,18 @@ def document_create(
 
     document.full_clean()
     document.save()
+    audit_event_create_if_requested(
+        audit_context=audit_context,
+        action=AuditAction.DOCUMENT_CREATED,
+        module="documents",
+        instance=document,
+        description="Document created.",
+        after_data={
+            "code": document.code,
+            "title": document.title,
+            "status": document.status,
+        },
+    )
     return document
 
 
@@ -55,12 +71,22 @@ def document_set_current_version(*, document, document_version):
     return document
 
 
-def document_transition_status(*, document, target_status):
+def document_transition_status(*, document, target_status, audit_context=None):
+    previous_status = document.status
     validate_document_status_transition(document.status, target_status)
 
     document.status = target_status
     document.full_clean()
     document.save(update_fields=["status", "updated_at"])
+    audit_event_create_if_requested(
+        audit_context=audit_context,
+        action=AuditAction.DOCUMENT_STATUS_CHANGED,
+        module="documents",
+        instance=document,
+        description="Document status changed.",
+        before_data={"status": previous_status},
+        after_data={"status": document.status},
+    )
     return document
 
 
@@ -74,6 +100,7 @@ def document_file_create(
     size_bytes=None,
     file_hash="",
     is_active=True,
+    audit_context=None,
 ):
     document_file = DocumentFile(
         document_version=document_version,
@@ -87,4 +114,18 @@ def document_file_create(
     )
     document_file.full_clean()
     document_file.save()
+    audit_event_create_if_requested(
+        audit_context=audit_context,
+        action=AuditAction.FILE_UPLOADED,
+        module="documents",
+        instance=document_file,
+        description="Document file uploaded.",
+        after_data={
+            "document_version_id": document_version.id,
+            "original_filename": original_filename,
+            "content_type": content_type,
+            "size_bytes": size_bytes,
+            "file_hash": file_hash,
+        },
+    )
     return document_file

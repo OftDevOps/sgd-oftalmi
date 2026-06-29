@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from apps.accounts.models import UserRole
+from apps.audit.models import AuditAction, AuditEvent
+from apps.audit.services import AuditContext
 from apps.document_types.models import DocumentType
 from apps.documents.models import DocumentStatus
 from apps.documents.permissions import (
@@ -87,6 +89,30 @@ class DocumentPermissionWorkflowTests(TestCase):
 
         document.refresh_from_db()
         self.assertEqual(document.status, DocumentStatus.UNDER_REVIEW)
+
+    def test_document_transition_status_creates_audit_event_when_context_is_provided(self):
+        document = document_create(
+            code="FOR-OYM-003",
+            title="Registro auditado",
+            document_type=self.document_type,
+            owner_unit=self.owner_unit,
+            created_by=self.oym_admin,
+            status=DocumentStatus.RECEIVED,
+        )
+
+        document_transition_status(
+            document=document,
+            target_status=DocumentStatus.UNDER_REVIEW,
+            audit_context=AuditContext(user=self.oym_admin),
+        )
+
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.action, AuditAction.DOCUMENT_STATUS_CHANGED)
+        self.assertEqual(event.module, "documents")
+        self.assertEqual(event.entity_type, "Document")
+        self.assertEqual(event.entity_id, str(document.id))
+        self.assertEqual(event.before_data, {"status": DocumentStatus.RECEIVED})
+        self.assertEqual(event.after_data, {"status": DocumentStatus.UNDER_REVIEW})
 
     def test_document_transition_status_rejects_invalid_transition(self):
         document = document_create(

@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
+from apps.audit.models import AuditAction, AuditEvent
+from apps.audit.services import AuditContext
 from apps.document_requests.models import DocumentRequestStatus, DocumentRequestType
 from apps.document_requests.services import (
     document_request_create,
@@ -101,6 +103,23 @@ class DocumentRequestWorkflowTests(TestCase):
         document_request.refresh_from_db()
         self.assertEqual(document_request.status, DocumentRequestStatus.CLOSED)
         self.assertEqual(document_request.closed_at, changed_at)
+
+    def test_transition_creates_audit_event_when_context_is_provided(self):
+        document_request = self.create_request(status=DocumentRequestStatus.SUBMITTED)
+
+        document_request_transition_status(
+            document_request=document_request,
+            target_status=DocumentRequestStatus.RECEIVED,
+            audit_context=AuditContext(user=self.user),
+        )
+
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.action, AuditAction.OTHER)
+        self.assertEqual(event.module, "document_requests")
+        self.assertEqual(event.entity_type, "DocumentRequest")
+        self.assertEqual(event.entity_id, str(document_request.id))
+        self.assertEqual(event.before_data, {"status": DocumentRequestStatus.SUBMITTED})
+        self.assertEqual(event.after_data, {"status": DocumentRequestStatus.RECEIVED})
 
     def test_invalid_transition_raises_validation_error(self):
         document_request = self.create_request(status=DocumentRequestStatus.DRAFT)
