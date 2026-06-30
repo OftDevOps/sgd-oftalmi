@@ -96,11 +96,24 @@ Criterios:
 
 * Login con correo institucional.
 * CSRF activo.
+* Logout por POST y pantalla visual de sesion cerrada.
+* Redireccion inicial por rol despues del login.
 * Permisos por rol y modulo.
 * Restricciones por unidad ejecutora cuando aplique.
 * DRF, cuando se agregue, debera iniciar con autenticacion por sesion y permisos internos.
 
 No se implementara JWT, OAuth externo, LDAP ni Active Directory en esta fase.
+
+Redirecciones iniciales por rol:
+
+| Rol | Destino inicial |
+| --- | --- |
+| OyM Administrador Funcional | `/app/documents/` |
+| Analista OyM | `/app/documents/` |
+| Unidad Ejecutora | `/app/document-requests/` |
+| Usuario Lector | `/app/documents/` |
+| Sistemas Administrador Tecnico | `/app/users/` |
+| Auditor | `/app/audit/` |
 
 ---
 
@@ -112,6 +125,7 @@ Estructura inicial implementada:
 /                     Redireccion a /app/
 /accounts/login/      Login con sesion Django
 /accounts/logout/     Logout con sesion Django
+/accounts/logged-out/ Pantalla de sesion cerrada
 /admin/               Django admin
 /health/              Health check tecnico
 /app/                 Dashboard autenticado

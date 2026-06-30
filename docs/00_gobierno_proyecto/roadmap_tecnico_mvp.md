@@ -150,6 +150,7 @@ Punto 24 -> Servicios de auditoría automática controlada
 Punto 25 -> Carga inicial / seed de catálogos base
 F2-P01  -> Decisión técnica de capa de acceso
 F2-P02  -> Estructura base de URLs, vistas y capa de acceso
+F2-P03  -> Login, logout y redirección por rol
 ```
 
 Último commit técnico conocido en `develop`:
@@ -862,6 +863,31 @@ backend/config/navigation.py
 backend/templates/
 backend/apps/*/views.py
 backend/apps/*/urls.py
+backend/apps/accounts/tests/test_access_urls.py
+```
+
+#### F2-P03 - Login, logout y redirección por rol
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Login visual basado en correo institucional.
+* Redirección posterior al login según rol del usuario.
+* Respeto de `next` cuando la URL de destino es segura.
+* Logout por POST con pantalla visual de sesión cerrada.
+* Redirección de raíz `/` según autenticación y rol.
+* Pruebas de login, logout, `next` y redirecciones por rol.
+
+**Evidencia:**
+
+```text
+backend/apps/accounts/redirects.py
+backend/apps/accounts/views.py
+backend/config/urls.py
+backend/config/views.py
+backend/templates/accounts/login.html
+backend/templates/accounts/logged_out.html
 backend/apps/accounts/tests/test_access_urls.py
 ```
 

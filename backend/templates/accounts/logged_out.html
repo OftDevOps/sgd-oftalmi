@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <main class="login-shell">
+    <section class="login-panel" aria-labelledby="logged-out-title">
+      <p class="eyebrow">SGD-OFTALMI</p>
+      <h1 id="logged-out-title">Sesion cerrada</h1>
+      <p class="lead">El acceso institucional fue cerrado correctamente.</p>
+      <a class="button" href="{% url 'login' %}">Ingresar nuevamente</a>
+    </section>
+  </main>
+{% endblock %}

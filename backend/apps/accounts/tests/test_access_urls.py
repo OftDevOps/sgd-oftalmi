@@ -19,20 +19,105 @@ class AccessURLTests(TestCase):
         "app:notifications:index",
     )
 
-    def create_user(self, role=UserRole.OYM_ADMIN, email="user@oftalmi.test"):
-        return get_user_model().objects.create_user(email=email, role=role)
+    def create_user(
+        self,
+        role=UserRole.OYM_ADMIN,
+        email="user@oftalmi.test",
+        password="secure-pass",
+    ):
+        return get_user_model().objects.create_user(
+            email=email,
+            password=password,
+            role=role,
+        )
 
-    def test_root_redirects_to_app_dashboard(self):
+    def test_root_redirects_anonymous_user_to_login(self):
         response = self.client.get("/")
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], reverse("app:dashboard"))
+        self.assertEqual(response["Location"], reverse("login"))
+
+    def test_root_redirects_authenticated_user_by_role(self):
+        user = self.create_user(role=UserRole.READER)
+        self.client.force_login(user)
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("app:documents:index"))
 
     def test_login_page_renders(self):
         response = self.client.get(reverse("login"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Correo institucional")
+
+    def test_login_redirects_authenticated_user_by_role(self):
+        user = self.create_user(role=UserRole.SYSTEMS_TECH_ADMIN)
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("app:accounts:index"))
+
+    def test_login_post_redirects_user_by_role(self):
+        role_redirects = (
+            (UserRole.OYM_ADMIN, "app:documents:index"),
+            (UserRole.OYM_ANALYST, "app:documents:index"),
+            (UserRole.EXECUTING_UNIT, "app:document_requests:index"),
+            (UserRole.READER, "app:documents:index"),
+            (UserRole.SYSTEMS_TECH_ADMIN, "app:accounts:index"),
+            (UserRole.AUDITOR, "app:audit:index"),
+        )
+
+        for role, url_name in role_redirects:
+            with self.subTest(role=role):
+                self.client.logout()
+                user = self.create_user(
+                    role=role,
+                    email=f"{role}@oftalmi.test",
+                    password="secure-pass",
+                )
+
+                response = self.client.post(
+                    reverse("login"),
+                    {
+                        "username": user.email,
+                        "password": "secure-pass",
+                    },
+                )
+
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response["Location"], reverse(url_name))
+
+    def test_login_post_respects_safe_next_parameter(self):
+        user = self.create_user(password="secure-pass")
+        next_url = reverse("app:audit:index")
+
+        response = self.client.post(
+            f"{reverse('login')}?next={next_url}",
+            {
+                "username": user.email,
+                "password": "secure-pass",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], next_url)
+
+    def test_logout_post_redirects_to_logged_out_page(self):
+        user = self.create_user()
+        self.client.force_login(user)
+
+        response = self.client.post(reverse("logout"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("logged_out"))
+
+        logged_out_response = self.client.get(reverse("logged_out"))
+        self.assertEqual(logged_out_response.status_code, 200)
+        self.assertContains(logged_out_response, "Sesion cerrada")
 
     def test_dashboard_requires_authentication(self):
         response = self.client.get(reverse("app:dashboard"))

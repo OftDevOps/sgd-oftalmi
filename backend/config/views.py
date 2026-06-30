@@ -3,11 +3,16 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
+from apps.accounts.redirects import get_role_home_url
+
 from .navigation import get_module_navigation
 
 
 def root_redirect(request):
-    return redirect("app:dashboard")
+    if request.user.is_authenticated:
+        return redirect(get_role_home_url(request.user))
+
+    return redirect("login")
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
