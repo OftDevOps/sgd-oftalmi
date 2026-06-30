@@ -128,31 +128,33 @@ La primera fase técnica del MVP queda organizada en 25 puntos principales, con 
 | Punto 17  | Auditoría base                                                         | Completado |
 | Punto 18  | Roles y permisos base                                                  | Completado |
 | Punto 19  | Consolidación técnica del backend base                                 | Completado |
-| Punto 19B | Documentación formal del roadmap técnico MVP                           | En curso   |
+| Punto 19B | Documentación formal del roadmap técnico MVP                           | Completado |
 | Punto 20  | Servicios/selectors base del núcleo documental                         | Completado |
 | Punto 21  | Permisos finos por acción/módulo                                       | Completado |
 | Punto 22  | Transiciones de estados documentales                                   | Completado |
-| Punto 23  | Transiciones de estados de solicitudes documentales                    | Pendiente  |
-| Punto 24  | Servicios de auditoría automática controlada                           | Pendiente  |
-| Punto 25  | Carga inicial / seed de catálogos base                                 | Pendiente  |
+| Punto 23  | Transiciones de estados de solicitudes documentales                    | Completado |
+| Punto 24  | Servicios de auditoría automática controlada                           | Completado |
+| Punto 25  | Carga inicial / seed de catálogos base                                 | Completado |
 
 ---
 
 ## 6. Estado actual de avance
 
-Al momento de crear este roadmap, el desarrollo técnico ha avanzado hasta el **Punto 22**.
+La primera fase técnica del backend base se encuentra completada en la rama `develop`.
 
 Último avance técnico registrado:
 
 ```text
-Punto 21 -> Permisos finos por acción/módulo
-Punto 22 -> Transiciones de estados documentales
+Punto 23 -> Transiciones de estados de solicitudes documentales
+Punto 24 -> Servicios de auditoría automática controlada
+Punto 25 -> Carga inicial / seed de catálogos base
+F2-P01  -> Decisión técnica de capa de acceso
 ```
 
 Último commit técnico conocido en `develop`:
 
 ```text
-87de533 feat: add module permissions and document status transitions
+7d11339 feat: add base catalog seed command
 ```
 
 Estado de ramas conocido:
@@ -677,56 +679,74 @@ Commit:
 
 ---
 
-## 8. Puntos pendientes de la primera fase
+## 8. Cierre de la primera fase
 
 ### Punto 23 - Transiciones de estados de solicitudes documentales
 
-**Estado:** Pendiente.
+**Estado:** Completado.
 
 **Descripción:**
-Implementar una matriz explícita de transiciones permitidas para `DocumentRequestStatus`.
+Se implementó una matriz explícita de transiciones permitidas para `DocumentRequestStatus`.
 
-**Resultado esperado:**
+**Resultado:**
 
-* Crear `backend/apps/document_requests/workflows.py`.
-* Agregar servicio de transición en `document_requests/services.py`.
-* Validar transiciones permitidas y no permitidas.
-* Agregar pruebas unitarias.
-* No implementar todavía aprobaciones multinivel ni workflow operativo completo.
+* `backend/apps/document_requests/workflows.py`.
+* Servicio de transición en `document_requests/services.py`.
+* Validación de transiciones permitidas y no permitidas.
+* Pruebas unitarias.
+* Sin aprobaciones multinivel ni workflow operativo completo.
+
+**Evidencia:**
+
+```text
+2b5e0e7 feat: add document request status transitions
+```
 
 ---
 
 ### Punto 24 - Servicios de auditoría automática controlada
 
-**Estado:** Pendiente.
+**Estado:** Completado.
 
 **Descripción:**
-Crear servicios mínimos para registrar eventos de auditoría desde operaciones controladas del sistema.
+Se crearon servicios mínimos para registrar eventos de auditoría desde operaciones controladas del sistema.
 
-**Resultado esperado:**
+**Resultado:**
 
-* Centralizar creación de eventos de auditoría.
-* Permitir registrar actor, acción, resultado, objeto afectado, descripción y metadata.
-* No implementar todavía auditoría automática global por middleware.
-* No implementar reportes ni exportación.
+* Creación centralizada de eventos de auditoría.
+* Registro de actor, acción, resultado, objeto afectado, descripción y metadata.
+* Sin auditoría automática global por middleware.
+* Sin reportes ni exportación.
+
+**Evidencia:**
+
+```text
+75c7e7f feat: add controlled automatic audit services
+```
 
 ---
 
 ### Punto 25 - Carga inicial / seed de catálogos base
 
-**Estado:** Pendiente.
+**Estado:** Completado.
 
 **Descripción:**
-Crear mecanismo controlado para cargar datos base iniciales del MVP.
+Se creó un mecanismo controlado para cargar datos base iniciales del MVP.
 
-**Resultado esperado:**
+**Resultado:**
 
-* Seed de roles/grupos si aplica.
-* Seed de tipos documentales básicos si OyM los valida.
-* Seed de unidades organizativas si OyM/Sistemas lo valida.
+* Seed de roles/grupos base.
+* Seed de tipos documentales básicos validados por documentación existente.
+* Seed de unidades organizativas base.
 * Comando reproducible o fixture controlado.
-* No cargar datos productivos sensibles.
-* No inventar catálogos no validados.
+* Sin datos productivos sensibles.
+* Sin catálogos no validados.
+
+**Evidencia:**
+
+```text
+7d11339 feat: add base catalog seed command
+```
 
 ---
 
@@ -800,6 +820,24 @@ Posibles decisiones:
 * Enfoque híbrido.
 
 Esta decisión debe tomarse antes de construir pantallas o endpoints definitivos.
+
+#### F2-P01 - Decisión técnica de capa de acceso
+
+**Estado:** Completado.
+
+**Decisión:** Enfoque híbrido controlado.
+
+El MVP usará Django templates como interfaz principal y Django REST Framework solo para API interna cuando una pantalla, componente o integración lo justifique.
+
+No se construirá una API pública ni una SPA React completa como primera interfaz del MVP.
+
+**Evidencia:**
+
+```text
+docs/00_gobierno_proyecto/decisiones_arquitectura.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+docs/04_diseno_tecnico/api_spec.md
+```
 
 ---
 
@@ -880,5 +918,4 @@ Rama activa de trabajo: develop
 Rama estable: main
 ```
 
-Este roadmap debe actualizarse al completar los puntos 23, 24 y 25.
-
+Este roadmap debe mantenerse actualizado al completar nuevos puntos de fases posteriores.
