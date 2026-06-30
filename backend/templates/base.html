@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SGD-OFTALMI{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  </head>
+  <body>
+    {% block body %}
+      <div class="shell">
+        <aside class="sidebar" aria-label="Navegacion principal">
+          <a class="brand" href="{% url 'app:dashboard' %}">SGD-OFTALMI</a>
+          {% for group in module_navigation %}
+            <nav class="nav-section" aria-label="{{ group.title }}">
+              <p class="nav-title">{{ group.title }}</p>
+              <ul class="nav-list">
+                {% for item in group.items %}
+                  <li><a class="nav-link" href="{{ item.url }}">{{ item.label }}</a></li>
+                {% endfor %}
+              </ul>
+            </nav>
+          {% endfor %}
+        </aside>
+
+        <main class="content">
+          <div class="topbar">
+            <div class="user-summary">
+              {{ request.user.email }}{% if request.user.role %} · {{ request.user.get_role_display }}{% endif %}
+            </div>
+            <form class="logout-form" method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button class="button" type="submit">Salir</button>
+            </form>
+          </div>
+          {% block content %}{% endblock %}
+        </main>
+      </div>
+    {% endblock %}
+  </body>
+</html>

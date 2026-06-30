@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Panel interno</p>
+    <h1>Gestion documental</h1>
+    <p class="lead">Acceso operativo segun rol y permisos registrados.</p>
+  </header>
+
+  <section class="module-grid" aria-label="Modulos disponibles">
+    {% for group in module_navigation %}
+      <article class="module-card">
+        <h2>{{ group.title }}</h2>
+        <ul>
+          {% for item in group.items %}
+            <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </article>
+    {% empty %}
+      <article class="module-card">
+        <h2>Sin modulos disponibles</h2>
+      </article>
+    {% endfor %}
+  </section>
+{% endblock %}

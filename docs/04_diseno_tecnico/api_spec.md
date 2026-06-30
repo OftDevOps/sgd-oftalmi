@@ -4,6 +4,14 @@
 
 La API completa aun no esta implementada.
 
+Existe un indice reservado en:
+
+```text
+/api/v1/
+```
+
+Este indice requiere autenticacion por sesion y solo expone metadata tecnica minima.
+
 La decision F2-P01 define un enfoque hibrido:
 
 ```text
@@ -26,6 +34,8 @@ Prefijo previsto:
 ```
 
 No se define API publica en esta fase.
+
+La estructura base no incluye endpoints funcionales de modelos.
 
 ---
 

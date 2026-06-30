@@ -96,6 +96,7 @@ USE_TZ = True
 
 STATIC_URL = config("STATIC_URL", default="/static/")
 STATIC_ROOT = Path(config("STATIC_ROOT", default=str(BASE_DIR / "staticfiles")))
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = config("MEDIA_URL", default="/media/")
 MEDIA_ROOT = Path(config("MEDIA_ROOT", default=str(BASE_DIR / "media")))
@@ -103,6 +104,9 @@ MEDIA_ROOT = Path(config("MEDIA_ROOT", default=str(BASE_DIR / "media")))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/app/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 EMAIL_BACKEND = config(
     "EMAIL_BACKEND",

@@ -106,14 +106,32 @@ No se implementara JWT, OAuth externo, LDAP ni Active Directory en esta fase.
 
 ## 5. Rutas previstas
 
-Estructura inicial sugerida:
+Estructura inicial implementada:
 
 ```text
-/                     Pantalla inicial autenticada o redireccion a login
+/                     Redireccion a /app/
+/accounts/login/      Login con sesion Django
+/accounts/logout/     Logout con sesion Django
 /admin/               Django admin
 /health/              Health check tecnico
-/app/                 Vistas funcionales Django
-/api/v1/              API interna versionada cuando se implemente DRF
+/app/                 Dashboard autenticado
+/app/...              Vistas base por modulo
+/api/v1/              Indice reservado de API interna
+```
+
+Las rutas de modulo se implementan con Django templates y permisos base:
+
+```text
+/app/users/
+/app/catalogs/organizational-units/
+/app/catalogs/document-types/
+/app/documents/
+/app/document-requests/
+/app/controlled-copies/
+/app/implementation-records/
+/app/audit/
+/app/reports/
+/app/notifications/
 ```
 
 Esta estructura podra ajustarse durante la implementacion de Fase 2 si no contradice la decision ADR-001.

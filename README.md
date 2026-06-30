@@ -30,6 +30,7 @@ La rama `develop` contiene la base Django del MVP con:
 - Copias controladas base.
 - Registros de implementacion base.
 - Auditoria base.
+- Capa de acceso base con Django templates.
 
 La rama `main` se mantiene como version estable aprobada. El trabajo activo se realiza en `develop`.
 
@@ -84,4 +85,4 @@ make backup-media
 
 ## Alcance pendiente
 
-No estan implementados todavia workflows completos, API, frontend final, permisos por documento, visor documental, notificaciones, reportes/exportacion Excel ni auditoria automatica conectada a eventos reales.
+No estan implementados todavia workflows completos, API funcional, frontend final, permisos por documento, visor documental, notificaciones operativas ni reportes/exportacion Excel.

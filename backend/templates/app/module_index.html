@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">{{ module_section }}</p>
+    <h1>{{ module_title }}</h1>
+  </header>
+
+  <section class="status-panel" aria-label="Estado del modulo">
+    <div class="status-row">
+      <span class="label">Modulo</span>
+      <span>{{ module_key }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{{ module_status }}</span>
+    </div>
+  </section>
+{% endblock %}

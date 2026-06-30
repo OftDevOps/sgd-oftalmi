@@ -149,6 +149,7 @@ Punto 23 -> Transiciones de estados de solicitudes documentales
 Punto 24 -> Servicios de auditoría automática controlada
 Punto 25 -> Carga inicial / seed de catálogos base
 F2-P01  -> Decisión técnica de capa de acceso
+F2-P02  -> Estructura base de URLs, vistas y capa de acceso
 ```
 
 Último commit técnico conocido en `develop`:
@@ -837,6 +838,31 @@ No se construirá una API pública ni una SPA React completa como primera interf
 docs/00_gobierno_proyecto/decisiones_arquitectura.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md
 docs/04_diseno_tecnico/api_spec.md
+```
+
+#### F2-P02 - Estructura base de URLs, vistas y capa de acceso
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Rutas principales para login, logout, dashboard y healthcheck.
+* Prefijo funcional `/app/` con vistas base por modulo.
+* Indice reservado `/api/v1/` sin endpoints funcionales.
+* Templates base para interfaz interna con sesion Django.
+* Pruebas de autenticacion, permisos base y rutas iniciales.
+
+**Evidencia:**
+
+```text
+backend/config/urls.py
+backend/config/app_urls.py
+backend/config/access.py
+backend/config/navigation.py
+backend/templates/
+backend/apps/*/views.py
+backend/apps/*/urls.py
+backend/apps/accounts/tests/test_access_urls.py
 ```
 
 ---
