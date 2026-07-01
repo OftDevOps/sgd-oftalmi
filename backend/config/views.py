@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
+from apps.accounts.dashboard import get_role_dashboard
 from apps.accounts.redirects import get_role_home_url
 
 from .navigation import get_module_navigation
@@ -20,6 +21,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["role_dashboard"] = get_role_dashboard(self.request.user)
         context["module_navigation"] = get_module_navigation(self.request.user)
         return context
 

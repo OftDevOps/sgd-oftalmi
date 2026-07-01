@@ -3,9 +3,31 @@
 {% block content %}
   <header class="page-header">
     <p class="eyebrow">Panel interno</p>
-    <h1>Gestion documental</h1>
-    <p class="lead">Acceso operativo segun rol y permisos registrados.</p>
+    <h1>{{ role_dashboard.title }}</h1>
+    <p class="lead">{{ role_dashboard.summary }}</p>
   </header>
+
+  <section class="module-grid" aria-label="Resumen por rol">
+    <article class="module-card">
+      <h2>Prioridades</h2>
+      <ul>
+        {% for item in role_dashboard.focus %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="module-card">
+      <h2>Accesos principales</h2>
+      <ul>
+        {% for action in role_dashboard.actions %}
+          <li><a href="{{ action.url }}">{{ action.label }}</a></li>
+        {% empty %}
+          <li>Sin accesos principales definidos.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </section>
 
   <section class="module-grid" aria-label="Modulos disponibles">
     {% for group in module_navigation %}

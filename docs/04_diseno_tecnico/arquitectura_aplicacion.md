@@ -36,7 +36,7 @@ Uso esperado:
 
 * Layout base.
 * Login/logout con sesion Django.
-* Panel interno por rol.
+* Dashboard base por rol.
 * Pantallas de catalogos.
 * Pantallas de documentos.
 * Pantallas de solicitudes documentales.
@@ -149,6 +149,8 @@ Las rutas de modulo se implementan con Django templates y permisos base:
 ```
 
 Esta estructura podra ajustarse durante la implementacion de Fase 2 si no contradice la decision ADR-001.
+
+El dashboard base por rol muestra contenido orientativo y accesos principales segun perfil. No calcula metricas reales complejas, no implementa reportes y no consulta informacion documental sensible.
 
 ---
 

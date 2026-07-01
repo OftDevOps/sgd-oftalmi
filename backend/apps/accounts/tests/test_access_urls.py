@@ -125,6 +125,31 @@ class AccessURLTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("login"), response["Location"])
 
+    def test_dashboard_displays_role_specific_content(self):
+        role_expectations = (
+            (UserRole.OYM_ADMIN, "Operacion documental OyM", "Solicitudes documentales"),
+            (UserRole.OYM_ANALYST, "Gestion operativa OyM", "Copias controladas"),
+            (UserRole.EXECUTING_UNIT, "Unidad ejecutora", "Solicitudes documentales"),
+            (UserRole.READER, "Consulta e implementacion", "Notificaciones"),
+            (UserRole.SYSTEMS_TECH_ADMIN, "Operacion tecnica", "Usuarios"),
+            (UserRole.AUDITOR, "Consulta de auditoria", "Auditoria"),
+        )
+
+        for role, title, action in role_expectations:
+            with self.subTest(role=role):
+                self.client.logout()
+                user = self.create_user(
+                    role=role,
+                    email=f"dashboard-{role}@oftalmi.test",
+                )
+                self.client.force_login(user)
+
+                response = self.client.get(reverse("app:dashboard"))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, title)
+                self.assertContains(response, action)
+
     def test_module_urls_require_authentication(self):
         for url_name in self.module_url_names:
             with self.subTest(url_name=url_name):

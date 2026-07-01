@@ -151,6 +151,7 @@ Punto 25 -> Carga inicial / seed de catálogos base
 F2-P01  -> Decisión técnica de capa de acceso
 F2-P02  -> Estructura base de URLs, vistas y capa de acceso
 F2-P03  -> Login, logout y redirección por rol
+F2-P04  -> Dashboard base por rol
 ```
 
 Último commit técnico conocido en `develop`:
@@ -888,6 +889,29 @@ backend/config/urls.py
 backend/config/views.py
 backend/templates/accounts/login.html
 backend/templates/accounts/logged_out.html
+backend/apps/accounts/tests/test_access_urls.py
+```
+
+#### F2-P04 - Dashboard base por rol
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Dashboard protegido por login.
+* Contenido minimo diferenciado por rol.
+* Accesos principales por perfil usando rutas ya existentes.
+* Sin metricas reales complejas.
+* Sin modelos nuevos ni migraciones.
+* Sin reportes ni frontend avanzado.
+* Pruebas de contenido por rol.
+
+**Evidencia:**
+
+```text
+backend/apps/accounts/dashboard.py
+backend/config/views.py
+backend/templates/app/dashboard.html
 backend/apps/accounts/tests/test_access_urls.py
 ```
 
