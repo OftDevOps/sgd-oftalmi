@@ -154,6 +154,7 @@ F2-P03  -> Login, logout y redirección por rol
 F2-P04  -> Dashboard base por rol
 F2-P05  -> Catálogos: vistas de unidades organizativas y tipos documentales
 F2-P06  -> Documentos: listado, detalle y consulta base
+F2-P07  -> Solicitudes documentales: creación y consulta base
 ```
 
 Último commit técnico conocido en `develop`:
@@ -966,6 +967,32 @@ backend/apps/documents/views.py
 backend/apps/documents/urls.py
 backend/apps/documents/tests/test_views.py
 backend/templates/documents/
+```
+
+#### F2-P07 - Solicitudes documentales: creación y consulta base
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Listado de solicitudes documentales.
+* Detalle básico de solicitud.
+* Formulario simple para crear solicitud.
+* Acceso protegido por login.
+* Permisos por rol usando helpers existentes.
+* Unidad ejecutora puede crear solicitudes.
+* OyM puede consultar todas las solicitudes.
+* Usuarios no OyM con acceso solo consultan solicitudes propias.
+* Sin workflow completo, aprobacion, rechazo, notificaciones ni modelos nuevos.
+
+**Evidencia:**
+
+```text
+backend/apps/document_requests/forms.py
+backend/apps/document_requests/views.py
+backend/apps/document_requests/urls.py
+backend/apps/document_requests/tests/test_views.py
+backend/templates/document_requests/
 ```
 
 ---

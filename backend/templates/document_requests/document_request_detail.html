@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>{{ document_request.title }}</h1>
+    <p class="lead">Detalle base de solicitud documental registrada.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle de la solicitud documental">
+    <div class="status-row">
+      <span class="label">Tipo</span>
+      <span>{{ document_request.get_request_type_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{{ document_request.get_status_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Unidad ejecutora</span>
+      <span>{{ document_request.organizational_unit.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Solicitante</span>
+      <span>{{ document_request.requested_by.email }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Tipo documental</span>
+      <span>{{ document_request.document_type|default:"Sin tipo documental" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Documento relacionado</span>
+      <span>{{ document_request.related_document|default:"Sin documento relacionado" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Descripcion</span>
+      <span>{{ document_request.description|default:"Sin descripcion" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Creada</span>
+      <span>{{ document_request.created_at }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Enviada</span>
+      <span>{{ document_request.submitted_at|default:"Sin envio registrado" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Cerrada</span>
+      <span>{{ document_request.closed_at|default:"Sin cierre registrado" }}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:document_requests:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}

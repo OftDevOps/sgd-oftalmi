@@ -144,6 +144,8 @@ Las rutas de modulo se implementan con Django templates y permisos base:
 /app/documents/
 /app/documents/<id>/
 /app/document-requests/
+/app/document-requests/new/
+/app/document-requests/<id>/
 /app/controlled-copies/
 /app/implementation-records/
 /app/audit/
@@ -158,6 +160,8 @@ El dashboard base por rol muestra contenido orientativo y accesos principales se
 Las vistas iniciales de catalogos son de solo lectura. Permiten listar y consultar detalle basico de unidades ejecutoras y tipos documentales usando permisos existentes. La creacion, edicion y eliminacion desde vistas funcionales queda fuera de este punto.
 
 Las vistas iniciales de documentos son de consulta base. Permiten listar, ver detalle, revisar versiones asociadas y consultar metadatos de archivos sin exponer descarga ni visor documental. La carga de archivos, aprobacion y cambios de estado quedan fuera de este punto.
+
+Las vistas iniciales de solicitudes documentales permiten listado, detalle y creacion simple en estado borrador usando servicios existentes. El procesamiento operativo de solicitudes, aprobacion, rechazo, observaciones complejas y notificaciones quedan fuera de esta etapa.
 
 ---
 

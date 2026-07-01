@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>Solicitudes documentales</h1>
+    <p class="lead">Consulta base de solicitudes registradas para gestion de Organizacion y Metodos.</p>
+    {% if can_create_document_request %}
+      <p class="page-actions">
+        <a class="button" href="{% url 'app:document_requests:create' %}">Nueva solicitud</a>
+      </p>
+    {% endif %}
+  </header>
+
+  <section class="table-panel" aria-label="Listado de solicitudes documentales">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Titulo</th>
+          <th>Estado</th>
+          <th>Unidad</th>
+          <th>Solicitante</th>
+          <th>Documento relacionado</th>
+          <th>Creada</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request_item in document_requests %}
+          <tr>
+            <td>{{ request_item.get_request_type_display }}</td>
+            <td>{{ request_item.title }}</td>
+            <td>{{ request_item.get_status_display }}</td>
+            <td>{{ request_item.organizational_unit.name }}</td>
+            <td>{{ request_item.requested_by.email }}</td>
+            <td>{{ request_item.related_document|default:"-" }}</td>
+            <td>{{ request_item.created_at }}</td>
+            <td><a href="{% url 'app:document_requests:detail' request_item.pk %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8">No hay solicitudes documentales disponibles.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}
