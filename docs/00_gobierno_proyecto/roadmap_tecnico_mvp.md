@@ -156,6 +156,7 @@ F2-P05  -> Catálogos: vistas de unidades organizativas y tipos documentales
 F2-P06  -> Documentos: listado, detalle y consulta base
 F2-P07  -> Solicitudes documentales: creación y consulta base
 F2-P08  -> Copias controladas: consulta base
+F2-P09  -> Implementation records: consulta y registro base
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1020,6 +1021,32 @@ backend/apps/controlled_copies/urls.py
 backend/apps/controlled_copies/tests/test_permissions.py
 backend/apps/controlled_copies/tests/test_views.py
 backend/templates/controlled_copies/
+```
+
+#### F2-P09 - Implementation records: consulta y registro base
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Listado de registros de implementacion.
+* Detalle basico de registro.
+* Formulario simple para crear registro propio pendiente.
+* Acceso protegido por login.
+* Permisos por rol usando helpers existentes.
+* OyM puede consultar todos los registros.
+* Usuario autenticado puede consultar sus propios registros.
+* Sin `ImplementationCertificate`, firma formal, numeracion de constancias, PDF, notificaciones ni reportes.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/implementation_records/forms.py
+backend/apps/implementation_records/views.py
+backend/apps/implementation_records/urls.py
+backend/apps/implementation_records/tests/test_views.py
+backend/templates/implementation_records/
 ```
 
 ---

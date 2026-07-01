@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>{{ implementation_record.document.code }} v{{ implementation_record.document_version.version_number }}</h1>
+    <p class="lead">Detalle base del registro de implementacion asociado al usuario y version documental.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle del registro de implementacion">
+    <div class="status-row">
+      <span class="label">Usuario</span>
+      <span>{{ implementation_record.user.email }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Documento</span>
+      <span>{{ implementation_record.document.code }} - {{ implementation_record.document.title }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Version</span>
+      <span>{{ implementation_record.document_version.version_number }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{{ implementation_record.get_status_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Asignado</span>
+      <span>{{ implementation_record.assigned_at }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Leido</span>
+      <span>{{ implementation_record.read_at|default:"Sin lectura registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Interpretado</span>
+      <span>{{ implementation_record.interpreted_at|default:"Sin interpretacion registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Aceptado</span>
+      <span>{{ implementation_record.accepted_at|default:"Sin aceptacion registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Implementado</span>
+      <span>{{ implementation_record.implemented_at|default:"Sin implementacion registrada" }}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:implementation_records:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}
