@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>{{ document.code }} - {{ document.title }}</h1>
+    <p class="lead">Detalle base de documento con versiones y metadatos de archivos asociados.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle del documento">
+    <div class="status-row">
+      <span class="label">Codigo</span>
+      <span>{{ document.code }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Titulo</span>
+      <span>{{ document.title }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Tipo documental</span>
+      <span>{{ document.document_type.code }} - {{ document.document_type.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Unidad responsable</span>
+      <span>{{ document.owner_unit.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{{ document.get_status_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Version vigente</span>
+      <span>{{ document.current_version|default:"Sin version vigente" }}</span>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <h2>Versiones asociadas</h2>
+    {% for version in document_versions %}
+      <article class="page-section">
+        <section class="status-panel" aria-label="Detalle de version documental">
+          <div class="status-row">
+            <span class="label">Version</span>
+            <span>{{ version.version_number }}</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Estado</span>
+            <span>{{ version.get_status_display }}</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Fecha de emision</span>
+            <span>{{ version.issue_date|default:"-" }}</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Fecha de vigencia</span>
+            <span>{{ version.effective_date|default:"-" }}</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Fecha de aprobacion</span>
+            <span>{{ version.approved_at|default:"-" }}</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Creada por</span>
+            <span>{{ version.created_by.email }}</span>
+          </div>
+        </section>
+
+        <h3>Archivos asociados</h3>
+        <section class="table-panel" aria-label="Archivos de la version documental">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre original</th>
+                <th>Contenido</th>
+                <th>Tamano</th>
+                <th>Hash</th>
+                <th>Cargado por</th>
+                <th>Fecha de carga</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for file in version.files.all %}
+                <tr>
+                  <td>{{ file.original_filename }}</td>
+                  <td>{{ file.content_type|default:"-" }}</td>
+                  <td>{{ file.size_bytes|default:"-" }}</td>
+                  <td>{{ file.file_hash|default:"-" }}</td>
+                  <td>{{ file.uploaded_by.email }}</td>
+                  <td>{{ file.uploaded_at }}</td>
+                  <td>{% if file.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="7">No hay archivos asociados a esta version.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </article>
+    {% empty %}
+      <p>No hay versiones visibles para este documento.</p>
+    {% endfor %}
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:documents:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}

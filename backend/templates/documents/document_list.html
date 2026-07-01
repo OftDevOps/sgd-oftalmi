@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>Documentos</h1>
+    <p class="lead">Consulta base de documentos controlados y sus metadatos principales.</p>
+  </header>
+
+  <section class="table-panel" aria-label="Listado de documentos">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Titulo</th>
+          <th>Tipo</th>
+          <th>Unidad</th>
+          <th>Estado</th>
+          <th>Version vigente</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document in documents %}
+          <tr>
+            <td>{{ document.code }}</td>
+            <td>{{ document.title }}</td>
+            <td>{{ document.document_type.code }} - {{ document.document_type.name }}</td>
+            <td>{{ document.owner_unit.name }}</td>
+            <td>{{ document.get_status_display }}</td>
+            <td>{{ document.current_version|default:"-" }}</td>
+            <td><a href="{% url 'app:documents:detail' document.pk %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7">No hay documentos disponibles para consulta.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

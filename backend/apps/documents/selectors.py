@@ -48,3 +48,7 @@ def document_file_list(*, document_version=None, is_active=None):
         queryset = queryset.filter(is_active=is_active)
 
     return queryset
+
+
+def document_detail_queryset():
+    return document_list().prefetch_related("versions__created_by", "versions__files__uploaded_by")

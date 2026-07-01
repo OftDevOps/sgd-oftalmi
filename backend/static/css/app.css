@@ -224,6 +224,10 @@ h1 {
   margin-top: 18px;
 }
 
+.page-section {
+  margin-top: 24px;
+}
+
 .login-shell {
   align-items: center;
   display: flex;

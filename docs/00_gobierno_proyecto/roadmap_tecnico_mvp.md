@@ -153,6 +153,7 @@ F2-P02  -> Estructura base de URLs, vistas y capa de acceso
 F2-P03  -> Login, logout y redirección por rol
 F2-P04  -> Dashboard base por rol
 F2-P05  -> Catálogos: vistas de unidades organizativas y tipos documentales
+F2-P06  -> Documentos: listado, detalle y consulta base
 ```
 
 Último commit técnico conocido en `develop`:
@@ -941,6 +942,30 @@ backend/apps/document_types/views.py
 backend/apps/document_types/urls.py
 backend/apps/document_types/tests/test_views.py
 backend/templates/catalogs/
+```
+
+#### F2-P06 - Documentos: listado, detalle y consulta base
+
+**Estado:** Completado.
+
+**Resultado esperado:**
+
+* Listado de documentos.
+* Detalle básico de documento.
+* Visualización de versiones asociadas.
+* Visualización de archivos asociados como metadatos.
+* Acceso protegido por login.
+* Permisos por rol usando helpers existentes.
+* Sin carga, descarga ni visor documental.
+* Sin cambios de estado ni aprobaciones desde vistas.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/views.py
+backend/apps/documents/urls.py
+backend/apps/documents/tests/test_views.py
+backend/templates/documents/
 ```
 
 ---
