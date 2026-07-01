@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Catalogos</p>
+    <h1>{{ document_type.code }} - {{ document_type.name }}</h1>
+    <p class="lead">Detalle de tipo documental controlado por Organizacion y Metodos.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle del tipo documental">
+    <div class="status-row">
+      <span class="label">Codigo</span>
+      <span>{{ document_type.code }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Nombre</span>
+      <span>{{ document_type.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Descripcion</span>
+      <span>{{ document_type.description|default:"Sin descripcion" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{% if document_type.is_active %}Activo{% else %}Inactivo{% endif %}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:document_types:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}

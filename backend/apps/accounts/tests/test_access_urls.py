@@ -167,7 +167,6 @@ class AccessURLTests(TestCase):
                 response = self.client.get(reverse(url_name))
 
                 self.assertEqual(response.status_code, 200)
-                self.assertContains(response, "Base de acceso")
 
     def test_reader_access_is_limited_by_module_permissions(self):
         user = self.create_user(

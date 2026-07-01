@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Catalogos</p>
+    <h1>Tipos documentales</h1>
+    <p class="lead">Consulta de tipologias documentales administradas por Organizacion y Metodos.</p>
+  </header>
+
+  <section class="table-panel" aria-label="Listado de tipos documentales">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Estado</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document_type in document_types %}
+          <tr>
+            <td>{{ document_type.code }}</td>
+            <td>{{ document_type.name }}</td>
+            <td>{% if document_type.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+            <td><a href="{% url 'app:document_types:detail' document_type.pk %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">No hay tipos documentales registrados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

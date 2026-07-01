@@ -152,6 +152,7 @@ F2-P01  -> Decisión técnica de capa de acceso
 F2-P02  -> Estructura base de URLs, vistas y capa de acceso
 F2-P03  -> Login, logout y redirección por rol
 F2-P04  -> Dashboard base por rol
+F2-P05  -> Catálogos: vistas de unidades organizativas y tipos documentales
 ```
 
 Último commit técnico conocido en `develop`:
@@ -913,6 +914,33 @@ backend/apps/accounts/dashboard.py
 backend/config/views.py
 backend/templates/app/dashboard.html
 backend/apps/accounts/tests/test_access_urls.py
+```
+
+#### F2-P05 - Catálogos: vistas de unidades organizativas y tipos documentales
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Listado de unidades ejecutoras.
+* Detalle básico de unidad ejecutora.
+* Listado de tipos documentales.
+* Detalle básico de tipo documental.
+* Acceso protegido por login.
+* Permisos por rol usando helpers existentes.
+* Sin crear, editar ni eliminar desde vistas funcionales.
+* Sin APIs, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/organizational_units/views.py
+backend/apps/organizational_units/urls.py
+backend/apps/organizational_units/tests/test_views.py
+backend/apps/document_types/views.py
+backend/apps/document_types/urls.py
+backend/apps/document_types/tests/test_views.py
+backend/templates/catalogs/
 ```
 
 ---

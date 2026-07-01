@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Catalogos</p>
+    <h1>Unidades ejecutoras</h1>
+    <p class="lead">Consulta de unidades internas que participan en la gestion documental.</p>
+  </header>
+
+  <section class="table-panel" aria-label="Listado de unidades ejecutoras">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Codigo</th>
+          <th>Estado</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for unit in organizational_units %}
+          <tr>
+            <td>{{ unit.name }}</td>
+            <td>{{ unit.code|default:"-" }}</td>
+            <td>{% if unit.is_active %}Activa{% else %}Inactiva{% endif %}</td>
+            <td><a href="{% url 'app:organizational_units:detail' unit.pk %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">No hay unidades ejecutoras registradas.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

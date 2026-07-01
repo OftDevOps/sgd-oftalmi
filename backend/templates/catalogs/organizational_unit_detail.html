@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Catalogos</p>
+    <h1>{{ organizational_unit.name }}</h1>
+    <p class="lead">Detalle de unidad ejecutora registrada para la gestion documental.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle de la unidad ejecutora">
+    <div class="status-row">
+      <span class="label">Nombre</span>
+      <span>{{ organizational_unit.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Codigo</span>
+      <span>{{ organizational_unit.code|default:"Sin codigo" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Descripcion</span>
+      <span>{{ organizational_unit.description|default:"Sin descripcion" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{% if organizational_unit.is_active %}Activa{% else %}Inactiva{% endif %}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:organizational_units:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}
