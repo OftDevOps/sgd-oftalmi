@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>{{ controlled_copy.document.code }} - copia {{ controlled_copy.copy_number }}</h1>
+    <p class="lead">Detalle base de copia controlada registrada.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle de la copia controlada">
+    <div class="status-row">
+      <span class="label">Documento</span>
+      <span>{{ controlled_copy.document.code }} - {{ controlled_copy.document.title }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Version</span>
+      <span>{{ controlled_copy.document_version.version_number }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Numero de copia</span>
+      <span>{{ controlled_copy.copy_number }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Estado</span>
+      <span>{{ controlled_copy.get_status_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Unidad receptora</span>
+      <span>{{ controlled_copy.receiver_unit.name }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Usuario receptor</span>
+      <span>{{ controlled_copy.receiver_user.email|default:"Sin usuario receptor especifico" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Entregada</span>
+      <span>{{ controlled_copy.delivered_at|default:"Sin entrega registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Retirada</span>
+      <span>{{ controlled_copy.retired_at|default:"Sin retiro registrado" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Evidencia</span>
+      <span>{{ controlled_copy.evidence_reference|default:"Sin evidencia registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Observaciones</span>
+      <span>{{ controlled_copy.observations|default:"Sin observaciones" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Registrada por</span>
+      <span>{{ controlled_copy.created_by.email }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Creada</span>
+      <span>{{ controlled_copy.created_at }}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:controlled_copies:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}

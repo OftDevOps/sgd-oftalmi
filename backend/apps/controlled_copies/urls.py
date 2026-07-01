@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .views import ControlledCopyIndexView
+from .views import ControlledCopyDetailView, ControlledCopyListView
 
 
 app_name = "controlled_copies"
 
 urlpatterns = [
-    path("", ControlledCopyIndexView.as_view(), name="index"),
+    path("", ControlledCopyListView.as_view(), name="index"),
+    path("<int:pk>/", ControlledCopyDetailView.as_view(), name="detail"),
 ]

@@ -155,6 +155,7 @@ F2-P04  -> Dashboard base por rol
 F2-P05  -> Catálogos: vistas de unidades organizativas y tipos documentales
 F2-P06  -> Documentos: listado, detalle y consulta base
 F2-P07  -> Solicitudes documentales: creación y consulta base
+F2-P08  -> Copias controladas: consulta base
 ```
 
 Último commit técnico conocido en `develop`:
@@ -993,6 +994,32 @@ backend/apps/document_requests/views.py
 backend/apps/document_requests/urls.py
 backend/apps/document_requests/tests/test_views.py
 backend/templates/document_requests/
+```
+
+#### F2-P08 - Copias controladas: consulta base
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Listado de copias controladas.
+* Detalle básico de copia controlada.
+* Acceso protegido por login.
+* Permisos por rol usando helpers existentes.
+* OyM puede ver todas las copias controladas.
+* Unidad o usuario destinatario puede consultar sus copias aplicables.
+* Sistemas Técnico y Auditor permanecen sin acceso si el helper no les otorga permiso.
+* Sin creación, edición, retiro, workflow de entrega, constancias, notificaciones ni reportes desde vistas.
+
+**Evidencia:**
+
+```text
+backend/apps/controlled_copies/permissions.py
+backend/apps/controlled_copies/views.py
+backend/apps/controlled_copies/urls.py
+backend/apps/controlled_copies/tests/test_permissions.py
+backend/apps/controlled_copies/tests/test_views.py
+backend/templates/controlled_copies/
 ```
 
 ---

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Gestion documental</p>
+    <h1>Copias controladas</h1>
+    <p class="lead">Consulta base de copias controladas registradas por Organizacion y Metodos.</p>
+  </header>
+
+  <section class="table-panel" aria-label="Listado de copias controladas">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Version</th>
+          <th>Copia</th>
+          <th>Estado</th>
+          <th>Unidad receptora</th>
+          <th>Usuario receptor</th>
+          <th>Entrega</th>
+          <th>Retiro</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for controlled_copy in controlled_copies %}
+          <tr>
+            <td>{{ controlled_copy.document.code }} - {{ controlled_copy.document.title }}</td>
+            <td>{{ controlled_copy.document_version.version_number }}</td>
+            <td>{{ controlled_copy.copy_number }}</td>
+            <td>{{ controlled_copy.get_status_display }}</td>
+            <td>{{ controlled_copy.receiver_unit.name }}</td>
+            <td>{{ controlled_copy.receiver_user.email|default:"-" }}</td>
+            <td>{{ controlled_copy.delivered_at|default:"-" }}</td>
+            <td>{{ controlled_copy.retired_at|default:"-" }}</td>
+            <td><a href="{% url 'app:controlled_copies:detail' controlled_copy.pk %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9">No hay copias controladas disponibles para consulta.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

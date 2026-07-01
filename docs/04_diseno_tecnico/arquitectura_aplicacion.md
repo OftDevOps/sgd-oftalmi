@@ -147,6 +147,7 @@ Las rutas de modulo se implementan con Django templates y permisos base:
 /app/document-requests/new/
 /app/document-requests/<id>/
 /app/controlled-copies/
+/app/controlled-copies/<id>/
 /app/implementation-records/
 /app/audit/
 /app/reports/
@@ -162,6 +163,8 @@ Las vistas iniciales de catalogos son de solo lectura. Permiten listar y consult
 Las vistas iniciales de documentos son de consulta base. Permiten listar, ver detalle, revisar versiones asociadas y consultar metadatos de archivos sin exponer descarga ni visor documental. La carga de archivos, aprobacion y cambios de estado quedan fuera de este punto.
 
 Las vistas iniciales de solicitudes documentales permiten listado, detalle y creacion simple en estado borrador usando servicios existentes. El procesamiento operativo de solicitudes, aprobacion, rechazo, observaciones complejas y notificaciones quedan fuera de esta etapa.
+
+Las vistas iniciales de copias controladas permiten listado y detalle base. OyM consulta todas las copias, mientras que destinatarios por usuario o unidad consultan solo las copias aplicables. La creacion, edicion, entrega, retiro, constancias, reportes y notificaciones quedan fuera de esta etapa.
 
 ---
 
