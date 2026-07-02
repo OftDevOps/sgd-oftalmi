@@ -152,6 +152,7 @@ Las rutas de modulo se implementan con Django templates y permisos base:
 /app/implementation-records/new/
 /app/implementation-records/<id>/
 /app/audit/
+/app/audit/<id>/
 /app/reports/
 /app/notifications/
 ```
@@ -169,6 +170,8 @@ Las vistas iniciales de solicitudes documentales permiten listado, detalle y cre
 Las vistas iniciales de copias controladas permiten listado y detalle base. OyM consulta todas las copias, mientras que destinatarios por usuario o unidad consultan solo las copias aplicables. La creacion, edicion, entrega, retiro, constancias, reportes y notificaciones quedan fuera de esta etapa.
 
 Las vistas iniciales de registros de implementacion permiten listado, detalle y creacion simple de registro propio pendiente. La emision de certificados, firma formal, numeracion de constancias, PDF, reportes y notificaciones quedan fuera de esta etapa.
+
+Las vistas iniciales de auditoria permiten listado y detalle base de eventos con acceso restringido por helpers existentes. La exportacion, reportes, filtros avanzados y modificacion de eventos quedan fuera de esta etapa.
 
 ---
 

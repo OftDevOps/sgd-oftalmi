@@ -157,6 +157,7 @@ F2-P06  -> Documentos: listado, detalle y consulta base
 F2-P07  -> Solicitudes documentales: creación y consulta base
 F2-P08  -> Copias controladas: consulta base
 F2-P09  -> Implementation records: consulta y registro base
+F2-P10  -> Auditoría: consulta restringida base
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1047,6 +1048,31 @@ backend/apps/implementation_records/views.py
 backend/apps/implementation_records/urls.py
 backend/apps/implementation_records/tests/test_views.py
 backend/templates/implementation_records/
+```
+
+#### F2-P10 - Auditoría: consulta restringida base
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Listado de eventos de auditoria.
+* Detalle basico de evento.
+* Acceso protegido por login.
+* Acceso restringido con helpers existentes.
+* OyM Admin, Analista OyM, Auditor y Sistemas Tecnico pueden consultar segun permisos actuales.
+* Solo lectura.
+* Sin exportacion, reportes, filtros avanzados, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/audit/permissions.py
+backend/apps/audit/views.py
+backend/apps/audit/urls.py
+backend/apps/audit/tests/test_permissions.py
+backend/apps/audit/tests/test_views.py
+backend/templates/audit/
 ```
 
 ---

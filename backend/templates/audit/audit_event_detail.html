@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Control</p>
+    <h1>{{ audit_event.module }} - {{ audit_event.get_action_display }}</h1>
+    <p class="lead">Detalle base del evento de auditoria seleccionado.</p>
+  </header>
+
+  <section class="status-panel" aria-label="Detalle del evento de auditoria">
+    <div class="status-row">
+      <span class="label">Fecha</span>
+      <span>{{ audit_event.created_at }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Usuario</span>
+      <span>{{ audit_event.user.email|default:"Sistema" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Modulo</span>
+      <span>{{ audit_event.module }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Accion</span>
+      <span>{{ audit_event.get_action_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Resultado</span>
+      <span>{{ audit_event.get_result_display }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Entidad</span>
+      <span>{{ audit_event.entity_type|default:"Sin entidad" }}{% if audit_event.entity_id %} #{{ audit_event.entity_id }}{% endif %}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">IP</span>
+      <span>{{ audit_event.ip_address|default:"Sin IP registrada" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">User agent</span>
+      <span>{{ audit_event.user_agent|default:"Sin user agent registrado" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Descripcion</span>
+      <span>{{ audit_event.description|default:"Sin descripcion" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Datos previos</span>
+      <span>{{ audit_event.before_data|default:"Sin datos previos" }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Datos posteriores</span>
+      <span>{{ audit_event.after_data|default:"Sin datos posteriores" }}</span>
+    </div>
+  </section>
+
+  <p class="page-actions">
+    <a href="{% url 'app:audit:index' %}">Volver al listado</a>
+  </p>
+{% endblock %}

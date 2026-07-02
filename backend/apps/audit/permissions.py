@@ -1,9 +1,16 @@
 from apps.accounts.models import UserRole
-from apps.accounts.permissions import has_any_role, is_oym_admin
+from apps.accounts.permissions import has_any_role
 
 
 def can_view_functional_audit(user):
-    return has_any_role(user, {UserRole.OYM_ADMIN, UserRole.AUDITOR})
+    return has_any_role(
+        user,
+        {
+            UserRole.OYM_ADMIN,
+            UserRole.OYM_ANALYST,
+            UserRole.AUDITOR,
+        },
+    )
 
 
 def can_view_technical_audit(user):
