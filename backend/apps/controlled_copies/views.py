@@ -3,7 +3,6 @@ from django.views.generic import DetailView, ListView
 
 from apps.accounts.permissions import is_oym_user
 from config.access import ModuleAccessMixin
-from config.navigation import get_module_navigation
 
 from .models import ControlledCopy
 from .permissions import can_view_controlled_copies
@@ -12,11 +11,6 @@ from .selectors import controlled_copy_list
 
 class ControlledCopyAccessMixin(ModuleAccessMixin):
     permission_check = staticmethod(can_view_controlled_copies)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["module_navigation"] = get_module_navigation(self.request.user)
-        return context
 
 
 class ControlledCopyQuerysetMixin:

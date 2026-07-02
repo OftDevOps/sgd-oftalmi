@@ -173,6 +173,8 @@ Las vistas iniciales de registros de implementacion permiten listado, detalle y 
 
 Las vistas iniciales de auditoria permiten listado y detalle base de eventos con acceso restringido por helpers existentes. La exportacion, reportes, filtros avanzados y modificacion de eventos quedan fuera de esta etapa.
 
+Las vistas internas de Fase 2 deben usar `ModuleAccessMixin` o `ModuleIndexView` para asegurar login requerido, ejecucion del helper de permiso correspondiente y navegacion de modulo consistente. Las pruebas transversales por rol verifican los codigos 200/403 esperados para las rutas principales.
+
 ---
 
 ## 6. Frontend React/Vite

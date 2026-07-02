@@ -158,6 +158,7 @@ F2-P07  -> Solicitudes documentales: creación y consulta base
 F2-P08  -> Copias controladas: consulta base
 F2-P09  -> Implementation records: consulta y registro base
 F2-P10  -> Auditoría: consulta restringida base
+F2-P11  -> Aplicación transversal de permisos por rol en vistas
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1073,6 +1074,27 @@ backend/apps/audit/urls.py
 backend/apps/audit/tests/test_permissions.py
 backend/apps/audit/tests/test_views.py
 backend/templates/audit/
+```
+
+#### F2-P11 - Aplicación transversal de permisos por rol en vistas
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Revision de vistas creadas en Fase 2.
+* Confirmacion de login requerido en rutas internas.
+* Confirmacion de permisos por rol mediante helpers existentes.
+* Confirmacion de respuestas 403 donde corresponde.
+* Centralizacion de navegacion de modulo en `ModuleAccessMixin`.
+* Pruebas transversales por rol sobre rutas principales de Fase 2.
+* Sin modelos nuevos, migraciones, APIs, reportes ni frontend avanzado.
+
+**Evidencia:**
+
+```text
+backend/config/access.py
+backend/apps/accounts/tests/test_phase2_permissions.py
 ```
 
 ---

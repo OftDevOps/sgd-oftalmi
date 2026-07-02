@@ -1,7 +1,7 @@
 from django.views.generic import DetailView, ListView
 
 from config.access import ModuleAccessMixin
-from config.navigation import can_access_documents_module, get_module_navigation
+from config.navigation import can_access_documents_module
 
 from .models import Document, DocumentStatus
 from .permissions import can_view_obsolete_document
@@ -16,11 +16,6 @@ VISIBLE_DOCUMENT_STATUSES = {
 
 class DocumentAccessMixin(ModuleAccessMixin):
     permission_check = staticmethod(can_access_documents_module)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["module_navigation"] = get_module_navigation(self.request.user)
-        return context
 
 
 class DocumentListView(DocumentAccessMixin, ListView):

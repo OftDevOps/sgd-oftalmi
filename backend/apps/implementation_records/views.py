@@ -4,7 +4,7 @@ from django.views.generic import CreateView, DetailView, ListView
 
 from apps.accounts.permissions import is_active_user
 from config.access import ModuleAccessMixin
-from config.navigation import can_access_implementation_records_module, get_module_navigation
+from config.navigation import can_access_implementation_records_module
 
 from .forms import ImplementationRecordCreateForm
 from .models import ImplementationRecord
@@ -17,7 +17,6 @@ class ImplementationRecordAccessMixin(ModuleAccessMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["module_navigation"] = get_module_navigation(self.request.user)
         context["can_create_implementation_record"] = is_active_user(self.request.user)
         return context
 

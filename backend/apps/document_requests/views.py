@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView
 
 from config.access import ModuleAccessMixin
-from config.navigation import can_access_document_requests_module, get_module_navigation
+from config.navigation import can_access_document_requests_module
 
 from .forms import DocumentRequestCreateForm
 from .models import DocumentRequest
@@ -16,7 +16,6 @@ class DocumentRequestAccessMixin(ModuleAccessMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["module_navigation"] = get_module_navigation(self.request.user)
         context["can_create_document_request"] = can_create_document_request(
             self.request.user,
         )

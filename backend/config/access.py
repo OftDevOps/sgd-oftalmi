@@ -18,6 +18,11 @@ class ModuleAccessMixin(LoginRequiredMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("module_navigation", get_module_navigation(self.request.user))
+        return context
+
 
 class ModuleIndexView(ModuleAccessMixin, TemplateView):
     template_name = "app/module_index.html"
@@ -34,7 +39,6 @@ class ModuleIndexView(ModuleAccessMixin, TemplateView):
                 "module_title": self.module_title,
                 "module_section": self.module_section,
                 "module_status": self.module_status,
-                "module_navigation": get_module_navigation(self.request.user),
             }
         )
         return context
