@@ -164,6 +164,7 @@ F2-P13  -> Documentación técnica de cierre de Fase 2
 F3-P01  -> Definición técnica del visor documental
 F3-P02  -> Servicio de entrega controlada de archivos
 F3-P03  -> Validación de acceso por usuario/unidad/documento
+F3-P04  -> Vista de consulta documental controlada
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1227,6 +1228,33 @@ backend/apps/documents/tests/test_views.py
 backend/apps/documents/permissions.py
 backend/apps/documents/tests/test_views.py
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P04 - Vista de consulta documental controlada
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista y template base del visor documental.
+* Integracion con la ruta protegida de entrega controlada de PDF creada en F3-P02.
+* Visualizacion inline mediante `iframe`.
+* Metadatos basicos de documento, version y archivo.
+* Login obligatorio.
+* Validacion de permisos con reglas existentes de F3-P03.
+* Mensaje controlado para acceso denegado o archivo no disponible.
+* Navegacion desde detalle documental hacia visor cuando aplica.
+* Pruebas automatizadas de acceso permitido, denegado, login requerido y archivo no disponible.
+* Sin modelos nuevos, migraciones, APIs, PDF.js custom, marcas de agua, conversion Office ni bloqueo avanzado de descarga o impresion.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/views.py
+backend/apps/documents/urls.py
+backend/templates/documents/document_viewer.html
+backend/templates/documents/document_detail.html
+backend/apps/documents/tests/test_views.py
 ```
 
 ---

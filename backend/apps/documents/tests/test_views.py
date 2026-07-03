@@ -229,6 +229,156 @@ class DocumentViewsTests(TestCase):
         self.assertIn(reverse("login"), response["Location"])
         self.assertEqual(AuditEvent.objects.count(), 0)
 
+    def test_controlled_viewer_requires_login(self):
+        response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response["Location"])
+
+    def test_reader_can_open_controlled_viewer_when_related_by_unit_copy(self):
+        ControlledCopy.objects.create(
+            document=self.active_document,
+            document_version=self.active_version,
+            copy_number="CC-003",
+            receiver_unit=self.production_unit,
+            status=ControlledCopyStatus.ACTIVE,
+            created_by=self.oym_admin,
+        )
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        file_view_url = reverse(
+            "app:documents:file_view",
+            args=[
+                self.active_document.pk,
+                self.active_version.pk,
+                self.active_file.pk,
+            ],
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "documents/document_viewer.html")
+        self.assertContains(response, "Consulta controlada de archivo PDF documental")
+        self.assertContains(response, self.active_file.original_filename)
+        self.assertContains(response, file_view_url)
+        self.assertContains(response, "<iframe", html=False)
+        self.assertNotContains(response, self.active_file.file.url)
+
+    def test_controlled_viewer_returns_403_message_for_disallowed_user(self):
+        self.client.force_login(self.systems_admin)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "documents/document_viewer.html")
+        self.assertContains(
+            response,
+            "No tiene permiso para visualizar este archivo",
+            status_code=403,
+        )
+        self.assertNotContains(response, "<iframe", html=False, status_code=403)
+        self.assertEqual(AuditEvent.objects.count(), 0)
+
+    def test_controlled_viewer_returns_404_message_for_missing_file_record(self):
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    999999,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(
+            response,
+            "El documento, version o archivo solicitado no existe",
+            status_code=404,
+        )
+        self.assertNotContains(response, "<iframe", html=False, status_code=404)
+
+    def test_controlled_viewer_returns_404_message_for_missing_physical_file(self):
+        self.active_file.file.storage.delete(self.active_file.file.name)
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(
+            response,
+            "El archivo documental no esta disponible",
+            status_code=404,
+        )
+        self.assertNotContains(response, "<iframe", html=False, status_code=404)
+
+    def test_document_detail_links_to_viewer_when_user_can_view_file(self):
+        ControlledCopy.objects.create(
+            document=self.active_document,
+            document_version=self.active_version,
+            copy_number="CC-004",
+            receiver_unit=self.production_unit,
+            status=ControlledCopyStatus.ACTIVE,
+            created_by=self.oym_admin,
+        )
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse("app:documents:detail", args=[self.active_document.pk])
+        )
+
+        viewer_url = reverse(
+            "app:documents:file_viewer",
+            args=[
+                self.active_document.pk,
+                self.active_version.pk,
+                self.active_file.pk,
+            ],
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Abrir visor")
+        self.assertContains(response, viewer_url)
+        self.assertNotContains(response, self.active_file.file.url)
+
     def test_reader_can_view_active_pdf_through_controlled_route(self):
         ControlledCopy.objects.create(
             document=self.active_document,

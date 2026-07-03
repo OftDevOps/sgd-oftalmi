@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Visor documental - SGD-OFTALMI{% endblock %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Visor documental</p>
+    {% if document %}
+      <h1>{{ document.code }} - {{ document.title }}</h1>
+      <p class="lead">Consulta controlada de archivo PDF documental.</p>
+    {% else %}
+      <h1>Archivo documental no disponible</h1>
+      <p class="lead">La solicitud no pudo ser procesada.</p>
+    {% endif %}
+  </header>
+
+  {% if document_file %}
+    <section class="status-panel" aria-label="Metadatos del archivo documental">
+      <div class="status-row">
+        <span class="label">Documento</span>
+        <span>{{ document.code }} - {{ document.title }}</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Version</span>
+        <span>{{ document_version.version_number }}</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Archivo</span>
+        <span>{{ document_file.original_filename }}</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Contenido</span>
+        <span>{{ document_file.content_type|default:"-" }}</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Hash</span>
+        <span>{{ document_file.file_hash|default:"-" }}</span>
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="page-section">
+    {% if can_view_file %}
+      <div class="viewer-panel">
+        <iframe
+          class="document-viewer-frame"
+          src="{% url 'app:documents:file_view' document.pk document_version.pk document_file.pk %}"
+          title="Visor PDF - {{ document_file.original_filename }}"
+        ></iframe>
+      </div>
+    {% else %}
+      <section class="status-panel" aria-label="Estado del visor">
+        <p>{{ viewer_message }}</p>
+      </section>
+    {% endif %}
+  </section>
+
+  <p class="page-actions">
+    {% if document %}
+      <a href="{% url 'app:documents:detail' document.pk %}">Volver al documento</a>
+    {% else %}
+      <a href="{% url 'app:documents:index' %}">Volver al listado</a>
+    {% endif %}
+  </p>
+{% endblock %}

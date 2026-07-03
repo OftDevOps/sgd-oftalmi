@@ -2,11 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import FileResponse, Http404
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.audit.services import AuditContext
 from config.access import ModuleAccessMixin
-from config.navigation import can_access_documents_module
+from config.navigation import can_access_documents_module, get_module_navigation
 
 from .models import Document, DocumentStatus
 from .permissions import can_view_document_file, can_view_obsolete_document
@@ -63,8 +63,60 @@ class DocumentDetailView(DocumentAccessMixin, DetailView):
         if not can_view_obsolete_document(self.request.user):
             versions = versions.filter(status__in=VISIBLE_DOCUMENT_STATUSES)
 
+        for version in versions:
+            for document_file in version.files.all():
+                document_file.can_open_viewer = can_view_document_file(
+                    self.request.user,
+                    document_file,
+                )
+
         context["document_versions"] = versions
         return context
+
+
+class ControlledDocumentViewerView(LoginRequiredMixin, TemplateView):
+    template_name = "documents/document_viewer.html"
+
+    def get_document_file(self):
+        return document_file_get_for_controlled_delivery(
+            document_id=self.kwargs["document_id"],
+            version_id=self.kwargs["version_id"],
+            file_id=self.kwargs["file_id"],
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        document_file = self.get_document_file()
+        context["module_navigation"] = get_module_navigation(self.request.user)
+        context["document_file"] = document_file
+        context["can_view_file"] = False
+        context["viewer_status"] = 200
+        context["viewer_message"] = ""
+
+        if document_file is None:
+            context["viewer_status"] = 404
+            context["viewer_message"] = "El documento, version o archivo solicitado no existe."
+            return context
+
+        context["document_version"] = document_file.document_version
+        context["document"] = document_file.document_version.document
+
+        if not can_view_document_file(self.request.user, document_file):
+            context["viewer_status"] = 403
+            context["viewer_message"] = "No tiene permiso para visualizar este archivo."
+            return context
+
+        if not document_file.file.storage.exists(document_file.file.name):
+            context["viewer_status"] = 404
+            context["viewer_message"] = "El archivo documental no esta disponible."
+            return context
+
+        context["can_view_file"] = True
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs.setdefault("status", context.get("viewer_status", 200))
+        return super().render_to_response(context, **response_kwargs)
 
 
 class ControlledDocumentFileView(LoginRequiredMixin, View):

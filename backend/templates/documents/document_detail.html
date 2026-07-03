@@ -77,6 +77,7 @@
                 <th>Cargado por</th>
                 <th>Fecha de carga</th>
                 <th>Estado</th>
+                <th>Consulta</th>
               </tr>
             </thead>
             <tbody>
@@ -89,10 +90,17 @@
                   <td>{{ file.uploaded_by.email }}</td>
                   <td>{{ file.uploaded_at }}</td>
                   <td>{% if file.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+                  <td>
+                    {% if file.can_open_viewer %}
+                      <a href="{% url 'app:documents:file_viewer' document.pk version.pk file.pk %}">Abrir visor</a>
+                    {% else %}
+                      No disponible
+                    {% endif %}
+                  </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="7">No hay archivos asociados a esta version.</td>
+                  <td colspan="8">No hay archivos asociados a esta version.</td>
                 </tr>
               {% endfor %}
             </tbody>

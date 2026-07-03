@@ -247,6 +247,22 @@ Actualmente no existe una matriz formal independiente `documento <-> usuario aut
 
 Queda como pendiente futuro evaluar una matriz formal de autorizacion documental si el proceso de OyM lo requiere. Esa evaluacion debe definir alcance funcional, datos requeridos, reglas de mantenimiento, auditoria, impacto en reportes y necesidad de modelos o migraciones.
 
+### 9.3 Vista base de consulta controlada
+
+F3-P04 implementa la primera experiencia funcional del visor documental.
+
+La vista base:
+
+* Renderiza una pagina protegida por login.
+* Muestra metadatos basicos de documento, version y archivo.
+* Valida permisos usando las reglas de F3-P03.
+* Integra la entrega controlada de PDF de F3-P02 mediante `iframe`.
+* No expone la ruta fisica ni URL directa del archivo en storage.
+* Muestra mensaje controlado para acceso denegado o archivo no disponible.
+* Agrega enlace desde el detalle documental solo cuando el usuario puede consultar el archivo.
+
+F3-P04 no implementa bloqueo avanzado de descarga, bloqueo avanzado de impresion, marcas de agua, visor PDF.js custom, conversion Office, APIs, modelos nuevos ni migraciones.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

@@ -327,6 +327,8 @@ F3-P03 fortalece el permiso fino del archivo: OyM conserva acceso funcional; Sis
 
 Nota tecnica: la autorizacion documental actual se apoya en relaciones existentes del modelo (`rol`, `unidad organizativa`, `copia controlada`, `registro de implementacion`, `documento`, `version` y `archivo activo`). No existe todavia una matriz formal independiente `documento <-> usuario autorizado` o `documento <-> unidad autorizada`. Esa relacion no debe agregarse sin validacion funcional de Organizacion y Metodos. Queda pendiente evaluar dicha matriz si el proceso documental lo requiere.
 
+F3-P04 agrega la primera pagina funcional del visor documental. La pagina renderiza metadatos basicos y un `iframe` que consume la ruta interna protegida de entrega PDF. El enlace al visor aparece desde el detalle documental solo cuando las reglas de F3-P03 autorizan la consulta. Esta etapa no implementa todavia PDF.js custom, marcas de agua, conversion Office ni bloqueo avanzado de impresion o descarga.
+
 ---
 
 ## 9. Impacto DevOps
