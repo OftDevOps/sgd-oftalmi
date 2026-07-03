@@ -252,17 +252,24 @@ F3-P01 no implementa:
 
 ## 13. Pendientes para F3-P02
 
-Pendientes propuestos para F3-P02:
+F3-P02 debe implementar el primer servicio de entrega controlada de archivos, manteniendo el alcance limitado a PDF y sin crear modelos ni migraciones.
+
+Al cierre de F3-P02 queda implementado:
 
 * Definir rutas internas del visor sin exponer archivo directo.
-* Implementar vista Django protegida para visualizar PDF.
-* Implementar selector de documento/version/archivo consultable.
-* Implementar helper de permiso por documento, version, usuario y unidad.
-* Registrar auditoria minima de intento de visualizacion.
-* Agregar template base del visor PDF.
-* Evitar boton de descarga en la interfaz.
+* Implementar vista Django protegida para entregar PDF.
+* Implementar selector de documento/version/archivo consultable y activo.
+* Implementar helper de permiso por usuario, documento, version y archivo.
+* Registrar auditoria minima de acceso permitido y denegado.
 * Agregar pruebas de acceso permitido y denegado.
 * Verificar que usuarios lectores no reciban URLs directas de archivos.
+
+Queda pendiente para puntos posteriores:
+
+* Agregar template base del visor PDF.
+* Evitar boton de descarga desde la interfaz del visor.
+* Definir marcas de agua visibles.
+* Fortalecer reglas por asignacion especifica de documento cuando exista ese modelo o servicio.
 * Mantener fuera de alcance la conversion Office hasta decision posterior.
 
 ## 14. Criterios de aceptacion

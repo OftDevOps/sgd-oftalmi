@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 
-from apps.audit.models import AuditAction
-from apps.audit.services import audit_event_create_if_requested
+from apps.audit.models import AuditAction, AuditResult
+from apps.audit.services import audit_event_create_for_instance, audit_event_create_if_requested
 
 from .models import Document, DocumentFile, DocumentVersion
 from .workflows import validate_document_status_transition
@@ -129,3 +129,51 @@ def document_file_create(
         },
     )
     return document_file
+
+
+def document_file_access_audit_create(
+    *,
+    document_file,
+    result,
+    audit_context=None,
+    description="Document file access.",
+):
+    if audit_context is None:
+        return None
+
+    document_version = document_file.document_version
+    document = document_version.document
+    return audit_event_create_for_instance(
+        audit_context=audit_context,
+        action=AuditAction.DOCUMENT_VIEWED,
+        module="documents",
+        instance=document_file,
+        result=result,
+        description=description,
+        after_data={
+            "document_id": document.id,
+            "document_code": document.code,
+            "document_version_id": document_version.id,
+            "version_number": document_version.version_number,
+            "document_file_id": document_file.id,
+            "original_filename": document_file.original_filename,
+        },
+    )
+
+
+def document_file_access_granted_audit_create(*, document_file, audit_context=None):
+    return document_file_access_audit_create(
+        document_file=document_file,
+        audit_context=audit_context,
+        result=AuditResult.SUCCESS,
+        description="Controlled document file access granted.",
+    )
+
+
+def document_file_access_denied_audit_create(*, document_file, audit_context=None):
+    return document_file_access_audit_create(
+        document_file=document_file,
+        audit_context=audit_context,
+        result=AuditResult.DENIED,
+        description="Controlled document file access denied.",
+    )

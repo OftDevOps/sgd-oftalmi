@@ -1,14 +1,27 @@
+import shutil
+import tempfile
+
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.test import override_settings
 from django.urls import reverse
 
 from apps.accounts.models import UserRole
+from apps.audit.models import AuditAction, AuditEvent, AuditResult
 from apps.document_types.models import DocumentType
 from apps.documents.models import Document, DocumentFile, DocumentStatus, DocumentVersion
 from apps.organizational_units.models import OrganizationalUnit
 
 
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class DocumentViewsTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        media_root = cls._overridden_settings["MEDIA_ROOT"]
+        super().tearDownClass()
+        shutil.rmtree(media_root, ignore_errors=True)
+
     def create_user(self, role, prefix):
         return get_user_model().objects.create_user(
             email=f"{prefix}@oftalmi.test",
@@ -44,9 +57,13 @@ class DocumentViewsTests(TestCase):
         self.active_document.current_version = self.active_version
         self.active_document.save(update_fields=["current_version", "updated_at"])
 
-        DocumentFile.objects.create(
+        self.active_file = DocumentFile.objects.create(
             document_version=self.active_version,
-            file="documents/2026/07/for-oym-001-v01.pdf",
+            file=SimpleUploadedFile(
+                "for-oym-001-v01.pdf",
+                b"%PDF-1.4 controlled file",
+                content_type="application/pdf",
+            ),
             original_filename="for-oym-001-v01.pdf",
             content_type="application/pdf",
             size_bytes=2048,
@@ -60,9 +77,13 @@ class DocumentViewsTests(TestCase):
             status=DocumentStatus.DRAFT,
             created_by=self.oym_admin,
         )
-        DocumentFile.objects.create(
+        self.draft_file = DocumentFile.objects.create(
             document_version=self.draft_version,
-            file="documents/2026/07/for-oym-001-v02.pdf",
+            file=SimpleUploadedFile(
+                "for-oym-001-v02.pdf",
+                b"%PDF-1.4 draft file",
+                content_type="application/pdf",
+            ),
             original_filename="for-oym-001-v02.pdf",
             content_type="application/pdf",
             size_bytes=3072,
@@ -161,3 +182,121 @@ class DocumentViewsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_controlled_file_view_requires_login(self):
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response["Location"])
+        self.assertEqual(AuditEvent.objects.count(), 0)
+
+    def test_reader_can_view_active_pdf_through_controlled_route(self):
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            ),
+            HTTP_USER_AGENT="viewer-test",
+            REMOTE_ADDR="127.0.0.1",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertIn("inline", response["Content-Disposition"])
+        self.assertEqual(response["Cache-Control"], "no-store")
+        self.assertEqual(b"".join(response.streaming_content), b"%PDF-1.4 controlled file")
+
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.user, self.reader)
+        self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
+        self.assertEqual(event.result, AuditResult.SUCCESS)
+        self.assertEqual(event.module, "documents")
+        self.assertEqual(event.entity_type, "DocumentFile")
+        self.assertEqual(event.entity_id, str(self.active_file.pk))
+        self.assertEqual(event.ip_address, "127.0.0.1")
+        self.assertEqual(event.user_agent, "viewer-test")
+        self.assertEqual(event.after_data["document_id"], self.active_document.pk)
+        self.assertEqual(event.after_data["document_version_id"], self.active_version.pk)
+        self.assertEqual(event.after_data["document_file_id"], self.active_file.pk)
+
+    def test_disallowed_role_gets_403_and_denied_audit_event(self):
+        self.client.force_login(self.systems_admin)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.user, self.systems_admin)
+        self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
+        self.assertEqual(event.result, AuditResult.DENIED)
+        self.assertEqual(event.entity_id, str(self.active_file.pk))
+
+    def test_reader_gets_403_for_non_visible_version_and_denied_audit_event(self):
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.draft_version.pk,
+                    self.draft_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.DENIED)
+
+    def test_missing_controlled_file_returns_404_without_audit_event(self):
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    999999,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(AuditEvent.objects.count(), 0)
+
+    def test_document_detail_does_not_expose_direct_media_url(self):
+        self.client.force_login(self.reader)
+
+        response = self.client.get(
+            reverse("app:documents:detail", args=[self.active_document.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.active_file.original_filename)
+        self.assertNotContains(response, self.active_file.file.url)

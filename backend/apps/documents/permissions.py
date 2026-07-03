@@ -2,6 +2,10 @@ from apps.accounts.models import UserRole
 from apps.accounts.permissions import has_any_role, is_oym_admin, is_oym_user
 
 
+VIEWABLE_DOCUMENT_STATUSES = {"published", "active"}
+VIEWABLE_FILE_CONTENT_TYPES = {"application/pdf"}
+
+
 def can_create_document(user):
     return is_oym_user(user)
 
@@ -48,3 +52,35 @@ def can_print_document(user):
 
 def can_copy_document(user):
     return False
+
+
+def is_pdf_document_file(document_file):
+    if not document_file:
+        return False
+
+    content_type = (document_file.content_type or "").lower()
+    filename = (document_file.original_filename or "").lower()
+    return content_type in VIEWABLE_FILE_CONTENT_TYPES or filename.endswith(".pdf")
+
+
+def can_view_document_file(user, document_file):
+    if not document_file or not document_file.is_active or not is_pdf_document_file(document_file):
+        return False
+
+    document_version = document_file.document_version
+    document = document_version.document
+
+    if can_view_obsolete_document(user):
+        return True
+
+    return has_any_role(
+        user,
+        {
+            UserRole.EXECUTING_UNIT,
+            UserRole.READER,
+        },
+    ) and (
+        document.is_active
+        and document.status in VIEWABLE_DOCUMENT_STATUSES
+        and document_version.status in VIEWABLE_DOCUMENT_STATUSES
+    )

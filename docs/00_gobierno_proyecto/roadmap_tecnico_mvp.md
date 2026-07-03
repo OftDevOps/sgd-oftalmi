@@ -162,6 +162,7 @@ F2-P11  -> Aplicación transversal de permisos por rol en vistas
 F2-P12  -> Pruebas integradas de capa de acceso
 F2-P13  -> Documentación técnica de cierre de Fase 2
 F3-P01  -> Definición técnica del visor documental
+F3-P02  -> Servicio de entrega controlada de archivos
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1176,6 +1177,32 @@ Debe definirse con cuidado porque algunas restricciones dependen del navegador, 
 
 ```text
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P02 - Servicio de entrega controlada de archivos
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista protegida por login para entregar archivos documentales controlados.
+* Validacion de permisos por usuario, documento, version y archivo.
+* Entrega inicial limitada a PDF.
+* Respuesta `403` para usuarios sin permiso.
+* Respuesta `404` cuando documento, version o archivo no existen.
+* Auditoria minima para accesos permitidos y denegados.
+* Pruebas automatizadas para flujo permitido, denegado y ausencia de URL directa.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/views.py
+backend/apps/documents/urls.py
+backend/apps/documents/permissions.py
+backend/apps/documents/selectors.py
+backend/apps/documents/services.py
+backend/apps/documents/tests/test_views.py
 ```
 
 ---

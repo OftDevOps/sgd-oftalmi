@@ -50,5 +50,22 @@ def document_file_list(*, document_version=None, is_active=None):
     return queryset
 
 
+def document_file_get_for_controlled_delivery(*, document_id, version_id, file_id):
+    return (
+        DocumentFile.objects.select_related(
+            "document_version",
+            "document_version__document",
+            "uploaded_by",
+        )
+        .filter(
+            pk=file_id,
+            document_version_id=version_id,
+            document_version__document_id=document_id,
+            is_active=True,
+        )
+        .first()
+    )
+
+
 def document_detail_queryset():
     return document_list().prefetch_related("versions__created_by", "versions__files__uploaded_by")

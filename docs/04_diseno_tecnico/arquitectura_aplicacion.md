@@ -321,6 +321,8 @@ docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 
 Esta decision establece que el visor debe iniciar con PDF como formato prioritario, que los archivos no deben exponerse por rutas directas, y que cada acceso debe pasar por una vista o servicio controlado con validacion de permisos y auditoria minima. Los archivos Office quedan pendientes de conversion previa a PDF o evaluacion tecnica posterior.
 
+F3-P02 implementa la primera entrega controlada de archivos PDF mediante una ruta interna protegida del modulo `documents`. Esta ruta valida usuario, documento, version y archivo, registra auditoria de accesos permitidos y denegados, y no reemplaza todavia al visor visual final con marcas de agua o controles de interfaz.
+
 ---
 
 ## 9. Impacto DevOps
