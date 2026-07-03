@@ -325,6 +325,8 @@ F3-P02 implementa la primera entrega controlada de archivos PDF mediante una rut
 
 F3-P03 fortalece el permiso fino del archivo: OyM conserva acceso funcional; Sistemas y Auditor no acceden al contenido documental por esta ruta; Unidad Ejecutora y Usuario Lector requieren relacion aplicable por unidad, copia controlada o registro de implementacion. La respuesta para usuarios autenticados sin permiso es `403`; las inconsistencias o inexistencia de documento, version, archivo o archivo fisico mantienen `404`.
 
+Nota tecnica: la autorizacion documental actual se apoya en relaciones existentes del modelo (`rol`, `unidad organizativa`, `copia controlada`, `registro de implementacion`, `documento`, `version` y `archivo activo`). No existe todavia una matriz formal independiente `documento <-> usuario autorizado` o `documento <-> unidad autorizada`. Esa relacion no debe agregarse sin validacion funcional de Organizacion y Metodos. Queda pendiente evaluar dicha matriz si el proceso documental lo requiere.
+
 ---
 
 ## 9. Impacto DevOps

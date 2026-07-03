@@ -231,6 +231,22 @@ Condiciones obligatorias:
 * Documento, version y archivo inexistentes mantienen respuesta `404`.
 * Usuario autenticado sin permiso mantiene respuesta `403` y auditoria de acceso denegado.
 
+### 9.2 Limitacion actual de autorizacion documental
+
+La autorizacion documental de F3-P03 utiliza relaciones existentes del modelo actual:
+
+* Rol del usuario.
+* Unidad organizativa del usuario.
+* Copia controlada por usuario o unidad.
+* Registro de implementacion por usuario.
+* Documento.
+* Version documental.
+* Archivo activo.
+
+Actualmente no existe una matriz formal independiente `documento <-> usuario autorizado` o `documento <-> unidad autorizada`. Esa relacion no debe inventarse tecnicamente sin validacion funcional de Organizacion y Metodos, porque podria modificar el alcance real de consulta documental.
+
+Queda como pendiente futuro evaluar una matriz formal de autorizacion documental si el proceso de OyM lo requiere. Esa evaluacion debe definir alcance funcional, datos requeridos, reglas de mantenimiento, auditoria, impacto en reportes y necesidad de modelos o migraciones.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |
