@@ -161,12 +161,13 @@ F2-P10  -> Auditoría: consulta restringida base
 F2-P11  -> Aplicación transversal de permisos por rol en vistas
 F2-P12  -> Pruebas integradas de capa de acceso
 F2-P13  -> Documentación técnica de cierre de Fase 2
+F3-P01  -> Definición técnica del visor documental
 ```
 
 Último commit técnico conocido en `develop`:
 
 ```text
-1f27004 test: add access layer integration coverage
+fcf887c docs: close phase 2 access layer documentation
 ```
 
 Estado de ramas conocido:
@@ -1144,6 +1145,8 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 
 ### Fase 3 - Visor documental y restricciones de consulta
 
+**Estado:** Iniciada formalmente.
+
 Objetivo futuro:
 
 * Visualización controlada de documentos.
@@ -1153,6 +1156,27 @@ Objetivo futuro:
 * Trazabilidad de acceso.
 
 Debe definirse con cuidado porque algunas restricciones dependen del navegador, del formato documental y de políticas técnicas realistas.
+
+#### F3-P01 - Definición técnica del visor documental
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Definicion documental de la arquitectura tecnica del visor documental.
+* Definicion de entrega controlada de archivos sin rutas directas.
+* Priorizacion de PDF como formato inicial de visualizacion.
+* Registro explicito de restricciones viables y no garantizables.
+* Definicion de trazabilidad minima por usuario, documento y version.
+* Identificacion de riesgos tecnicos reales y controles compensatorios.
+* Pendientes definidos para F3-P02.
+* Sin implementacion funcional, codigo, modelos, migraciones, APIs, templates ni cambios de infraestructura.
+
+**Evidencia:**
+
+```text
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
 
 ---
 

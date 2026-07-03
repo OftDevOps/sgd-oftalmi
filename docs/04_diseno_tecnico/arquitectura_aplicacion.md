@@ -313,6 +313,14 @@ La arquitectura debe preservar las reglas funcionales de consulta controlada:
 * La visualizacion debe auditarse cuando aplique.
 * Las restricciones de copia, impresion y descarga son controles razonables de aplicacion, no proteccion absoluta.
 
+La definicion tecnica inicial del visor documental se registra en:
+
+```text
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+Esta decision establece que el visor debe iniciar con PDF como formato prioritario, que los archivos no deben exponerse por rutas directas, y que cada acceso debe pasar por una vista o servicio controlado con validacion de permisos y auditoria minima. Los archivos Office quedan pendientes de conversion previa a PDF o evaluacion tecnica posterior.
+
 ---
 
 ## 9. Impacto DevOps
