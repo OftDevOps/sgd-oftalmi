@@ -329,6 +329,8 @@ Nota tecnica: la autorizacion documental actual se apoya en relaciones existente
 
 F3-P04 agrega la primera pagina funcional del visor documental. La pagina renderiza metadatos basicos y un `iframe` que consume la ruta interna protegida de entrega PDF. El enlace al visor aparece desde el detalle documental solo cuando las reglas de F3-P03 autorizan la consulta. Esta etapa no implementa todavia PDF.js custom, marcas de agua, conversion Office ni bloqueo avanzado de impresion o descarga.
 
+F3-P05 formaliza el registro de acceso documental sobre `AuditEvent`. Los eventos `DOCUMENT_VIEWED` registran usuario, documento, version, archivo, IP, user agent, accion, resultado, fecha/hora y metadata documental normalizada. Se registran accesos permitidos, denegados y fallidos por archivo no disponible. No se crea un modelo `DocumentAccessLog` mientras `AuditEvent` cubra la trazabilidad minima requerida.
+
 ---
 
 ## 9. Impacto DevOps

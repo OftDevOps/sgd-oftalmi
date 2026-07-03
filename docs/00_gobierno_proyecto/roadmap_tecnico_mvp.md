@@ -165,6 +165,7 @@ F3-P01  -> Definición técnica del visor documental
 F3-P02  -> Servicio de entrega controlada de archivos
 F3-P03  -> Validación de acceso por usuario/unidad/documento
 F3-P04  -> Vista de consulta documental controlada
+F3-P05  -> Registro de acceso a documentos
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1255,6 +1256,29 @@ backend/apps/documents/urls.py
 backend/templates/documents/document_viewer.html
 backend/templates/documents/document_detail.html
 backend/apps/documents/tests/test_views.py
+```
+
+#### F3-P05 - Registro de acceso a documentos
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Revision y normalizacion de eventos `DOCUMENT_VIEWED`.
+* Confirmacion de registro de acceso permitido, denegado y fallido por archivo no disponible.
+* Trazabilidad sobre `AuditEvent` con usuario, documento, version, archivo, IP, user agent, accion, resultado y fecha/hora.
+* Metadata documental normalizada en `after_data`.
+* Descripciones estandarizadas para visor documental.
+* Pruebas especificas de evidencia de trazabilidad.
+* Sin modelo `DocumentAccessLog`, sin modelos nuevos y sin migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/services.py
+backend/apps/documents/views.py
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```
 
 ---

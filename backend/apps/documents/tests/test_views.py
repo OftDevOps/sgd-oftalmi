@@ -31,6 +31,28 @@ class DocumentViewsTests(TestCase):
             organizational_unit=organizational_unit,
         )
 
+    def assert_document_access_event(self, event, *, user, result, description):
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
+        self.assertEqual(event.result, result)
+        self.assertEqual(event.module, "documents")
+        self.assertEqual(event.entity_type, "DocumentFile")
+        self.assertEqual(event.entity_id, str(self.active_file.pk))
+        self.assertEqual(event.description, description)
+        self.assertIsNotNone(event.created_at)
+        self.assertEqual(event.after_data["document_id"], self.active_document.pk)
+        self.assertEqual(event.after_data["document_code"], self.active_document.code)
+        self.assertEqual(event.after_data["document_title"], self.active_document.title)
+        self.assertEqual(event.after_data["document_status"], self.active_document.status)
+        self.assertEqual(event.after_data["document_version_id"], self.active_version.pk)
+        self.assertEqual(event.after_data["version_number"], self.active_version.version_number)
+        self.assertEqual(event.after_data["version_status"], self.active_version.status)
+        self.assertEqual(event.after_data["document_file_id"], self.active_file.pk)
+        self.assertEqual(event.after_data["original_filename"], self.active_file.original_filename)
+        self.assertEqual(event.after_data["content_type"], self.active_file.content_type)
+        self.assertEqual(event.after_data["size_bytes"], self.active_file.size_bytes)
+        self.assertEqual(event.after_data["file_hash"], self.active_file.file_hash)
+
     def setUp(self):
         self.document_type = DocumentType.objects.create(code="FOR", name="Formato")
         self.owner_unit = OrganizationalUnit.objects.create(
@@ -304,7 +326,13 @@ class DocumentViewsTests(TestCase):
             status_code=403,
         )
         self.assertNotContains(response, "<iframe", html=False, status_code=403)
-        self.assertEqual(AuditEvent.objects.count(), 0)
+        event = AuditEvent.objects.get()
+        self.assert_document_access_event(
+            event,
+            user=self.systems_admin,
+            result=AuditResult.DENIED,
+            description="Document viewer access denied.",
+        )
 
     def test_controlled_viewer_returns_404_message_for_missing_file_record(self):
         self.client.force_login(self.reader)
@@ -327,6 +355,7 @@ class DocumentViewsTests(TestCase):
             status_code=404,
         )
         self.assertNotContains(response, "<iframe", html=False, status_code=404)
+        self.assertEqual(AuditEvent.objects.count(), 0)
 
     def test_controlled_viewer_returns_404_message_for_missing_physical_file(self):
         self.active_file.file.storage.delete(self.active_file.file.name)
@@ -350,6 +379,37 @@ class DocumentViewsTests(TestCase):
             status_code=404,
         )
         self.assertNotContains(response, "<iframe", html=False, status_code=404)
+        event = AuditEvent.objects.get()
+        self.assert_document_access_event(
+            event,
+            user=self.oym_admin,
+            result=AuditResult.FAILURE,
+            description="Document viewer access failed because the file is unavailable.",
+        )
+
+    def test_controlled_file_view_records_failure_when_physical_file_is_missing(self):
+        self.active_file.file.storage.delete(self.active_file.file.name)
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+        event = AuditEvent.objects.get()
+        self.assert_document_access_event(
+            event,
+            user=self.oym_admin,
+            result=AuditResult.FAILURE,
+            description="Document viewer access failed because the file is unavailable.",
+        )
 
     def test_document_detail_links_to_viewer_when_user_can_view_file(self):
         ControlledCopy.objects.create(
@@ -410,17 +470,14 @@ class DocumentViewsTests(TestCase):
         self.assertEqual(b"".join(response.streaming_content), b"%PDF-1.4 controlled file")
 
         event = AuditEvent.objects.get()
-        self.assertEqual(event.user, self.reader)
-        self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
-        self.assertEqual(event.result, AuditResult.SUCCESS)
-        self.assertEqual(event.module, "documents")
-        self.assertEqual(event.entity_type, "DocumentFile")
-        self.assertEqual(event.entity_id, str(self.active_file.pk))
+        self.assert_document_access_event(
+            event,
+            user=self.reader,
+            result=AuditResult.SUCCESS,
+            description="Document viewer access granted.",
+        )
         self.assertEqual(event.ip_address, "127.0.0.1")
         self.assertEqual(event.user_agent, "viewer-test")
-        self.assertEqual(event.after_data["document_id"], self.active_document.pk)
-        self.assertEqual(event.after_data["document_version_id"], self.active_version.pk)
-        self.assertEqual(event.after_data["document_file_id"], self.active_file.pk)
 
     def test_oym_roles_can_view_any_document_file(self):
         for user in (self.oym_admin, self.oym_analyst):
@@ -464,10 +521,12 @@ class DocumentViewsTests(TestCase):
                 self.assertEqual(response.status_code, 403)
 
                 event = AuditEvent.objects.get()
-                self.assertEqual(event.user, user)
-                self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
-                self.assertEqual(event.result, AuditResult.DENIED)
-                self.assertEqual(event.entity_id, str(self.active_file.pk))
+                self.assert_document_access_event(
+                    event,
+                    user=user,
+                    result=AuditResult.DENIED,
+                    description="Document viewer access denied.",
+                )
 
     def test_executing_unit_can_view_document_owned_by_own_unit(self):
         self.client.force_login(self.executing_unit)

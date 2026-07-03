@@ -153,10 +153,16 @@ def document_file_access_audit_create(
         after_data={
             "document_id": document.id,
             "document_code": document.code,
+            "document_title": document.title,
+            "document_status": document.status,
             "document_version_id": document_version.id,
             "version_number": document_version.version_number,
+            "version_status": document_version.status,
             "document_file_id": document_file.id,
             "original_filename": document_file.original_filename,
+            "content_type": document_file.content_type,
+            "size_bytes": document_file.size_bytes,
+            "file_hash": document_file.file_hash,
         },
     )
 
@@ -166,7 +172,7 @@ def document_file_access_granted_audit_create(*, document_file, audit_context=No
         document_file=document_file,
         audit_context=audit_context,
         result=AuditResult.SUCCESS,
-        description="Controlled document file access granted.",
+        description="Document viewer access granted.",
     )
 
 
@@ -175,5 +181,14 @@ def document_file_access_denied_audit_create(*, document_file, audit_context=Non
         document_file=document_file,
         audit_context=audit_context,
         result=AuditResult.DENIED,
-        description="Controlled document file access denied.",
+        description="Document viewer access denied.",
+    )
+
+
+def document_file_access_failed_audit_create(*, document_file, audit_context=None):
+    return document_file_access_audit_create(
+        document_file=document_file,
+        audit_context=audit_context,
+        result=AuditResult.FAILURE,
+        description="Document viewer access failed because the file is unavailable.",
     )

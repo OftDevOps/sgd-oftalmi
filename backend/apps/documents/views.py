@@ -18,6 +18,7 @@ from .selectors import (
 )
 from .services import (
     document_file_access_denied_audit_create,
+    document_file_access_failed_audit_create,
     document_file_access_granted_audit_create,
 )
 
@@ -77,6 +78,13 @@ class DocumentDetailView(DocumentAccessMixin, DetailView):
 class ControlledDocumentViewerView(LoginRequiredMixin, TemplateView):
     template_name = "documents/document_viewer.html"
 
+    def get_audit_context(self):
+        return AuditContext(
+            user=self.request.user,
+            ip_address=self.request.META.get("REMOTE_ADDR"),
+            user_agent=self.request.META.get("HTTP_USER_AGENT", ""),
+        )
+
     def get_document_file(self):
         return document_file_get_for_controlled_delivery(
             document_id=self.kwargs["document_id"],
@@ -102,11 +110,19 @@ class ControlledDocumentViewerView(LoginRequiredMixin, TemplateView):
         context["document"] = document_file.document_version.document
 
         if not can_view_document_file(self.request.user, document_file):
+            document_file_access_denied_audit_create(
+                document_file=document_file,
+                audit_context=self.get_audit_context(),
+            )
             context["viewer_status"] = 403
             context["viewer_message"] = "No tiene permiso para visualizar este archivo."
             return context
 
         if not document_file.file.storage.exists(document_file.file.name):
+            document_file_access_failed_audit_create(
+                document_file=document_file,
+                audit_context=self.get_audit_context(),
+            )
             context["viewer_status"] = 404
             context["viewer_message"] = "El archivo documental no esta disponible."
             return context
@@ -153,6 +169,10 @@ class ControlledDocumentFileView(LoginRequiredMixin, View):
         try:
             file_handle = document_file.file.open("rb")
         except OSError as exc:
+            document_file_access_failed_audit_create(
+                document_file=document_file,
+                audit_context=audit_context,
+            )
             raise Http404("Document file not found.") from exc
 
         document_file_access_granted_audit_create(

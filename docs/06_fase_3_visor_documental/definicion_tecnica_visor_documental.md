@@ -263,6 +263,33 @@ La vista base:
 
 F3-P04 no implementa bloqueo avanzado de descarga, bloqueo avanzado de impresion, marcas de agua, visor PDF.js custom, conversion Office, APIs, modelos nuevos ni migraciones.
 
+### 9.4 Registro de acceso a documentos
+
+F3-P05 formaliza la trazabilidad documental del visor usando la auditoria base existente.
+
+No se crea un modelo especializado `DocumentAccessLog` en esta etapa porque `AuditEvent` cubre la evidencia minima requerida:
+
+* Usuario.
+* Documento.
+* Version documental.
+* Archivo documental.
+* Fecha y hora del servidor.
+* Accion `document_viewed`.
+* Resultado `success`, `denied` o `failure`.
+* Direccion IP cuando esta disponible.
+* User agent cuando esta disponible.
+* Descripcion normalizada del evento.
+
+Las descripciones normalizadas son:
+
+| Resultado | Descripcion |
+| --- | --- |
+| `success` | `Document viewer access granted.` |
+| `denied` | `Document viewer access denied.` |
+| `failure` | `Document viewer access failed because the file is unavailable.` |
+
+La metadata documental se registra en `after_data` con identificadores y datos basicos de documento, version y archivo. Un modelo especializado de acceso documental solo debe evaluarse si OyM requiere reportes analiticos de lectura/consulta, alto volumen de eventos, reglas especificas de retencion o consultas operativas que no convenga resolver sobre `AuditEvent`.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |
