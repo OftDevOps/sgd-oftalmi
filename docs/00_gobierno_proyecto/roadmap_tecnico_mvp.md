@@ -163,6 +163,7 @@ F2-P12  -> Pruebas integradas de capa de acceso
 F2-P13  -> Documentación técnica de cierre de Fase 2
 F3-P01  -> Definición técnica del visor documental
 F3-P02  -> Servicio de entrega controlada de archivos
+F3-P03  -> Validación de acceso por usuario/unidad/documento
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1203,6 +1204,29 @@ backend/apps/documents/permissions.py
 backend/apps/documents/selectors.py
 backend/apps/documents/services.py
 backend/apps/documents/tests/test_views.py
+```
+
+#### F3-P03 - Validación de acceso por usuario/unidad/documento
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Fortalecimiento del helper de permiso fino por documento, version y archivo.
+* Reglas explicitas para OyM, Sistemas, Auditor, Unidad Ejecutora y Usuario Lector.
+* Validacion de acceso por unidad organizativa cuando existe relacion aplicable.
+* Validacion de relacion directa por registro de implementacion o copia controlada.
+* Mantenimiento de `403` para usuario autenticado sin permiso.
+* Mantenimiento de `404` para documento, version, archivo o archivo fisico inexistente.
+* Pruebas automatizadas por rol, unidad y relacion directa.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/permissions.py
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```
 
 ---

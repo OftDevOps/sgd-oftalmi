@@ -9,8 +9,10 @@ from django.urls import reverse
 
 from apps.accounts.models import UserRole
 from apps.audit.models import AuditAction, AuditEvent, AuditResult
+from apps.controlled_copies.models import ControlledCopy, ControlledCopyStatus
 from apps.document_types.models import DocumentType
 from apps.documents.models import Document, DocumentFile, DocumentStatus, DocumentVersion
+from apps.implementation_records.models import ImplementationRecord
 from apps.organizational_units.models import OrganizationalUnit
 
 
@@ -22,10 +24,11 @@ class DocumentViewsTests(TestCase):
         super().tearDownClass()
         shutil.rmtree(media_root, ignore_errors=True)
 
-    def create_user(self, role, prefix):
+    def create_user(self, role, prefix, organizational_unit=None):
         return get_user_model().objects.create_user(
             email=f"{prefix}@oftalmi.test",
             role=role,
+            organizational_unit=organizational_unit,
         )
 
     def setUp(self):
@@ -34,11 +37,38 @@ class DocumentViewsTests(TestCase):
             name="Organizacion y Metodos",
             code="OYM",
         )
+        self.production_unit = OrganizationalUnit.objects.create(
+            name="Produccion",
+            code="PROD",
+        )
+        self.hr_unit = OrganizationalUnit.objects.create(
+            name="Recursos Humanos",
+            code="RRHH",
+        )
         self.oym_admin = self.create_user(UserRole.OYM_ADMIN, "oym_admin")
         self.oym_analyst = self.create_user(UserRole.OYM_ANALYST, "oym_analyst")
-        self.executing_unit = self.create_user(UserRole.EXECUTING_UNIT, "executing_unit")
-        self.reader = self.create_user(UserRole.READER, "reader")
+        self.executing_unit = self.create_user(
+            UserRole.EXECUTING_UNIT,
+            "executing_unit",
+            organizational_unit=self.owner_unit,
+        )
+        self.other_executing_unit = self.create_user(
+            UserRole.EXECUTING_UNIT,
+            "other_executing_unit",
+            organizational_unit=self.production_unit,
+        )
+        self.reader = self.create_user(
+            UserRole.READER,
+            "reader",
+            organizational_unit=self.production_unit,
+        )
+        self.other_reader = self.create_user(
+            UserRole.READER,
+            "other_reader",
+            organizational_unit=self.hr_unit,
+        )
         self.systems_admin = self.create_user(UserRole.SYSTEMS_TECH_ADMIN, "systems_admin")
+        self.auditor = self.create_user(UserRole.AUDITOR, "auditor")
 
         self.active_document = Document.objects.create(
             code="FOR-OYM-001",
@@ -200,6 +230,14 @@ class DocumentViewsTests(TestCase):
         self.assertEqual(AuditEvent.objects.count(), 0)
 
     def test_reader_can_view_active_pdf_through_controlled_route(self):
+        ControlledCopy.objects.create(
+            document=self.active_document,
+            document_version=self.active_version,
+            copy_number="CC-001",
+            receiver_unit=self.production_unit,
+            status=ControlledCopyStatus.ACTIVE,
+            created_by=self.oym_admin,
+        )
         self.client.force_login(self.reader)
 
         response = self.client.get(
@@ -234,8 +272,72 @@ class DocumentViewsTests(TestCase):
         self.assertEqual(event.after_data["document_version_id"], self.active_version.pk)
         self.assertEqual(event.after_data["document_file_id"], self.active_file.pk)
 
-    def test_disallowed_role_gets_403_and_denied_audit_event(self):
-        self.client.force_login(self.systems_admin)
+    def test_oym_roles_can_view_any_document_file(self):
+        for user in (self.oym_admin, self.oym_analyst):
+            with self.subTest(user=user.email):
+                AuditEvent.objects.all().delete()
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(
+                    reverse(
+                        "app:documents:file_view",
+                        args=[
+                            self.active_document.pk,
+                            self.draft_version.pk,
+                            self.draft_file.pk,
+                        ],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(AuditEvent.objects.get().result, AuditResult.SUCCESS)
+
+    def test_systems_and_auditor_roles_get_403_and_denied_audit_event(self):
+        for user in (self.systems_admin, self.auditor):
+            with self.subTest(user=user.email):
+                AuditEvent.objects.all().delete()
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(
+                    reverse(
+                        "app:documents:file_view",
+                        args=[
+                            self.active_document.pk,
+                            self.active_version.pk,
+                            self.active_file.pk,
+                        ],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 403)
+
+                event = AuditEvent.objects.get()
+                self.assertEqual(event.user, user)
+                self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
+                self.assertEqual(event.result, AuditResult.DENIED)
+                self.assertEqual(event.entity_id, str(self.active_file.pk))
+
+    def test_executing_unit_can_view_document_owned_by_own_unit(self):
+        self.client.force_login(self.executing_unit)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.SUCCESS)
+
+    def test_executing_unit_without_unit_relation_gets_403(self):
+        self.client.force_login(self.other_executing_unit)
 
         response = self.client.get(
             reverse(
@@ -249,12 +351,72 @@ class DocumentViewsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.DENIED)
 
-        event = AuditEvent.objects.get()
-        self.assertEqual(event.user, self.systems_admin)
-        self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
-        self.assertEqual(event.result, AuditResult.DENIED)
-        self.assertEqual(event.entity_id, str(self.active_file.pk))
+    def test_reader_with_direct_implementation_record_can_view_document_file(self):
+        ImplementationRecord.objects.create(
+            user=self.other_reader,
+            document=self.active_document,
+            document_version=self.active_version,
+        )
+        self.client.force_login(self.other_reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.SUCCESS)
+
+    def test_reader_with_direct_controlled_copy_can_view_document_file(self):
+        ControlledCopy.objects.create(
+            document=self.active_document,
+            document_version=self.active_version,
+            copy_number="CC-002",
+            receiver_unit=self.hr_unit,
+            receiver_user=self.other_reader,
+            status=ControlledCopyStatus.DELIVERED,
+            created_by=self.oym_admin,
+        )
+        self.client.force_login(self.other_reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.SUCCESS)
+
+    def test_reader_without_unit_or_direct_relation_gets_403(self):
+        self.client.force_login(self.other_reader)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(AuditEvent.objects.get().result, AuditResult.DENIED)
 
     def test_reader_gets_403_for_non_visible_version_and_denied_audit_event(self):
         self.client.force_login(self.reader)

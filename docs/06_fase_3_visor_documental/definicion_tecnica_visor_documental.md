@@ -206,6 +206,31 @@ Cada intento de visualizacion debe registrar, como minimo:
 
 La trazabilidad debe aplicarse tanto a accesos autorizados como a intentos denegados, porque ambos son relevantes para control documental.
 
+## 9.1 Reglas de acceso fino implementadas
+
+F3-P03 fortalece la validacion de acceso por usuario, unidad, documento, version y archivo, sin crear modelos nuevos.
+
+Reglas actuales:
+
+| Rol | Acceso a archivo documental controlado |
+| --- | --- |
+| OyM Administrador Funcional | Puede visualizar archivos PDF documentales, incluyendo versiones no visibles para usuarios generales, por su rol funcional. |
+| Analista OyM | Puede visualizar archivos PDF documentales, incluyendo versiones no visibles para usuarios generales, por su rol funcional. |
+| Sistemas Tecnico | No accede al contenido documental por esta ruta; recibe `403` si intenta visualizar archivo. |
+| Auditor | No accede al contenido documental por esta ruta; recibe `403` si intenta visualizar archivo. |
+| Unidad Ejecutora | Puede visualizar PDF vigente si pertenece a la unidad responsable del documento o tiene relacion por copia controlada de su unidad. |
+| Usuario Lector | Puede visualizar PDF vigente si tiene relacion directa por registro de implementacion, copia controlada asignada o copia controlada aplicable a su unidad. |
+
+Condiciones obligatorias:
+
+* El archivo debe estar activo.
+* El archivo debe ser PDF por `content_type` o nombre de archivo.
+* Para usuarios no OyM, documento y version deben estar en estado visible (`published` o `active`).
+* Las relaciones directas se validan con registros de implementacion y copias controladas existentes.
+* Las relaciones por unidad se validan con unidad responsable del documento o copias controladas asignadas a la unidad.
+* Documento, version y archivo inexistentes mantienen respuesta `404`.
+* Usuario autenticado sin permiso mantiene respuesta `403` y auditoria de acceso denegado.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

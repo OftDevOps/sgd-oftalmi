@@ -323,6 +323,8 @@ Esta decision establece que el visor debe iniciar con PDF como formato prioritar
 
 F3-P02 implementa la primera entrega controlada de archivos PDF mediante una ruta interna protegida del modulo `documents`. Esta ruta valida usuario, documento, version y archivo, registra auditoria de accesos permitidos y denegados, y no reemplaza todavia al visor visual final con marcas de agua o controles de interfaz.
 
+F3-P03 fortalece el permiso fino del archivo: OyM conserva acceso funcional; Sistemas y Auditor no acceden al contenido documental por esta ruta; Unidad Ejecutora y Usuario Lector requieren relacion aplicable por unidad, copia controlada o registro de implementacion. La respuesta para usuarios autenticados sin permiso es `403`; las inconsistencias o inexistencia de documento, version, archivo o archivo fisico mantienen `404`.
+
 ---
 
 ## 9. Impacto DevOps
