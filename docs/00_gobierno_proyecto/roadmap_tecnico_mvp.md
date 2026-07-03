@@ -159,6 +159,7 @@ F2-P08  -> Copias controladas: consulta base
 F2-P09  -> Implementation records: consulta y registro base
 F2-P10  -> Auditoría: consulta restringida base
 F2-P11  -> Aplicación transversal de permisos por rol en vistas
+F2-P12  -> Pruebas integradas de capa de acceso
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1094,6 +1095,27 @@ backend/templates/audit/
 
 ```text
 backend/config/access.py
+backend/apps/accounts/tests/test_phase2_permissions.py
+```
+
+#### F2-P12 - Pruebas integradas de capa de acceso
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Refuerzo de pruebas integradas de navegacion de Fase 2.
+* Validacion de rutas principales por rol.
+* Validacion de redirects a login para usuarios anonimos.
+* Validacion de respuestas 403 segun permisos existentes.
+* Validacion de templates esperados para paginas principales.
+* Validacion de navegacion visible por rol en dashboard.
+* Confirmacion de ausencia de migraciones pendientes.
+* Sin modelos nuevos, APIs, nuevas funcionalidades ni cambios de reglas funcionales.
+
+**Evidencia:**
+
+```text
 backend/apps/accounts/tests/test_phase2_permissions.py
 ```
 
