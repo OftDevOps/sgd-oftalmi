@@ -177,7 +177,119 @@ Las vistas internas de Fase 2 deben usar `ModuleAccessMixin` o `ModuleIndexView`
 
 ---
 
-## 6. Frontend React/Vite
+## 6. Cierre tecnico de Fase 2
+
+La Fase 2 deja implementada una capa de acceso interna basada en Django templates, sesiones Django y permisos por rol apoyados en helpers existentes. La interfaz resultante es operativa para consulta y registro base, pero no sustituye workflows documentales completos ni implementa visor documental final.
+
+### 6.1 Rutas actuales
+
+| Ruta | Vista / proposito | Acceso |
+| --- | --- | --- |
+| `/` | Redireccion inicial segun autenticacion | Publica con redireccion |
+| `/accounts/login/` | Login con correo institucional | Publica |
+| `/accounts/logout/` | Logout de sesion | Usuario autenticado |
+| `/accounts/logged-out/` | Confirmacion visual de cierre de sesion | Publica |
+| `/app/` | Dashboard base por rol | Login requerido |
+| `/app/users/` | Modulo base de usuarios | OyM Admin, Sistemas Tecnico |
+| `/app/catalogs/organizational-units/` | Listado de unidades ejecutoras | Segun `can_view_organizational_units` |
+| `/app/catalogs/organizational-units/<id>/` | Detalle de unidad ejecutora | Segun `can_view_organizational_units` |
+| `/app/catalogs/document-types/` | Listado de tipos documentales | Segun `can_view_document_types` |
+| `/app/catalogs/document-types/<id>/` | Detalle de tipo documental | Segun `can_view_document_types` |
+| `/app/documents/` | Listado documental base | Segun `can_access_documents_module` |
+| `/app/documents/<id>/` | Detalle documental con versiones y metadata de archivos | Segun `can_access_documents_module` y queryset visible |
+| `/app/document-requests/` | Listado de solicitudes documentales | Segun `can_access_document_requests_module` |
+| `/app/document-requests/new/` | Creacion simple de solicitud documental | Segun `can_create_document_request` |
+| `/app/document-requests/<id>/` | Detalle de solicitud documental | Segun permisos de modulo y queryset visible |
+| `/app/controlled-copies/` | Listado de copias controladas | Segun `can_view_controlled_copies` |
+| `/app/controlled-copies/<id>/` | Detalle de copia controlada | Segun permisos de modulo y queryset visible |
+| `/app/implementation-records/` | Listado de registros de implementacion | Usuario activo, con queryset segun rol |
+| `/app/implementation-records/new/` | Registro simple propio de implementacion | Usuario activo |
+| `/app/implementation-records/<id>/` | Detalle de registro de implementacion | Usuario activo, con queryset segun rol |
+| `/app/audit/` | Listado restringido de auditoria | Segun `can_view_audit` |
+| `/app/audit/<id>/` | Detalle restringido de evento de auditoria | Segun `can_view_audit` |
+| `/app/reports/` | Modulo reservado de reportes | Segun `can_view_reports` |
+| `/app/notifications/` | Modulo reservado de notificaciones | Usuario activo |
+| `/api/v1/` | Indice reservado de API interna | Login requerido |
+| `/admin/` | Django admin | Staff/admin Django |
+| `/health/` | Health check tecnico | Operacion tecnica |
+
+### 6.2 Permisos aplicados
+
+Los permisos de Fase 2 se aplican mediante `ModuleAccessMixin`, `ModuleIndexView`, helpers de `permissions.py` y helpers de navegacion de `config.navigation`.
+
+| Modulo | Helper principal | Roles con acceso actual |
+| --- | --- | --- |
+| Dashboard | `LoginRequiredMixin` + `get_module_navigation` | Todo usuario autenticado |
+| Usuarios | `can_view_users` | OyM Admin, Sistemas Tecnico |
+| Unidades ejecutoras | `can_view_organizational_units` | OyM Admin, Analista OyM, Sistemas Tecnico |
+| Tipos documentales | `can_view_document_types` | OyM Admin, Analista OyM, Unidad Ejecutora |
+| Documentos | `can_access_documents_module` | OyM Admin, Analista OyM, Unidad Ejecutora, Usuario Lector |
+| Solicitudes documentales | `can_access_document_requests_module` | OyM Admin, Analista OyM, Unidad Ejecutora, Sistemas Tecnico |
+| Crear solicitud documental | `can_create_document_request` | OyM Admin, Analista OyM, Unidad Ejecutora, Sistemas Tecnico |
+| Copias controladas | `can_view_controlled_copies` | OyM Admin, Analista OyM, Unidad Ejecutora, Usuario Lector |
+| Registros de implementacion | `can_access_implementation_records_module` | Todo usuario activo |
+| Crear registro de implementacion | `is_active_user` | Todo usuario activo |
+| Auditoria | `can_view_audit` | OyM Admin, Analista OyM, Auditor, Sistemas Tecnico |
+| Reportes | `can_view_reports` | OyM Admin, Analista OyM |
+| Notificaciones | `can_view_own_notifications` | Todo usuario activo |
+
+Las vistas que muestran registros usan selectors o querysets acotados para no exponer informacion fuera del alcance del rol. Las pruebas integradas verifican login requerido, codigos 200/403, templates principales y navegacion visible por rol.
+
+### 6.3 Validaciones de cierre
+
+Validaciones tecnicas registradas al cierre de Fase 2:
+
+```text
+python -m compileall backend
+docker compose exec backend python manage.py makemigrations --check --dry-run
+make check
+make test-base
+make healthcheck
+```
+
+Resultado esperado y validado:
+
+```text
+compileall -> OK
+makemigrations --check --dry-run -> No changes detected
+make check -> OK
+make test-base -> 179 tests OK
+make healthcheck -> 200 {"status": "ok"}
+```
+
+### 6.4 Exclusiones confirmadas
+
+Fase 2 no implementa:
+
+* API funcional.
+* Frontend SPA.
+* Nuevos modelos o migraciones.
+* Workflows documentales completos.
+* Aprobaciones, rechazos u observaciones operativas completas.
+* Reportes finales ni exportacion Excel.
+* Visor documental final.
+* Descarga controlada de archivos.
+* Restricciones finales de impresion, copia o captura.
+* Notificaciones operativas.
+* Auditoria automatica adicional fuera de lo ya definido.
+
+### 6.5 Pendientes para Fase 3
+
+La Fase 3 debe enfocarse en visor documental y restricciones de consulta controlada:
+
+* Definir el patron tecnico del visor documental.
+* Evitar exposicion directa de archivos documentales.
+* Registrar auditoria de visualizacion cuando aplique.
+* Aplicar permisos por documento, version, usuario y unidad.
+* Bloquear descargas directas para usuarios lectores desde la aplicacion.
+* Agregar controles razonables contra impresion y copia desde la interfaz.
+* Evaluar marcas de agua o metadatos visibles para trazabilidad.
+* Mantener claro que estos controles no son proteccion absoluta contra capturas externas.
+* Agregar pruebas especificas de acceso a documentos y archivos.
+
+---
+
+## 7. Frontend React/Vite
 
 El directorio `frontend/` existe como base tecnica, pero no sera la interfaz principal inicial del MVP.
 
@@ -191,7 +303,7 @@ No se construira una SPA completa sin una decision tecnica posterior.
 
 ---
 
-## 7. Seguridad documental
+## 8. Seguridad documental
 
 La arquitectura debe preservar las reglas funcionales de consulta controlada:
 
@@ -203,7 +315,7 @@ La arquitectura debe preservar las reglas funcionales de consulta controlada:
 
 ---
 
-## 8. Impacto DevOps
+## 9. Impacto DevOps
 
 La decision hibrida mantiene el despliegue inicial simple:
 

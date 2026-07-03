@@ -160,12 +160,13 @@ F2-P09  -> Implementation records: consulta y registro base
 F2-P10  -> Auditoría: consulta restringida base
 F2-P11  -> Aplicación transversal de permisos por rol en vistas
 F2-P12  -> Pruebas integradas de capa de acceso
+F2-P13  -> Documentación técnica de cierre de Fase 2
 ```
 
 Último commit técnico conocido en `develop`:
 
 ```text
-7d11339 feat: add base catalog seed command
+1f27004 test: add access layer integration coverage
 ```
 
 Estado de ramas conocido:
@@ -1117,6 +1118,26 @@ backend/apps/accounts/tests/test_phase2_permissions.py
 
 ```text
 backend/apps/accounts/tests/test_phase2_permissions.py
+```
+
+#### F2-P13 - Documentación técnica de cierre de Fase 2
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Actualizacion del roadmap tecnico MVP con cierre documental de Fase 2.
+* Actualizacion de arquitectura de aplicacion con rutas actuales.
+* Documentacion de permisos aplicados por modulo y rol.
+* Documentacion de validaciones tecnicas de Fase 2.
+* Documentacion de pendientes y limites para Fase 3.
+* Sin codigo nuevo, modelos, migraciones, APIs ni nuevas reglas funcionales.
+
+**Evidencia:**
+
+```text
+docs/00_gobierno_proyecto/roadmap_tecnico_mvp.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```
 
 ---
