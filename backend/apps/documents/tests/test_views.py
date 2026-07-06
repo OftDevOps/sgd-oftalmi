@@ -1,6 +1,8 @@
 import shutil
 import tempfile
+from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -307,9 +309,28 @@ class DocumentViewsTests(TestCase):
         self.assertContains(response, 'referrerpolicy="same-origin"', html=False)
         self.assertContains(response, "contextmenu")
         self.assertContains(response, "event.preventDefault()")
+        self.assertContains(response, '["s", "p", "c"]')
+        self.assertContains(
+            response,
+            "La impresion de documentos controlados no esta permitida desde el visor.",
+        )
+        self.assertContains(response, "print-restriction-message")
         self.assertNotContains(response, f'href="{file_view_url}', html=False)
         self.assertNotContains(response, " download", html=False)
+        self.assertNotContains(response, "Imprimir")
+        self.assertNotContains(response, "window.print")
         self.assertNotContains(response, self.active_file.file.url)
+
+    def test_viewer_print_styles_hide_document_frame(self):
+        css_path = Path(settings.BASE_DIR) / "static" / "css" / "app.css"
+        css = css_path.read_text(encoding="utf-8")
+
+        self.assertIn("@media print", css)
+        self.assertIn(".viewer-panel", css)
+        self.assertIn(".document-viewer-frame", css)
+        self.assertIn("display: none !important", css)
+        self.assertIn(".print-restriction-message", css)
+        self.assertIn("display: block", css)
 
     def test_controlled_viewer_returns_403_message_for_disallowed_user(self):
         self.client.force_login(self.systems_admin)

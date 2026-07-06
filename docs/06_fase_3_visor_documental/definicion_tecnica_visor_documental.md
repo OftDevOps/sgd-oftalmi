@@ -313,6 +313,24 @@ Limitaciones:
 * Estos controles no reemplazan marcas de agua, PDF.js custom ni politicas operativas.
 * Una restriccion visual mas fuerte debe evaluarse en un punto posterior con visor especializado, watermarking y controles compensatorios.
 
+### 9.6 Reduccion de exposicion de impresion
+
+F3-P07 implementa controles de reduccion de exposicion de impresion. No se presenta como bloqueo absoluto.
+
+Controles aplicados:
+
+* Se mantiene el bloqueo suave de `Ctrl/Cmd + P` desde la pagina del visor.
+* No se agregan botones, enlaces ni acciones visibles de impresion.
+* Se agregan reglas CSS `@media print` para ocultar el iframe del visor al imprimir la pagina.
+* Se muestra en impresion el mensaje: `La impresion de documentos controlados no esta permitida desde el visor.`
+* Se mantiene la trazabilidad documental existente sobre accesos al visor y al archivo controlado.
+
+Limitaciones:
+
+* El visor nativo del navegador o plugin PDF puede ofrecer opciones propias de impresion.
+* El sistema operativo, extensiones o herramientas externas pueden imprimir o capturar contenido fuera del control de la aplicacion.
+* Controles mas fuertes requieren evaluar PDF.js custom, watermarking y politicas operativas; aun asi, no eliminarian capturas de pantalla o fotografia externa.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

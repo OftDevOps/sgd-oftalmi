@@ -333,6 +333,8 @@ F3-P05 formaliza el registro de acceso documental sobre `AuditEvent`. Los evento
 
 F3-P06 reduce la exposicion de descarga, sin prometer bloqueo absoluto. La entrega PDF se mantiene `inline`, sin `attachment`, con `no-store`, iframe de mismo origen y controles HTML/JS razonables para desalentar descarga desde la interfaz. El navegador aun puede ofrecer opciones nativas de guardar o imprimir; controles mas fuertes quedan para una fase posterior con PDF.js custom, marcas de agua y controles compensatorios.
 
+F3-P07 reduce la exposicion de impresion, sin prometer bloqueo absoluto. La pagina del visor mantiene controles JS razonables para desalentar `Ctrl/Cmd + P`, no ofrece botones de impresion, y usa CSS `@media print` para ocultar el iframe y mostrar un mensaje de restriccion al imprimir la pagina. El visor nativo del navegador o herramientas externas pueden seguir ofreciendo opciones de impresion fuera del control de la aplicacion.
+
 ---
 
 ## 9. Impacto DevOps

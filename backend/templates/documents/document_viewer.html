@@ -50,6 +50,9 @@
           title="Visor PDF - {{ document_file.original_filename }}"
         ></iframe>
       </div>
+      <section class="print-restriction-message" aria-label="Restriccion de impresion">
+        <p>La impresion de documentos controlados no esta permitida desde el visor.</p>
+      </section>
     {% else %}
       <section class="status-panel" aria-label="Estado del visor">
         <p>{{ viewer_message }}</p>

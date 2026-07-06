@@ -167,6 +167,7 @@ F3-P03  -> Validación de acceso por usuario/unidad/documento
 F3-P04  -> Vista de consulta documental controlada
 F3-P05  -> Registro de acceso a documentos
 F3-P06  -> Restricción de descarga según viabilidad técnica
+F3-P07  -> Restricción de impresión según viabilidad técnica
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1304,6 +1305,30 @@ docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```text
 backend/apps/documents/views.py
 backend/templates/documents/document_viewer.html
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P07 - Restricción de impresión según viabilidad técnica
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Mantenimiento de controles JS razonables para desalentar `Ctrl/Cmd + P`.
+* Reglas CSS `@media print` para ocultar visualmente el iframe del visor al imprimir la pagina.
+* Mensaje impreso: `La impresion de documentos controlados no esta permitida desde el visor.`
+* Confirmacion de ausencia de botones o enlaces de impresion en la interfaz.
+* Documentacion explicita de que no se puede impedir al 100% la impresion desde visor nativo, navegador o sistema operativo.
+* Mantenimiento de trazabilidad documental existente.
+* Pruebas automatizadas sobre ausencia de controles de impresion y presencia de CSS print/mensaje.
+* Sin modelos nuevos, migraciones, PDF.js custom, marcas de agua ni bloqueo avanzado de impresion.
+
+**Evidencia:**
+
+```text
+backend/templates/documents/document_viewer.html
+backend/static/css/app.css
 backend/apps/documents/tests/test_views.py
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```
