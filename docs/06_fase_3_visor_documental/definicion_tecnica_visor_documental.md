@@ -290,6 +290,29 @@ Las descripciones normalizadas son:
 
 La metadata documental se registra en `after_data` con identificadores y datos basicos de documento, version y archivo. Un modelo especializado de acceso documental solo debe evaluarse si OyM requiere reportes analiticos de lectura/consulta, alto volumen de eventos, reglas especificas de retencion o consultas operativas que no convenga resolver sobre `AuditEvent`.
 
+### 9.5 Reduccion de exposicion de descarga
+
+F3-P06 implementa controles de reduccion de exposicion de descarga. No se presenta como bloqueo absoluto.
+
+Controles aplicados:
+
+* La entrega PDF mantiene `Content-Disposition: inline`.
+* No se usa `Content-Disposition: attachment`.
+* Se mantiene `Cache-Control: no-store` y `Pragma: no-cache`.
+* La respuesta del PDF permite iframe solo desde el mismo origen.
+* El iframe del visor usa fragmento `toolbar=0&navpanes=0&scrollbar=1` para reducir toolbar nativo cuando el navegador lo respete.
+* El iframe usa `sandbox` sin `allow-downloads`.
+* La interfaz no muestra botones ni enlaces de descarga.
+* La interfaz no expone la URL fisica del archivo en storage.
+* Se agregan controles JavaScript razonables para desalentar menu contextual y atajos de guardar, imprimir o copiar desde la pagina del visor.
+
+Limitaciones:
+
+* El navegador puede seguir ofreciendo opciones nativas de guardar o imprimir.
+* Las herramientas del sistema operativo, extensiones, caches internas o visores nativos pueden permitir acciones fuera del control de la aplicacion.
+* Estos controles no reemplazan marcas de agua, PDF.js custom ni politicas operativas.
+* Una restriccion visual mas fuerte debe evaluarse en un punto posterior con visor especializado, watermarking y controles compensatorios.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

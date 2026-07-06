@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import FileResponse, Http404
+from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
@@ -77,6 +78,7 @@ class DocumentDetailView(DocumentAccessMixin, DetailView):
 
 class ControlledDocumentViewerView(LoginRequiredMixin, TemplateView):
     template_name = "documents/document_viewer.html"
+    pdf_viewer_fragment = "toolbar=0&navpanes=0&scrollbar=1"
 
     def get_audit_context(self):
         return AuditContext(
@@ -127,7 +129,16 @@ class ControlledDocumentViewerView(LoginRequiredMixin, TemplateView):
             context["viewer_message"] = "El archivo documental no esta disponible."
             return context
 
+        file_url = reverse(
+            "app:documents:file_view",
+            args=[
+                document_file.document_version.document_id,
+                document_file.document_version_id,
+                document_file.pk,
+            ],
+        )
         context["can_view_file"] = True
+        context["viewer_file_url"] = f"{file_url}#{self.pdf_viewer_fragment}"
         return context
 
     def render_to_response(self, context, **response_kwargs):
@@ -188,4 +199,6 @@ class ControlledDocumentFileView(LoginRequiredMixin, View):
         response["Cache-Control"] = "no-store"
         response["Pragma"] = "no-cache"
         response["X-Content-Type-Options"] = "nosniff"
+        response["X-Frame-Options"] = "SAMEORIGIN"
+        response["Content-Security-Policy"] = "frame-ancestors 'self'"
         return response

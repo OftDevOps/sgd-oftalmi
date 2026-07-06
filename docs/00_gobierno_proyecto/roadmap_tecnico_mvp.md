@@ -166,6 +166,7 @@ F3-P02  -> Servicio de entrega controlada de archivos
 F3-P03  -> Validación de acceso por usuario/unidad/documento
 F3-P04  -> Vista de consulta documental controlada
 F3-P05  -> Registro de acceso a documentos
+F3-P06  -> Restricción de descarga según viabilidad técnica
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1277,6 +1278,32 @@ backend/apps/documents/tests/test_views.py
 ```text
 backend/apps/documents/services.py
 backend/apps/documents/views.py
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P06 - Restricción de descarga según viabilidad técnica
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Confirmacion de entrega PDF con `Content-Disposition: inline`.
+* Confirmacion de ausencia de `Content-Disposition: attachment`.
+* Mantenimiento de `Cache-Control: no-store`.
+* Entrega en iframe limitada a mismo origen.
+* Fragmento de visor nativo para reducir exposicion de toolbar cuando el navegador lo soporte.
+* Controles HTML/JS razonables para desalentar menu contextual y atajos de guardar, imprimir o copiar desde la pagina del visor.
+* Confirmacion de que no se expone URL fisica del archivo ni enlaces directos de descarga en la interfaz.
+* Documentacion explicita de que el navegador puede seguir ofreciendo opciones nativas de guardar o imprimir.
+* Pruebas automatizadas sobre headers y ausencia de enlaces directos.
+* Sin modelos nuevos, migraciones, PDF.js custom, marcas de agua ni bloqueo avanzado de descarga o impresion.
+
+**Evidencia:**
+
+```text
+backend/apps/documents/views.py
+backend/templates/documents/document_viewer.html
 backend/apps/documents/tests/test_views.py
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```

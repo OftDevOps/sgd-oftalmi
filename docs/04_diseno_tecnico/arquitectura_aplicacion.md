@@ -331,6 +331,8 @@ F3-P04 agrega la primera pagina funcional del visor documental. La pagina render
 
 F3-P05 formaliza el registro de acceso documental sobre `AuditEvent`. Los eventos `DOCUMENT_VIEWED` registran usuario, documento, version, archivo, IP, user agent, accion, resultado, fecha/hora y metadata documental normalizada. Se registran accesos permitidos, denegados y fallidos por archivo no disponible. No se crea un modelo `DocumentAccessLog` mientras `AuditEvent` cubra la trazabilidad minima requerida.
 
+F3-P06 reduce la exposicion de descarga, sin prometer bloqueo absoluto. La entrega PDF se mantiene `inline`, sin `attachment`, con `no-store`, iframe de mismo origen y controles HTML/JS razonables para desalentar descarga desde la interfaz. El navegador aun puede ofrecer opciones nativas de guardar o imprimir; controles mas fuertes quedan para una fase posterior con PDF.js custom, marcas de agua y controles compensatorios.
+
 ---
 
 ## 9. Impacto DevOps

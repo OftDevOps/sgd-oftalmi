@@ -296,12 +296,19 @@ class DocumentViewsTests(TestCase):
                 self.active_file.pk,
             ],
         )
+        viewer_file_url = f"{file_view_url}#toolbar=0&amp;navpanes=0&amp;scrollbar=1"
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "documents/document_viewer.html")
         self.assertContains(response, "Consulta controlada de archivo PDF documental")
         self.assertContains(response, self.active_file.original_filename)
-        self.assertContains(response, file_view_url)
+        self.assertContains(response, viewer_file_url)
         self.assertContains(response, "<iframe", html=False)
+        self.assertContains(response, 'sandbox="allow-same-origin allow-scripts"', html=False)
+        self.assertContains(response, 'referrerpolicy="same-origin"', html=False)
+        self.assertContains(response, "contextmenu")
+        self.assertContains(response, "event.preventDefault()")
+        self.assertNotContains(response, f'href="{file_view_url}', html=False)
+        self.assertNotContains(response, " download", html=False)
         self.assertNotContains(response, self.active_file.file.url)
 
     def test_controlled_viewer_returns_403_message_for_disallowed_user(self):
@@ -466,7 +473,12 @@ class DocumentViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
         self.assertIn("inline", response["Content-Disposition"])
+        self.assertNotIn("attachment", response["Content-Disposition"].lower())
         self.assertEqual(response["Cache-Control"], "no-store")
+        self.assertEqual(response["Pragma"], "no-cache")
+        self.assertEqual(response["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(response["X-Frame-Options"], "SAMEORIGIN")
+        self.assertEqual(response["Content-Security-Policy"], "frame-ancestors 'self'")
         self.assertEqual(b"".join(response.streaming_content), b"%PDF-1.4 controlled file")
 
         event = AuditEvent.objects.get()

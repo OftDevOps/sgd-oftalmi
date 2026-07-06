@@ -41,10 +41,12 @@
 
   <section class="page-section">
     {% if can_view_file %}
-      <div class="viewer-panel">
+      <div class="viewer-panel" data-controlled-viewer>
         <iframe
           class="document-viewer-frame"
-          src="{% url 'app:documents:file_view' document.pk document_version.pk document_file.pk %}"
+          src="{{ viewer_file_url }}"
+          sandbox="allow-same-origin allow-scripts"
+          referrerpolicy="same-origin"
           title="Visor PDF - {{ document_file.original_filename }}"
         ></iframe>
       </div>
@@ -62,4 +64,26 @@
       <a href="{% url 'app:documents:index' %}">Volver al listado</a>
     {% endif %}
   </p>
+
+  {% if can_view_file %}
+    <script>
+      (function () {
+        var viewer = document.querySelector("[data-controlled-viewer]");
+        if (!viewer) {
+          return;
+        }
+
+        viewer.addEventListener("contextmenu", function (event) {
+          event.preventDefault();
+        });
+
+        document.addEventListener("keydown", function (event) {
+          var key = event.key.toLowerCase();
+          if ((event.ctrlKey || event.metaKey) && ["s", "p", "c"].indexOf(key) !== -1) {
+            event.preventDefault();
+          }
+        });
+      })();
+    </script>
+  {% endif %}
 {% endblock %}
