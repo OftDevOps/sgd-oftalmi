@@ -380,6 +380,73 @@ Cobertura reforzada:
 
 F3-P09 no crea modelos, migraciones, PDF.js custom, APIs ni cambios de reglas funcionales. Cualquier desviacion detectada por estas pruebas debe tratarse como correccion estricta de seguridad o trazabilidad, no como expansion funcional.
 
+### 9.9 Limitaciones reales y cierre de Fase 3
+
+F3-P10 cierra documentalmente la Fase 3. El objetivo es dejar una verdad tecnica defendible sobre lo que el visor documental controla, lo que reduce y lo que no puede garantizar.
+
+Controles implementados entre F3-P01 y F3-P09:
+
+* Definicion tecnica del visor documental y su alcance inicial.
+* Entrega controlada de archivos mediante backend, sin exponer rutas fisicas ni URL directa de storage.
+* Login obligatorio para visor y entrega de archivo.
+* Validacion de permisos por rol, documento, version, archivo, unidad, copia controlada y registro de implementacion cuando aplica.
+* Respuestas diferenciadas: `403` para usuario autenticado sin permiso y `404` para documento, version, archivo o archivo fisico inexistente.
+* Auditoria `DOCUMENT_VIEWED` con resultado `success`, `denied` o `failure`.
+* Encabezados de seguridad y cache: `Cache-Control: no-store`, `Pragma: no-cache`, `Content-Disposition: inline`, `X-Content-Type-Options`, `X-Frame-Options` y `Content-Security-Policy`.
+* Renderizado del PDF en iframe protegido por ruta controlada.
+* Iframe `sandbox` sin `allow-downloads`.
+* Reduccion de toolbar nativo mediante fragmento del visor PDF cuando el navegador lo respeta.
+* Ausencia de botones o enlaces de descarga e impresion en la interfaz.
+* Controles JavaScript razonables para desalentar menu contextual y atajos de guardar, imprimir o copiar desde la pagina.
+* CSS de impresion para ocultar el iframe y mostrar mensaje de restriccion.
+* Marca de agua visual con usuario, unidad cuando aplica, documento, version y fecha/hora.
+* Pruebas automatizadas de seguridad del visor.
+
+Limitaciones y riesgos residuales:
+
+* Captura de pantalla desde sistema operativo, navegador, extension o herramienta externa.
+* Fotografia externa tomada con telefono u otro dispositivo.
+* Impresion desde visor nativo del navegador, plugin PDF, sistema operativo o herramienta externa.
+* Descarga o extraccion mediante herramientas avanzadas si el navegador o plugin expone capacidades fuera del control de la aplicacion.
+* OCR sobre capturas, fotografias o copias obtenidas por medios externos.
+* Cache o archivos temporales administrados por navegador, sistema operativo o software de terceros.
+* Exposicion accidental por configuracion incorrecta de Nginx, `MEDIA_URL`, storage, volumenes o permisos del sistema operativo.
+* Falsa sensacion de seguridad si los controles visuales se comunican como bloqueo absoluto.
+
+Controles compensatorios requeridos:
+
+* Mantener permisos backend como control principal, no como control visual.
+* Mantener entrega controlada de archivos y evitar publicacion directa de documentos por `MEDIA_URL`.
+* Mantener auditoria `DOCUMENT_VIEWED` para accesos exitosos, denegados y fallidos.
+* Revisar configuracion Nginx/storage antes de produccion para impedir exposicion directa de documentos.
+* Mantener `Cache-Control: no-store` y `Content-Disposition: inline` para la entrega PDF.
+* Mantener CSP `frame-ancestors 'self'`, `X-Frame-Options` e iframe sandbox sin `allow-downloads`.
+* Mantener marca de agua visual como control disuasivo y evidencia visual.
+* Definir politica interna de uso aceptable para documentos controlados.
+* Capacitar a usuarios sobre prohibicion de descarga, impresion, copia, captura o redistribucion no autorizada.
+* Monitorear eventos de acceso denegado, fallido o patrones anormales de consulta.
+
+Aclaraciones tecnicas de cierre:
+
+* El PDF original no se modifica en Fase 3.
+* No se generan copias fisicas, archivos temporales versionados ni PDFs derivados con marca persistente.
+* La marca de agua actual es visual en el template, no persistente dentro del archivo.
+* Archivos Office quedan pendientes de conversion previa a PDF o evaluacion tecnica posterior.
+* PDF.js custom, marcas de agua persistentes, streaming especializado o procesamiento dinamico de PDF quedan fuera de Fase 3.
+
+Criterios de aceptacion de cierre de Fase 3:
+
+* El visor solo permite acceso autenticado.
+* El archivo PDF se entrega por ruta backend controlada.
+* No se exponen rutas fisicas ni enlaces directos al archivo en la interfaz.
+* Los permisos se validan antes de renderizar visor o entregar archivo.
+* Los intentos permitidos, denegados y fallidos quedan auditados.
+* Los headers de seguridad y cache se validan por pruebas.
+* La interfaz no ofrece descarga ni impresion.
+* Existe mensaje de impresion restringida y marca de agua visual.
+* Las limitaciones reales quedan documentadas sin prometer proteccion absoluta.
+* No existen modelos ni migraciones pendientes derivados de Fase 3.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |
@@ -389,6 +456,9 @@ F3-P09 no crea modelos, migraciones, PDF.js custom, APIs ni cambios de reglas fu
 | Cache del navegador | El navegador puede conservar datos temporales si no se controlan encabezados y flujo. |
 | Permisos incompletos | Validar solo rol y no documento/version/unidad puede exponer informacion indebida. |
 | Archivos Office editables | Visualizarlos directamente puede facilitar descarga, edicion o copia. |
+| OCR | Capturas, fotografias o copias externas pueden procesarse con OCR fuera del sistema. |
+| Impresion nativa | Navegador, plugin PDF o sistema operativo pueden ofrecer impresion fuera del control de la aplicacion. |
+| Herramientas avanzadas | Extensiones o herramientas externas pueden extraer contenido renderizado en el cliente. |
 | Rendimiento | PDFs grandes pueden afectar memoria, ancho de banda y experiencia de usuario. |
 | Auditoria excesiva o insuficiente | Registrar demasiado puede generar ruido; registrar poco debilita trazabilidad. |
 | Configuracion de infraestructura | Nginx, volumenes y permisos del sistema deben alinearse con la estrategia del visor. |

@@ -170,6 +170,7 @@ F3-P06  -> Restricción de descarga según viabilidad técnica
 F3-P07  -> Restricción de impresión según viabilidad técnica
 F3-P08  -> Marca de agua o identificación de usuario
 F3-P09  -> Pruebas de seguridad del visor
+F3-P10  -> Documentación de limitaciones reales del visor
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1381,6 +1382,28 @@ docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```text
 backend/apps/documents/tests/test_views.py
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P10 - Documentación de limitaciones reales del visor
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Consolidacion documental de controles implementados en F3-P01 a F3-P09.
+* Documentacion explicita de limitaciones reales del visor documental.
+* Registro de riesgos residuales: captura de pantalla, fotografia externa, impresion desde visor nativo, descarga con herramientas avanzadas, OCR y exposicion por mala configuracion de Nginx, `MEDIA_URL` o storage.
+* Consolidacion de controles compensatorios: permisos por rol/unidad/relacion documental, entrega controlada, auditoria `DOCUMENT_VIEWED`, headers de cache, entrega `inline`, CSP, iframe sandbox, reduccion de toolbar, marca de agua visual y politica interna de uso.
+* Confirmacion documental de que el PDF original no se modifica y no se generan copias derivadas.
+* Registro de que archivos Office quedan pendientes de conversion o evaluacion tecnica posterior.
+* Criterios de aceptacion de cierre de Fase 3 documentados.
+* Sin codigo nuevo, modelos, migraciones, PDF.js custom ni cambios funcionales.
+
+**Evidencia:**
+
+```text
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```
 
 ---

@@ -339,6 +339,8 @@ F3-P08 agrega marca de agua visual en el template del visor documental. La marca
 
 F3-P09 endurece la cobertura automatizada de seguridad del visor. Las pruebas validan autenticacion, permisos, rutas inexistentes, archivos inactivos o no soportados, ausencia de rutas fisicas, headers de seguridad, controles visuales de descarga/impresion, marca de agua y auditoria `success`, `denied` y `failure`. No se introducen modelos, migraciones, PDF.js ni nuevas reglas funcionales.
 
+F3-P10 cierra documentalmente la Fase 3 con las limitaciones reales del visor. El visor controla el acceso backend, reduce exposicion de descarga e impresion, agrega trazabilidad y marca de agua visual, pero no puede garantizar bloqueo absoluto frente a capturas de pantalla, fotografias externas, OCR, impresion desde visor nativo, herramientas avanzadas o errores de configuracion de infraestructura. El PDF original no se modifica y los archivos Office quedan pendientes de conversion o evaluacion tecnica posterior.
+
 ---
 
 ## 9. Impacto DevOps
