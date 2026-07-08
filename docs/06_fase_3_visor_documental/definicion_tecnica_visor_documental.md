@@ -357,6 +357,29 @@ Limitaciones:
 * La marca de agua no queda persistida dentro del PDF descargado o renderizado por el plugin nativo.
 * Una marca persistente dentro del PDF requeriria una fase posterior con procesamiento controlado de archivos, evaluacion de rendimiento, almacenamiento temporal o streaming dinamico, y reglas operativas aprobadas por Organizacion y Metodos.
 
+### 9.8 Pruebas de seguridad del visor
+
+F3-P09 no agrega funcionalidades nuevas. Su objetivo es validar con pruebas automatizadas que el visor documental conserva los controles definidos en F3-P02 a F3-P08.
+
+Cobertura reforzada:
+
+* Login requerido para visor y entrega controlada de archivo.
+* Acceso permitido cuando existe relacion valida por rol, unidad, copia controlada o registro de implementacion.
+* Acceso denegado con `403` para usuario autenticado sin permiso.
+* `404` para documento, version o archivo inexistente.
+* `404` para archivo activo en base de datos pero no disponible fisicamente.
+* `404` para archivo documental inactivo.
+* `403` para archivo no PDF o no soportado por el visor inicial.
+* Ausencia de rutas fisicas o `MEDIA_URL` en vistas de consulta.
+* Headers de seguridad y control de cache en entrega PDF: `Content-Disposition: inline`, `Cache-Control: no-store`, `Pragma: no-cache`, `X-Content-Type-Options`, `X-Frame-Options` y `Content-Security-Policy`.
+* Iframe `sandbox` sin `allow-downloads`.
+* Ausencia de botones o enlaces de descarga e impresion.
+* Presencia del mensaje de impresion restringida.
+* Presencia de marca de agua visual.
+* Auditoria `DOCUMENT_VIEWED` con resultados `success`, `denied` y `failure`.
+
+F3-P09 no crea modelos, migraciones, PDF.js custom, APIs ni cambios de reglas funcionales. Cualquier desviacion detectada por estas pruebas debe tratarse como correccion estricta de seguridad o trazabilidad, no como expansion funcional.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

@@ -169,6 +169,7 @@ F3-P05  -> Registro de acceso a documentos
 F3-P06  -> Restricción de descarga según viabilidad técnica
 F3-P07  -> Restricción de impresión según viabilidad técnica
 F3-P08  -> Marca de agua o identificación de usuario
+F3-P09  -> Pruebas de seguridad del visor
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1354,6 +1355,30 @@ docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```text
 backend/templates/documents/document_viewer.html
 backend/static/css/app.css
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P09 - Pruebas de seguridad del visor
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Revision y fortalecimiento de pruebas automatizadas del visor documental.
+* Cobertura de login requerido, acceso permitido, acceso denegado y rutas inexistentes.
+* Cobertura de documento inexistente, version inexistente, archivo inexistente, archivo inactivo y archivo fisico no disponible.
+* Cobertura de archivo no soportado para entrega controlada inicial limitada a PDF.
+* Validacion de ausencia de rutas fisicas o `MEDIA_URL` en interfaces de consulta.
+* Validacion de headers de seguridad: `Cache-Control: no-store`, `Content-Disposition: inline`, `X-Frame-Options`, `X-Content-Type-Options` y `Content-Security-Policy`.
+* Validacion de iframe con `sandbox` sin `allow-downloads`.
+* Validacion de ausencia de botones de descarga e impresion, presencia de mensaje de impresion restringida y marca de agua.
+* Validacion de auditoria `success`, `denied` y `failure`.
+* Sin modelos nuevos, migraciones, PDF.js custom ni cambios funcionales.
+
+**Evidencia:**
+
+```text
 backend/apps/documents/tests/test_views.py
 docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 ```

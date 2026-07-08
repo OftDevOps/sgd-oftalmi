@@ -33,27 +33,39 @@ class DocumentViewsTests(TestCase):
             organizational_unit=organizational_unit,
         )
 
-    def assert_document_access_event(self, event, *, user, result, description):
+    def assert_document_access_event(
+        self,
+        event,
+        *,
+        user,
+        result,
+        description,
+        document_file=None,
+    ):
+        document_file = document_file or self.active_file
+        document_version = document_file.document_version
+        document = document_version.document
+
         self.assertEqual(event.user, user)
         self.assertEqual(event.action, AuditAction.DOCUMENT_VIEWED)
         self.assertEqual(event.result, result)
         self.assertEqual(event.module, "documents")
         self.assertEqual(event.entity_type, "DocumentFile")
-        self.assertEqual(event.entity_id, str(self.active_file.pk))
+        self.assertEqual(event.entity_id, str(document_file.pk))
         self.assertEqual(event.description, description)
         self.assertIsNotNone(event.created_at)
-        self.assertEqual(event.after_data["document_id"], self.active_document.pk)
-        self.assertEqual(event.after_data["document_code"], self.active_document.code)
-        self.assertEqual(event.after_data["document_title"], self.active_document.title)
-        self.assertEqual(event.after_data["document_status"], self.active_document.status)
-        self.assertEqual(event.after_data["document_version_id"], self.active_version.pk)
-        self.assertEqual(event.after_data["version_number"], self.active_version.version_number)
-        self.assertEqual(event.after_data["version_status"], self.active_version.status)
-        self.assertEqual(event.after_data["document_file_id"], self.active_file.pk)
-        self.assertEqual(event.after_data["original_filename"], self.active_file.original_filename)
-        self.assertEqual(event.after_data["content_type"], self.active_file.content_type)
-        self.assertEqual(event.after_data["size_bytes"], self.active_file.size_bytes)
-        self.assertEqual(event.after_data["file_hash"], self.active_file.file_hash)
+        self.assertEqual(event.after_data["document_id"], document.pk)
+        self.assertEqual(event.after_data["document_code"], document.code)
+        self.assertEqual(event.after_data["document_title"], document.title)
+        self.assertEqual(event.after_data["document_status"], document.status)
+        self.assertEqual(event.after_data["document_version_id"], document_version.pk)
+        self.assertEqual(event.after_data["version_number"], document_version.version_number)
+        self.assertEqual(event.after_data["version_status"], document_version.status)
+        self.assertEqual(event.after_data["document_file_id"], document_file.pk)
+        self.assertEqual(event.after_data["original_filename"], document_file.original_filename)
+        self.assertEqual(event.after_data["content_type"], document_file.content_type)
+        self.assertEqual(event.after_data["size_bytes"], document_file.size_bytes)
+        self.assertEqual(event.after_data["file_hash"], document_file.file_hash)
 
     def setUp(self):
         self.document_type = DocumentType.objects.create(code="FOR", name="Formato")
@@ -327,6 +339,8 @@ class DocumentViewsTests(TestCase):
         self.assertContains(response, "print-restriction-message")
         self.assertNotContains(response, f'href="{file_view_url}', html=False)
         self.assertNotContains(response, " download", html=False)
+        self.assertNotContains(response, "allow-downloads")
+        self.assertNotContains(response, "Descargar")
         self.assertNotContains(response, "Imprimir")
         self.assertNotContains(response, "window.print")
         self.assertNotContains(response, self.active_file.file.url)
@@ -406,6 +420,43 @@ class DocumentViewsTests(TestCase):
         self.assertNotContains(response, "<iframe", html=False, status_code=404)
         self.assertEqual(AuditEvent.objects.count(), 0)
 
+    def test_controlled_viewer_returns_404_for_missing_document_or_version(self):
+        self.client.force_login(self.reader)
+        missing_cases = (
+            (
+                999999,
+                self.active_version.pk,
+                self.active_file.pk,
+                "missing document",
+            ),
+            (
+                self.active_document.pk,
+                999999,
+                self.active_file.pk,
+                "missing version",
+            ),
+        )
+
+        for document_id, version_id, file_id, label in missing_cases:
+            with self.subTest(label=label):
+                AuditEvent.objects.all().delete()
+
+                response = self.client.get(
+                    reverse(
+                        "app:documents:file_viewer",
+                        args=[document_id, version_id, file_id],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 404)
+                self.assertContains(
+                    response,
+                    "El documento, version o archivo solicitado no existe",
+                    status_code=404,
+                )
+                self.assertNotContains(response, "<iframe", html=False, status_code=404)
+                self.assertEqual(AuditEvent.objects.count(), 0)
+
     def test_controlled_viewer_returns_404_message_for_missing_physical_file(self):
         self.active_file.file.storage.delete(self.active_file.file.name)
         self.client.force_login(self.oym_admin)
@@ -436,6 +487,74 @@ class DocumentViewsTests(TestCase):
             description="Document viewer access failed because the file is unavailable.",
         )
 
+    def test_inactive_document_file_is_not_rendered_or_delivered(self):
+        self.active_file.is_active = False
+        self.active_file.save(update_fields=["is_active"])
+        self.client.force_login(self.oym_admin)
+
+        viewer_response = self.client.get(
+            reverse(
+                "app:documents:file_viewer",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+        file_response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    self.active_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(viewer_response.status_code, 404)
+        self.assertEqual(file_response.status_code, 404)
+        self.assertNotContains(viewer_response, "<iframe", html=False, status_code=404)
+        self.assertEqual(AuditEvent.objects.count(), 0)
+
+    def test_non_pdf_document_file_is_denied_and_audited(self):
+        text_file = DocumentFile.objects.create(
+            document_version=self.active_version,
+            file=SimpleUploadedFile(
+                "for-oym-001-v01.txt",
+                b"controlled text file",
+                content_type="text/plain",
+            ),
+            original_filename="for-oym-001-v01.txt",
+            content_type="text/plain",
+            size_bytes=64,
+            file_hash="hash-txt",
+            uploaded_by=self.oym_admin,
+        )
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse(
+                "app:documents:file_view",
+                args=[
+                    self.active_document.pk,
+                    self.active_version.pk,
+                    text_file.pk,
+                ],
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+        event = AuditEvent.objects.get()
+        self.assert_document_access_event(
+            event,
+            user=self.oym_admin,
+            result=AuditResult.DENIED,
+            description="Document viewer access denied.",
+            document_file=text_file,
+        )
+
     def test_controlled_file_view_records_failure_when_physical_file_is_missing(self):
         self.active_file.file.storage.delete(self.active_file.file.name)
         self.client.force_login(self.oym_admin)
@@ -459,6 +578,37 @@ class DocumentViewsTests(TestCase):
             result=AuditResult.FAILURE,
             description="Document viewer access failed because the file is unavailable.",
         )
+
+    def test_controlled_file_view_returns_404_for_missing_document_or_version(self):
+        self.client.force_login(self.reader)
+        missing_cases = (
+            (
+                999999,
+                self.active_version.pk,
+                self.active_file.pk,
+                "missing document",
+            ),
+            (
+                self.active_document.pk,
+                999999,
+                self.active_file.pk,
+                "missing version",
+            ),
+        )
+
+        for document_id, version_id, file_id, label in missing_cases:
+            with self.subTest(label=label):
+                AuditEvent.objects.all().delete()
+
+                response = self.client.get(
+                    reverse(
+                        "app:documents:file_view",
+                        args=[document_id, version_id, file_id],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 404)
+                self.assertEqual(AuditEvent.objects.count(), 0)
 
     def test_document_detail_links_to_viewer_when_user_can_view_file(self):
         ControlledCopy.objects.create(

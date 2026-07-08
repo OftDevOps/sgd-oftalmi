@@ -337,6 +337,8 @@ F3-P07 reduce la exposicion de impresion, sin prometer bloqueo absoluto. La pagi
 
 F3-P08 agrega marca de agua visual en el template del visor documental. La marca identifica usuario autenticado, unidad cuando aplica, documento, version y fecha/hora de visualizacion. Este control es disuasivo y aporta evidencia visual, pero no modifica el PDF original, no genera copias fisicas ni impide capturas, fotografias externas o herramientas fuera del navegador. Una marca de agua persistente dentro del PDF queda fuera de esta etapa y requeriria evaluacion tecnica posterior.
 
+F3-P09 endurece la cobertura automatizada de seguridad del visor. Las pruebas validan autenticacion, permisos, rutas inexistentes, archivos inactivos o no soportados, ausencia de rutas fisicas, headers de seguridad, controles visuales de descarga/impresion, marca de agua y auditoria `success`, `denied` y `failure`. No se introducen modelos, migraciones, PDF.js ni nuevas reglas funcionales.
+
 ---
 
 ## 9. Impacto DevOps
