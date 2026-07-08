@@ -171,6 +171,7 @@ F3-P07  -> Restricción de impresión según viabilidad técnica
 F3-P08  -> Marca de agua o identificación de usuario
 F3-P09  -> Pruebas de seguridad del visor
 F3-P10  -> Documentación de limitaciones reales del visor
+F4-P01  -> Definición técnica y funcional de reportes y Libro Maestro
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1410,14 +1411,50 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 
 ### Fase 4 - Reportes y Libro Maestro
 
-Objetivo futuro:
+Objetivo:
 
-* Reportes Excel.
-* Libro Maestro documental.
-* Reporte mensual.
-* Reportes de implementación.
-* Reportes de copias controladas.
-* Reportes de auditoría.
+Construir reportes operativos y el Libro Maestro de Control Documental para Organización y Métodos, respetando permisos, trazabilidad y exportación controlada.
+
+Puntos propuestos:
+
+```text
+F4-P01 -> Definición técnica y funcional de reportes y Libro Maestro
+F4-P02 -> Selectors base de reportes
+F4-P03 -> Vista base de módulo de reportes
+F4-P04 -> Libro Maestro en pantalla
+F4-P05 -> Reportes documentales por estado y vigencia
+F4-P06 -> Reportes de solicitudes documentales
+F4-P07 -> Reportes de copias controladas
+F4-P08 -> Reportes de implementación
+F4-P09 -> Exportación CSV/Excel base
+F4-P10 -> Auditoría de consulta/exportación de reportes
+F4-P11 -> Pruebas y cierre documental de Fase 4
+```
+
+#### F4-P01 - Definición técnica y funcional de reportes y Libro Maestro
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Inicio formal de Fase 4.
+* Definición del objetivo funcional y técnico de reportes y Libro Maestro.
+* Alcance del Libro Maestro documental.
+* Reportes incluidos en el MVP según reglas de negocio de OyM.
+* Filtros esperados por tipo documental, unidad, estado, vigencia y fechas.
+* Fuentes de datos existentes para reportes.
+* Permisos por rol, manteniendo reportes exclusivos para OyM.
+* Decisión de exportación progresiva: CSV como salida técnica simple inicial y Excel como objetivo MVP con dependencia justificada.
+* Auditoría esperada con `AuditAction.REPORT_GENERATED`.
+* Riesgos, límites y puntos F4-P01 a F4-P11 documentados.
+* Sin código nuevo, templates, vistas, URLs, modelos ni migraciones.
+
+**Evidencia:**
+
+```text
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
 
 ---
 

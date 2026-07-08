@@ -343,7 +343,25 @@ F3-P10 cierra documentalmente la Fase 3 con las limitaciones reales del visor. E
 
 ---
 
-## 9. Impacto DevOps
+## 9. Reportes y Libro Maestro
+
+La definicion tecnica inicial de Fase 4 se registra en:
+
+```text
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+```
+
+F4-P01 define que los reportes y el Libro Maestro son funcionalidades de uso exclusivo de Organizacion y Metodos. La capa de reportes debe reutilizar modelos, selectors, servicios y permisos existentes, manteniendo consultas de solo lectura y evitando exponer informacion a usuarios lectores, unidades ejecutoras o Sistemas sin autorizacion funcional.
+
+El Libro Maestro debe construirse inicialmente desde `Document`, `DocumentVersion`, `DocumentFile`, `DocumentType` y `OrganizationalUnit`. Los reportes del MVP tambien pueden usar `DocumentRequest`, `ControlledCopy`, `ImplementationRecord`, `AuditEvent` y `User` como fuentes, segun el reporte.
+
+Los filtros esperados son tipo documental, unidad ejecutora, estado, vigencia, fecha de corte y rangos de fechas. La exportacion debe ser progresiva: CSV como salida tecnica simple inicial y Excel como objetivo del MVP cuando se agregue una dependencia justificada. Toda consulta/exportacion relevante debe auditarse con `AuditAction.REPORT_GENERATED`.
+
+F4-P01 no implementa vistas, templates, URLs, modelos, migraciones, exportadores ni APIs.
+
+---
+
+## 10. Impacto DevOps
 
 La decision hibrida mantiene el despliegue inicial simple:
 
