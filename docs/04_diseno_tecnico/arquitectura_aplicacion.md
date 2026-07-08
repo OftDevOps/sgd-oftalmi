@@ -357,6 +357,8 @@ El Libro Maestro debe construirse inicialmente desde `Document`, `DocumentVersio
 
 Los filtros esperados son tipo documental, unidad ejecutora, estado, vigencia, fecha de corte y rangos de fechas. La exportacion debe ser progresiva: CSV como salida tecnica simple inicial y Excel como objetivo del MVP cuando se agregue una dependencia justificada. Toda consulta/exportacion relevante debe auditarse con `AuditAction.REPORT_GENERATED`.
 
+F4-P02 materializa la primera capa reutilizable de esa arquitectura en `apps.reports.selectors`, centralizando consultas para Libro Maestro, reporte mensual, copias controladas e implementacion. Estos selectors deben mantenerse sin dependencia de `request` y sin logica de presentacion para que las vistas y exportadores futuros consuman el mismo criterio de datos.
+
 F4-P01 no implementa vistas, templates, URLs, modelos, migraciones, exportadores ni APIs.
 
 ---

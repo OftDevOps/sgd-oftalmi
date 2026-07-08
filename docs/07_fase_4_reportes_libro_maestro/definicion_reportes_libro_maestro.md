@@ -235,3 +235,26 @@ F4-P01 se considera cerrado cuando:
 * Queda claro que no se implemento codigo.
 * Queda claro que no se crearon modelos ni migraciones.
 * Quedan documentados reportes MVP, filtros, fuentes, permisos, exportaciones, auditoria, riesgos y puntos F4-P01 a F4-P11.
+
+## 14. Selectores base de reportes
+
+F4-P02 implementa la capa base de selectors para reportes documentales y Libro Maestro.
+
+Selectors definidos:
+
+* `get_master_book_queryset`
+* `get_monthly_document_report_queryset`
+* `get_controlled_copies_report_queryset`
+* `get_implementation_records_report_queryset`
+
+Propiedades esperadas:
+
+* Reutilizan modelos existentes.
+* Trabajan con `QuerySet` de solo lectura.
+* Centralizan filtros por tipo documental, unidad organizativa, estado, vigencia, rango de fechas, código documental, responsable y versión.
+* Usan `select_related` para reducir consultas adicionales cuando aplica.
+* No dependen de `request` HTTP.
+* No incluyen lógica de exportacion ni de presentacion.
+* Sirven como base para reportes, Libro Maestro y futuras vistas de Fase 4.
+
+F4-P02 no crea modelos ni migraciones. Cualquier selector nuevo debe documentar de forma explicita su fuente de datos y su criterio de filtro.

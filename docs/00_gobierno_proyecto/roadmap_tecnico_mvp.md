@@ -1456,6 +1456,29 @@ docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```
 
+#### F4-P02 - Selectors base para reportes documentales
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Capa base de selectors centralizada para reportes y Libro Maestro.
+* Selectors para Libro Maestro documental, reporte mensual, copias controladas e implementacion.
+* Filtros preparativos para tipo documental, unidad organizativa, estado, vigencia, fechas, codigo, responsable y version.
+* Querysets de solo lectura con uso razonable de `select_related`.
+* Sin dependencia de `request`, sin exportacion y sin logica de presentacion.
+* Pruebas unitarias para filtros base, relaciones esperadas y rango de fechas.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/selectors.py
+backend/apps/reports/tests/test_selectors.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
 ---
 
 ### Fase 5 - Notificaciones
