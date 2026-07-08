@@ -168,6 +168,7 @@ F3-P04  -> Vista de consulta documental controlada
 F3-P05  -> Registro de acceso a documentos
 F3-P06  -> Restricción de descarga según viabilidad técnica
 F3-P07  -> Restricción de impresión según viabilidad técnica
+F3-P08  -> Marca de agua o identificación de usuario
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1323,6 +1324,30 @@ docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
 * Mantenimiento de trazabilidad documental existente.
 * Pruebas automatizadas sobre ausencia de controles de impresion y presencia de CSS print/mensaje.
 * Sin modelos nuevos, migraciones, PDF.js custom, marcas de agua ni bloqueo avanzado de impresion.
+
+**Evidencia:**
+
+```text
+backend/templates/documents/document_viewer.html
+backend/static/css/app.css
+backend/apps/documents/tests/test_views.py
+docs/06_fase_3_visor_documental/definicion_tecnica_visor_documental.md
+```
+
+#### F3-P08 - Marca de agua o identificación de usuario
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Marca de agua visual en la pagina del visor documental.
+* Identificacion visible de usuario autenticado, unidad cuando aplica, documento, version y fecha/hora.
+* Marca de agua superpuesta al area del visor sin alterar la entrega PDF controlada.
+* No se modifica el archivo PDF original.
+* No se generan copias fisicas ni archivos derivados del PDF.
+* No se agregan modelos, migraciones, PDF.js custom ni librerias externas.
+* Pruebas automatizadas de presencia de marca de agua y estilos de overlay.
+* Documentacion explicita de que la marca de agua es control disuasivo y evidencia visual, no proteccion absoluta frente a captura, fotografia externa o herramientas del sistema operativo.
 
 **Evidencia:**
 

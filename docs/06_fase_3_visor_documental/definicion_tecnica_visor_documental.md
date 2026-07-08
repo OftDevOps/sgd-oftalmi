@@ -331,6 +331,32 @@ Limitaciones:
 * El sistema operativo, extensiones o herramientas externas pueden imprimir o capturar contenido fuera del control de la aplicacion.
 * Controles mas fuertes requieren evaluar PDF.js custom, watermarking y politicas operativas; aun asi, no eliminarian capturas de pantalla o fotografia externa.
 
+### 9.7 Marca de agua o identificacion de usuario
+
+F3-P08 implementa una marca de agua visual en la pagina del visor documental. El control busca aumentar trazabilidad disuasiva y evidencia visual cuando un documento controlado es consultado.
+
+Datos incluidos:
+
+* Usuario autenticado.
+* Unidad organizativa del usuario cuando exista.
+* Codigo documental.
+* Version documental.
+* Fecha/hora de visualizacion en la pagina.
+
+Controles aplicados:
+
+* La marca de agua se renderiza en el template del visor, superpuesta al area del iframe.
+* La entrega PDF controlada existente no cambia.
+* El archivo PDF original no se modifica.
+* No se generan copias fisicas ni archivos derivados.
+* No se agregan modelos, migraciones, PDF.js custom ni librerias externas.
+
+Limitaciones:
+
+* La marca de agua visual no impide capturas de pantalla, fotografia externa ni herramientas del sistema operativo.
+* La marca de agua no queda persistida dentro del PDF descargado o renderizado por el plugin nativo.
+* Una marca persistente dentro del PDF requeriria una fase posterior con procesamiento controlado de archivos, evaluacion de rendimiento, almacenamiento temporal o streaming dinamico, y reglas operativas aprobadas por Organizacion y Metodos.
+
 ## 10. Riesgos tecnicos reales
 
 | Riesgo | Descripcion |

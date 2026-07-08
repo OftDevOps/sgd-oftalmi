@@ -42,6 +42,17 @@
   <section class="page-section">
     {% if can_view_file %}
       <div class="viewer-panel" data-controlled-viewer>
+        <section class="viewer-watermark" aria-hidden="true">
+          <div class="viewer-watermark-content">
+            <span>Usuario: {{ request.user.email }}</span>
+            {% if request.user.organizational_unit %}
+              <span>Unidad: {{ request.user.organizational_unit.name }}</span>
+            {% endif %}
+            <span>Documento: {{ document.code }}</span>
+            <span>Version: {{ document_version.version_number }}</span>
+            <span>Fecha/hora: {% now "Y-m-d H:i" %}</span>
+          </div>
+        </section>
         <iframe
           class="document-viewer-frame"
           src="{{ viewer_file_url }}"

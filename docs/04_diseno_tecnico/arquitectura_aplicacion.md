@@ -335,6 +335,8 @@ F3-P06 reduce la exposicion de descarga, sin prometer bloqueo absoluto. La entre
 
 F3-P07 reduce la exposicion de impresion, sin prometer bloqueo absoluto. La pagina del visor mantiene controles JS razonables para desalentar `Ctrl/Cmd + P`, no ofrece botones de impresion, y usa CSS `@media print` para ocultar el iframe y mostrar un mensaje de restriccion al imprimir la pagina. El visor nativo del navegador o herramientas externas pueden seguir ofreciendo opciones de impresion fuera del control de la aplicacion.
 
+F3-P08 agrega marca de agua visual en el template del visor documental. La marca identifica usuario autenticado, unidad cuando aplica, documento, version y fecha/hora de visualizacion. Este control es disuasivo y aporta evidencia visual, pero no modifica el PDF original, no genera copias fisicas ni impide capturas, fotografias externas o herramientas fuera del navegador. Una marca de agua persistente dentro del PDF queda fuera de esta etapa y requeriria evaluacion tecnica posterior.
+
 ---
 
 ## 9. Impacto DevOps

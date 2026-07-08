@@ -310,6 +310,16 @@ class DocumentViewsTests(TestCase):
         self.assertContains(response, "contextmenu")
         self.assertContains(response, "event.preventDefault()")
         self.assertContains(response, '["s", "p", "c"]')
+        self.assertContains(response, "viewer-watermark")
+        self.assertContains(response, "Usuario:")
+        self.assertContains(response, self.reader.email)
+        self.assertContains(response, "Unidad:")
+        self.assertContains(response, self.production_unit.name)
+        self.assertContains(response, "Documento:")
+        self.assertContains(response, self.active_document.code)
+        self.assertContains(response, "Version:")
+        self.assertContains(response, self.active_version.version_number)
+        self.assertContains(response, "Fecha/hora:")
         self.assertContains(
             response,
             "La impresion de documentos controlados no esta permitida desde el visor.",
@@ -320,6 +330,17 @@ class DocumentViewsTests(TestCase):
         self.assertNotContains(response, "Imprimir")
         self.assertNotContains(response, "window.print")
         self.assertNotContains(response, self.active_file.file.url)
+
+    def test_viewer_watermark_styles_overlay_document_frame(self):
+        css_path = Path(settings.BASE_DIR) / "static" / "css" / "app.css"
+        css = css_path.read_text(encoding="utf-8")
+
+        self.assertIn(".viewer-watermark", css)
+        self.assertIn("position: absolute", css)
+        self.assertIn("pointer-events: none", css)
+        self.assertIn("z-index: 2", css)
+        self.assertIn(".viewer-watermark-content", css)
+        self.assertIn("transform: rotate(-24deg)", css)
 
     def test_viewer_print_styles_hide_document_frame(self):
         css_path = Path(settings.BASE_DIR) / "static" / "css" / "app.css"
