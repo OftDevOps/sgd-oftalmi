@@ -381,7 +381,24 @@ F4-P11 cierra documentalmente Fase 4 en `docs/07_fase_4_reportes_libro_maestro/c
 
 ---
 
-## 10. Impacto DevOps
+## 10. Preparacion de piloto controlado
+
+La preparacion tecnica del piloto controlado se registra en:
+
+```text
+docs/08_piloto_controlado/plan_piloto_controlado.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+```
+
+PILOTO-P01 no modifica la arquitectura en codigo. Define las condiciones para ejecutar una prueba piloto posterior con usuarios demo, datos no productivos, respaldo previo, restauracion verificable y guion funcional de validacion con Organizacion y Metodos.
+
+El piloto preparado debe validar autenticacion, permisos, visor documental, auditoria, reportes, exportaciones CSV y trazabilidad sin iniciar operacion productiva. La preparacion no crea usuarios reales, no carga datos productivos, no crea modelos, no crea migraciones, no cambia vistas, no agrega URLs y no modifica Docker, settings ni despliegue.
+
+El pase de piloto a despliegue interno requiere aprobacion funcional de Organizacion y Metodos y validacion tecnica de Sistemas sobre operacion, respaldo, restauracion, monitoreo minimo y soporte.
+
+---
+
+## 11. Impacto DevOps
 
 La decision hibrida mantiene el despliegue inicial simple:
 

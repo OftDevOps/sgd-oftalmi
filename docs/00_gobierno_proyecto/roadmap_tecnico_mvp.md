@@ -182,12 +182,13 @@ F4-P08  -> Exportación controlada CSV de reportes
 F4-P09  -> Permisos y auditoría de reportes
 F4-P10  -> Pruebas integradas de reportes
 F4-P11  -> Documentación técnica de cierre de Fase 4
+PILOTO-P01 -> Definición del plan técnico de piloto controlado
 ```
 
-Último commit técnico conocido en `develop`:
+Último commit conocido en `develop`:
 
 ```text
-e81ca6b feat: add controlled csv report exports
+8af3fa8 docs: close phase 4 reports documentation
 ```
 
 Estado de ramas conocido:
@@ -1749,6 +1750,48 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 
 ---
 
+### Bloque piloto controlado - Preparacion tecnica
+
+Objetivo:
+
+Preparar un piloto tecnico controlado del SGD-OFTALMI sin iniciar todavia la prueba piloto, sin cargar datos productivos y sin modificar la rama estable `main`.
+
+Puntos propuestos:
+
+```text
+PILOTO-P01 -> Definición del plan técnico de piloto controlado
+```
+
+#### PILOTO-P01 - Definición del plan técnico de piloto controlado
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Documentacion base para preparar un piloto tecnico controlado.
+* Definicion de objetivo, alcance, exclusiones y roles participantes.
+* Definicion de usuarios demo requeridos, sin crearlos en este punto.
+* Definicion de datos documentales demo requeridos, sin cargar datos productivos.
+* Checklist tecnico previo.
+* Checklist funcional de validacion con Organizacion y Metodos.
+* Validaciones esperadas de seguridad, visor documental, reportes y auditoria.
+* Procedimiento base de respaldo y restauracion.
+* Criterios de aceptacion.
+* Criterios de rechazo o bloqueo.
+* Riesgos y plan de cierre del piloto.
+* Recomendacion para pasar de piloto a despliegue interno.
+* Confirmacion de que no se inicio piloto, no se creo codigo funcional, no se crearon modelos y no se crearon migraciones.
+
+**Evidencia:**
+
+```text
+docs/08_piloto_controlado/plan_piloto_controlado.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+---
+
 ### Fase 5 - Notificaciones
 
 Objetivo futuro:
@@ -1793,8 +1836,11 @@ Resumen del estado al cierre de este documento:
 ```text
 Puntos principales de la primera fase: 25
 Punto documental intercalado: 19B
-Puntos completados: 01 al 22
-Puntos pendientes: 23, 24 y 25
+Fase 1: cerrada
+Fase 2: cerrada
+Fase 3: cerrada
+Fase 4: cerrada
+Preparacion piloto controlado: PILOTO-P01 documentado
 Rama activa de trabajo: develop
 Rama estable: main
 ```
