@@ -2,9 +2,11 @@ from calendar import monthrange
 from collections import Counter
 from datetime import date
 
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from django.views.generic import ListView
 
+from apps.audit.models import AuditResult
 from apps.implementation_records.models import ImplementationRecordStatus
 from config.access import ModuleAccessMixin, ModuleIndexView
 
@@ -32,10 +34,54 @@ from .selectors import (
     get_master_book_queryset,
     get_monthly_document_report_queryset,
 )
+from .services import (
+    CONTROLLED_COPIES_REPORT,
+    IMPLEMENTATION_RECORDS_REPORT,
+    MASTER_BOOK_REPORT,
+    MONTHLY_DOCUMENTS_REPORT,
+    REPORT_EXPORTED,
+    REPORT_VIEWED,
+    report_audit_event_create,
+    request_audit_context,
+    request_filter_metadata,
+)
 
 
 class ReportAccessMixin(ModuleAccessMixin):
     permission_check = staticmethod(can_view_reports)
+    report_code = ""
+    report_audit_event = REPORT_VIEWED
+    report_output_format = "html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        permission_check = self.__class__.permission_check
+        if permission_check is not None and not permission_check(request.user):
+            self.audit_report_event(result=AuditResult.DENIED)
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if response.status_code < 400:
+            self.audit_report_event(result=AuditResult.SUCCESS)
+        return response
+
+    def audit_report_event(self, *, result):
+        if not self.report_code:
+            return None
+
+        return report_audit_event_create(
+            audit_context=request_audit_context(self.request),
+            report_code=self.report_code,
+            report_event=self.report_audit_event,
+            result=result,
+            filters=request_filter_metadata(self.request),
+            output_format=self.report_output_format,
+        )
 
 
 class ReportIndexView(ModuleIndexView):
@@ -48,14 +94,18 @@ class ReportIndexView(ModuleIndexView):
 class CsvExportMixin:
     csv_filename_prefix = "reporte"
     csv_headers = ()
+    report_audit_event = REPORT_EXPORTED
+    report_output_format = "csv"
 
     def get(self, request, *args, **kwargs):
         object_list = self.get_report_queryset()
-        return build_csv_response(
+        response = build_csv_response(
             filename=self.get_export_filename(),
             headers=self.csv_headers,
             rows=self.get_export_rows(object_list),
         )
+        self.audit_report_event(result=AuditResult.SUCCESS)
+        return response
 
     def get_export_filename(self):
         report_date = timezone.localdate().strftime("%Y%m%d")
@@ -68,6 +118,7 @@ class CsvExportMixin:
 class MasterBookView(ReportAccessMixin, ListView):
     template_name = "reports/master_book.html"
     context_object_name = "documents"
+    report_code = MASTER_BOOK_REPORT
 
     def get_filter_form(self):
         return MasterBookFilterForm(self.request.GET or None)
@@ -106,6 +157,7 @@ class MasterBookExportView(CsvExportMixin, MasterBookView):
 class MonthlyDocumentReportView(ReportAccessMixin, ListView):
     template_name = "reports/monthly_documents.html"
     context_object_name = "document_versions"
+    report_code = MONTHLY_DOCUMENTS_REPORT
 
     def get_filter_data(self):
         today = timezone.localdate()
@@ -202,6 +254,7 @@ class MonthlyDocumentReportExportView(CsvExportMixin, MonthlyDocumentReportView)
 class ControlledCopiesReportView(ReportAccessMixin, ListView):
     template_name = "reports/controlled_copies.html"
     context_object_name = "controlled_copies"
+    report_code = CONTROLLED_COPIES_REPORT
 
     def get_filter_form(self):
         return ControlledCopiesReportFilterForm(self.request.GET or None)
@@ -260,6 +313,7 @@ class ControlledCopiesReportExportView(CsvExportMixin, ControlledCopiesReportVie
 class ImplementationRecordsReportView(ReportAccessMixin, ListView):
     template_name = "reports/implementation_records.html"
     context_object_name = "implementation_records"
+    report_code = IMPLEMENTATION_RECORDS_REPORT
 
     def get_filter_form(self):
         return ImplementationRecordsReportFilterForm(self.request.GET or None)

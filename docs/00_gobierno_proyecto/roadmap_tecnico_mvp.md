@@ -178,12 +178,14 @@ F4-P04  -> Filtros de Libro Maestro
 F4-P05  -> Reporte mensual documental
 F4-P06  -> Reporte de copias controladas
 F4-P07  -> Reporte de implementación/lectura
+F4-P08  -> Exportación controlada CSV de reportes
+F4-P09  -> Permisos y auditoría de reportes
 ```
 
 Último commit técnico conocido en `develop`:
 
 ```text
-fcf887c docs: close phase 2 access layer documentation
+e81ca6b feat: add controlled csv report exports
 ```
 
 Estado de ramas conocido:
@@ -1432,8 +1434,8 @@ F4-P05 -> Reporte mensual documental
 F4-P06 -> Reporte de copias controladas
 F4-P07 -> Reporte de implementación/lectura
 F4-P08 -> Exportación controlada CSV de reportes
-F4-P09 -> Reportes de solicitudes documentales
-F4-P10 -> Auditoría de consulta/exportación de reportes
+F4-P09 -> Permisos y auditoría de reportes
+F4-P10 -> Reportes de solicitudes documentales
 F4-P11 -> Pruebas y cierre documental de Fase 4
 ```
 
@@ -1641,7 +1643,7 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 * Enlaces de exportacion agregados en las pantallas de reportes.
 * Pruebas de login requerido, acceso denegado, headers, contenido, filtros y ausencia de rutas de archivos.
 * Excel queda pendiente como objetivo MVP con dependencia justificada.
-* Auditoria de exportacion queda pendiente para el punto especifico de auditoria de reportes.
+* Auditoria de consulta/exportacion cubierta posteriormente en F4-P09.
 * Sin modelos nuevos ni migraciones.
 
 **Evidencia:**
@@ -1654,6 +1656,36 @@ backend/templates/reports/master_book.html
 backend/templates/reports/monthly_documents.html
 backend/templates/reports/controlled_copies.html
 backend/templates/reports/implementation_records.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P09 - Permisos y auditoría de reportes
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Permisos de consulta y exportacion reforzados con `can_view_reports`.
+* Acceso a reportes mantenido exclusivamente para roles OyM autorizados.
+* Usuarios no autenticados siguen redirigidos al login.
+* Usuarios autenticados sin permiso reciben 403.
+* Consulta HTML de reportes auditada como evento de reporte.
+* Exportacion CSV de reportes auditada como evento de reporte.
+* Intentos denegados auditados cuando el usuario esta autenticado.
+* Reutilizacion de `AuditEvent` y `AuditAction.REPORT_GENERATED`; no se crearon valores nuevos en enum para evitar migraciones.
+* Metadata textual `REPORT_VIEWED` y `REPORT_EXPORTED` registrada en `after_data.report_event`.
+* Metadata registrada: usuario, reporte, filtros GET, formato, resultado, IP, user agent y fecha/hora automatica.
+* Sin contenido documental, PDFs, adjuntos, rutas `MEDIA_URL` ni archivos en auditoria.
+* Pruebas para auditoria de consulta/exportacion de Libro Maestro, reporte mensual, copias controladas e implementacion/lectura.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/services.py
+backend/apps/reports/views.py
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md

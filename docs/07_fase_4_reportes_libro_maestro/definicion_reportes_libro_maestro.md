@@ -219,8 +219,8 @@ Puntos propuestos para Fase 4:
 | F4-P06 | Reporte de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
 | F4-P07 | Reporte de implementacion/lectura | Pendientes, leidos, aceptados, implementados y vencidos. |
 | F4-P08 | Exportacion controlada CSV de reportes | Exportadores CSV para los reportes base ya implementados. |
-| F4-P09 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
-| F4-P10 | Auditoria de consulta/exportacion de reportes | Registro `REPORT_GENERATED` con metadata de reporte, filtros y formato. |
+| F4-P09 | Permisos y auditoria de reportes | Registro `REPORT_GENERATED` con metadata de consulta/exportacion, filtros y formato. |
+| F4-P10 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P11 | Pruebas y cierre documental de Fase 4 | Pruebas integradas, validacion de permisos/exportacion y cierre tecnico. |
 
 El orden puede ajustarse si OyM prioriza un reporte especifico, pero cualquier cambio debe documentarse.
@@ -480,5 +480,63 @@ Limitaciones registradas:
 
 * Excel `.xlsx` queda pendiente como objetivo MVP con dependencia justificada.
 * No se agrego dependencia nueva para F4-P08.
-* La auditoria especifica de exportacion queda pendiente para el punto de auditoria de reportes.
+* La auditoria especifica de consulta/exportacion se implementa en F4-P09.
+* No se crean modelos ni migraciones.
+
+## 21. Permisos y auditoria de reportes
+
+F4-P09 refuerza permisos y registra auditoria de consulta/exportacion de los reportes base de Fase 4.
+
+Alcance implementado:
+
+* Permiso unico de consulta/exportacion mediante `can_view_reports`.
+* Acceso mantenido para OyM Administrador Funcional y Analista OyM.
+* Usuarios no autenticados mantienen redireccion al login.
+* Usuarios autenticados sin permiso mantienen respuesta 403.
+* Consulta HTML auditada para:
+  * Libro Maestro.
+  * Reporte mensual documental.
+  * Reporte de copias controladas.
+  * Reporte de implementacion/lectura.
+* Exportacion CSV auditada para esos mismos reportes.
+* Intentos denegados auditados cuando existe usuario autenticado.
+
+Decision tecnica de auditoria:
+
+* Se reutiliza `AuditEvent`.
+* Se reutiliza `AuditAction.REPORT_GENERATED`.
+* No se crean nuevos valores `REPORT_VIEWED` ni `REPORT_EXPORTED` en el enum para evitar migraciones.
+* La diferencia entre consulta y exportacion se registra en `after_data.report_event`.
+
+Metadata registrada:
+
+| Campo | Fuente |
+| --- | --- |
+| Usuario | `request.user` |
+| Accion base | `AuditAction.REPORT_GENERATED` |
+| Modulo | `reports` |
+| Entidad | `Report` |
+| Identificador | Codigo interno del reporte |
+| Resultado | `success` o `denied` |
+| Evento de reporte | `REPORT_VIEWED` o `REPORT_EXPORTED` |
+| Filtros | Parametros GET recibidos |
+| Formato | `html` o `csv` |
+| IP | Metadata del request si esta disponible |
+| User agent | Metadata del request si esta disponible |
+| Fecha/hora | `AuditEvent.created_at` |
+
+Controles aplicados:
+
+* La auditoria no registra contenido documental.
+* La auditoria no registra PDFs, adjuntos ni rutas de archivos.
+* La auditoria no incluye rutas `MEDIA_URL`.
+* Cada request exitoso de vista o exportacion genera un solo evento.
+* Las exportaciones siguen usando la misma fuente de datos de pantalla.
+
+Limitaciones registradas:
+
+* No se implementa Excel `.xlsx`.
+* No se crean modelos especializados como `ReportExport` o `ReportSnapshot`.
+* No se implementan reportes nuevos.
+* No se modifica visor documental, documentos, copias controladas ni registros de implementacion.
 * No se crean modelos ni migraciones.

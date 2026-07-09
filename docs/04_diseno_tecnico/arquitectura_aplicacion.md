@@ -371,7 +371,9 @@ F4-P07 agrega la vista `/app/reports/implementation-records/` para el reporte de
 
 F4-P08 agrega exportacion CSV controlada para Libro Maestro, reporte mensual documental, copias controladas e implementacion/lectura. Las rutas `/app/reports/master-book/export.csv`, `/app/reports/monthly-documents/export.csv`, `/app/reports/controlled-copies/export.csv` y `/app/reports/implementation-records/export.csv` reutilizan los mismos formularios GET, permisos `can_view_reports` y selectors de las vistas. La respuesta CSV usa `Content-Disposition: attachment` solo para el archivo generado, `text/csv; charset=utf-8`, BOM UTF-8 y no incluye PDFs, adjuntos, rutas `MEDIA_URL` ni enlaces a archivos documentales.
 
-F4-P08 no implementa Excel `.xlsx`, modelos, migraciones, APIs ni auditoria especifica de exportacion. Excel queda como objetivo MVP con dependencia justificada y la auditoria de exportacion queda pendiente para el punto especifico de auditoria de reportes.
+F4-P08 no implementa Excel `.xlsx`, modelos, migraciones ni APIs. Excel queda como objetivo MVP con dependencia justificada.
+
+F4-P09 refuerza permisos y auditoria de reportes sin crear modelos ni migraciones. Las vistas HTML y exportaciones CSV siguen usando `can_view_reports`; usuarios no autenticados redirigen al login y usuarios autenticados sin permiso reciben 403. La auditoria reutiliza `AuditEvent` y `AuditAction.REPORT_GENERATED`; los eventos especificos `REPORT_VIEWED` y `REPORT_EXPORTED` se guardan como metadata textual en `after_data.report_event` para evitar cambiar enums y generar migraciones. Cada evento registra usuario, reporte, filtros GET, formato, resultado, IP y user agent, sin contenido documental, PDFs, adjuntos ni rutas `MEDIA_URL`.
 
 ---
 

@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import UserRole
+from apps.audit.models import AuditAction, AuditEvent, AuditResult
 from apps.controlled_copies.models import ControlledCopy, ControlledCopyStatus
 from apps.document_types.models import DocumentType
 from apps.documents.models import Document, DocumentStatus, DocumentVersion
@@ -193,6 +194,32 @@ class MasterBookViewTests(TestCase):
 
     def csv_content(self, response):
         return response.content.decode("utf-8-sig")
+
+    def assert_single_report_audit_event(
+        self,
+        *,
+        user,
+        report_code,
+        report_event,
+        result=AuditResult.SUCCESS,
+        output_format="html",
+        filters=None,
+    ):
+        event = AuditEvent.objects.get()
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.action, AuditAction.REPORT_GENERATED)
+        self.assertEqual(event.module, "reports")
+        self.assertEqual(event.entity_type, "Report")
+        self.assertEqual(event.entity_id, report_code)
+        self.assertEqual(event.result, result)
+        self.assertEqual(event.after_data["report_code"], report_code)
+        self.assertEqual(event.after_data["report_event"], report_event)
+        self.assertEqual(event.after_data["format"], output_format)
+
+        for key, value in (filters or {}).items():
+            self.assertEqual(event.after_data["filters"].get(key), str(value))
+
+        return event
 
     def test_master_book_requires_login(self):
         response = self.client.get(reverse("app:reports:master_book"))
@@ -1169,3 +1196,136 @@ class MasterBookViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, "Exportar CSV")
                 self.assertNotContains(response, "/media/")
+
+    def test_authorized_report_views_create_success_audit_events(self):
+        report_routes = (
+            (
+                "app:reports:master_book",
+                "master_book",
+                {"document_type": self.document_type.pk},
+            ),
+            (
+                "app:reports:monthly_documents",
+                "monthly_documents",
+                {"month": "7", "year": "2026"},
+            ),
+            (
+                "app:reports:controlled_copies",
+                "controlled_copies",
+                {"status": ControlledCopyStatus.ACTIVE},
+            ),
+            (
+                "app:reports:implementation_records",
+                "implementation_records",
+                {"code": "PRO-ADM-001"},
+            ),
+        )
+
+        for route, report_code, filters in report_routes:
+            with self.subTest(route=route):
+                AuditEvent.objects.all().delete()
+                self.client.logout()
+                self.client.force_login(self.oym_admin)
+
+                response = self.client.get(
+                    reverse(route),
+                    filters,
+                    REMOTE_ADDR="10.0.0.11",
+                    HTTP_USER_AGENT="report-view-test",
+                )
+
+                self.assertEqual(response.status_code, 200)
+                event = self.assert_single_report_audit_event(
+                    user=self.oym_admin,
+                    report_code=report_code,
+                    report_event="REPORT_VIEWED",
+                    filters=filters,
+                )
+                self.assertEqual(event.ip_address, "10.0.0.11")
+                self.assertEqual(event.user_agent, "report-view-test")
+
+    def test_authorized_report_exports_create_success_audit_events(self):
+        export_routes = (
+            (
+                "app:reports:master_book_export",
+                "master_book",
+                {"document_type": self.document_type.pk},
+            ),
+            (
+                "app:reports:monthly_documents_export",
+                "monthly_documents",
+                {"month": "7", "year": "2026"},
+            ),
+            (
+                "app:reports:controlled_copies_export",
+                "controlled_copies",
+                {"status": ControlledCopyStatus.ACTIVE},
+            ),
+            (
+                "app:reports:implementation_records_export",
+                "implementation_records",
+                {"code": "PRO-ADM-001"},
+            ),
+        )
+
+        for route, report_code, filters in export_routes:
+            with self.subTest(route=route):
+                AuditEvent.objects.all().delete()
+                self.client.logout()
+                self.client.force_login(self.oym_admin)
+
+                response = self.client.get(
+                    reverse(route),
+                    filters,
+                    REMOTE_ADDR="10.0.0.12",
+                    HTTP_USER_AGENT="report-export-test",
+                )
+
+                self.assert_csv_export_response(response, "sgd-oftalmi")
+                event = self.assert_single_report_audit_event(
+                    user=self.oym_admin,
+                    report_code=report_code,
+                    report_event="REPORT_EXPORTED",
+                    output_format="csv",
+                    filters=filters,
+                )
+                self.assertEqual(event.ip_address, "10.0.0.12")
+                self.assertEqual(event.user_agent, "report-export-test")
+                self.assertNotIn("/media/", self.csv_content(response))
+
+    def test_disallowed_report_view_and_export_create_denied_audit_events(self):
+        denied_routes = (
+            (
+                "app:reports:master_book",
+                "master_book",
+                "REPORT_VIEWED",
+                "html",
+            ),
+            (
+                "app:reports:master_book_export",
+                "master_book",
+                "REPORT_EXPORTED",
+                "csv",
+            ),
+        )
+
+        for route, report_code, report_event, output_format in denied_routes:
+            with self.subTest(route=route):
+                AuditEvent.objects.all().delete()
+                self.client.logout()
+                self.client.force_login(self.reader)
+
+                response = self.client.get(
+                    reverse(route),
+                    {"status": DocumentStatus.ACTIVE},
+                )
+
+                self.assertEqual(response.status_code, 403)
+                self.assert_single_report_audit_event(
+                    user=self.reader,
+                    report_code=report_code,
+                    report_event=report_event,
+                    result=AuditResult.DENIED,
+                    output_format=output_format,
+                    filters={"status": DocumentStatus.ACTIVE},
+                )
