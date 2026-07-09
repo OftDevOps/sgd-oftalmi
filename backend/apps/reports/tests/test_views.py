@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import UserRole
+from apps.controlled_copies.models import ControlledCopy, ControlledCopyStatus
 from apps.document_types.models import DocumentType
 from apps.documents.models import Document, DocumentStatus, DocumentVersion
 from apps.organizational_units.models import OrganizationalUnit
@@ -134,6 +135,27 @@ class MasterBookViewTests(TestCase):
         )
         Document.objects.filter(pk=self.other_month_document.pk).update(
             current_version_id=self.other_month_version.pk,
+        )
+        self.controlled_copy = ControlledCopy.objects.create(
+            document=self.document,
+            document_version=self.version,
+            copy_number="CC-001",
+            receiver_unit=self.other_owner_unit,
+            receiver_user=self.reader,
+            delivered_at=timezone.make_aware(datetime(2026, 7, 10, 8, 0)),
+            status=ControlledCopyStatus.ACTIVE,
+            created_by=self.oym_admin,
+        )
+        self.retired_controlled_copy = ControlledCopy.objects.create(
+            document=self.other_document,
+            document_version=self.other_version,
+            copy_number="CC-002",
+            receiver_unit=self.owner_unit,
+            receiver_user=self.executing_unit,
+            delivered_at=timezone.make_aware(datetime(2026, 6, 1, 8, 0)),
+            retired_at=timezone.make_aware(datetime(2026, 6, 15, 17, 0)),
+            status=ControlledCopyStatus.RETIRED,
+            created_by=self.oym_admin,
         )
 
     def test_master_book_requires_login(self):
@@ -523,4 +545,219 @@ class MasterBookViewTests(TestCase):
             date_field="published_at__date",
             date_from=date(2026, 7, 1),
             date_to=date(2026, 7, 31),
+        )
+
+    def test_controlled_copies_report_requires_login(self):
+        response = self.client.get(reverse("app:reports:controlled_copies"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response["Location"])
+
+    def test_oym_roles_can_view_controlled_copies_report(self):
+        for user in (self.oym_admin, self.oym_analyst):
+            with self.subTest(user=user.email):
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(reverse("app:reports:controlled_copies"))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, "reports/controlled_copies.html")
+                self.assertContains(response, "Reporte de copias controladas")
+
+    def test_disallowed_roles_cannot_view_controlled_copies_report(self):
+        denied_users = (
+            self.reader,
+            self.executing_unit,
+            self.systems_user,
+            self.auditor,
+        )
+
+        for user in denied_users:
+            with self.subTest(user=user.email):
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(reverse("app:reports:controlled_copies"))
+
+                self.assertEqual(response.status_code, 403)
+
+    def test_controlled_copies_report_renders_rows_and_summary(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(reverse("app:reports:controlled_copies"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertContains(response, self.reader.email)
+        self.assertContains(response, self.executing_unit.email)
+        self.assertEqual(response.context["report_summary"]["total"], 2)
+        self.assertIn(("Active", 1), response.context["report_summary"]["status_totals"])
+        self.assertIn(
+            ("Retired", 1),
+            response.context["report_summary"]["status_totals"],
+        )
+        self.assertNotContains(response, "/media/")
+
+    def test_controlled_copies_report_filters_by_status(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {"status": ControlledCopyStatus.ACTIVE},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertNotContains(response, "PRO-ADM-001")
+
+    def test_controlled_copies_report_filters_by_document_type(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {"document_type": self.other_document_type.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_controlled_copies_report_filters_by_owner_unit(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {"organizational_unit": self.owner_unit.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertNotContains(response, "PRO-ADM-001")
+
+    def test_controlled_copies_report_filters_by_receiver_unit_and_user(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {
+                "receiver_unit": self.owner_unit.pk,
+                "receiver_user": self.executing_unit.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_controlled_copies_report_filters_by_code_and_date_range(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {
+                "code": "FOR-OYM-001",
+                "date_from": "2026-07-01",
+                "date_to": "2026-07-31",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertNotContains(response, "PRO-ADM-001")
+
+    def test_invalid_controlled_copies_filters_do_not_break_view(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {
+                "document_type": "999999",
+                "receiver_user": "invalid",
+                "status": "invalid",
+                "date_from": "not-a-date",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reporte de copias controladas")
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertContains(response, "PRO-ADM-001")
+
+    def test_controlled_copies_selected_filters_are_kept_in_template(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies"),
+            {
+                "document_type": self.document_type.pk,
+                "organizational_unit": self.owner_unit.pk,
+                "receiver_unit": self.other_owner_unit.pk,
+                "receiver_user": self.reader.pk,
+                "status": ControlledCopyStatus.ACTIVE,
+                "code": "FOR-OYM-001",
+                "date_from": "2026-07-01",
+                "date_to": "2026-07-31",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<option value="{self.document_type.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.owner_unit.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.other_owner_unit.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.reader.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(response, '<option value="active" selected>', html=False)
+        self.assertContains(response, 'value="FOR-OYM-001"', html=False)
+        self.assertContains(response, 'value="2026-07-01"', html=False)
+        self.assertContains(response, 'value="2026-07-31"', html=False)
+
+    def test_controlled_copies_report_passes_clean_filters_to_selector(self):
+        self.client.force_login(self.oym_admin)
+
+        with patch(
+            "apps.reports.views.get_controlled_copies_report_queryset",
+            return_value=ControlledCopy.objects.none(),
+        ) as selector:
+            response = self.client.get(
+                reverse("app:reports:controlled_copies"),
+                {
+                    "document_type": self.document_type.pk,
+                    "organizational_unit": self.owner_unit.pk,
+                    "receiver_unit": self.other_owner_unit.pk,
+                    "receiver_user": self.reader.pk,
+                    "status": ControlledCopyStatus.ACTIVE,
+                    "code": "FOR-OYM-001",
+                    "date_from": "2026-07-01",
+                    "date_to": "2026-07-31",
+                },
+            )
+
+        self.assertEqual(response.status_code, 200)
+        selector.assert_called_once_with(
+            document_type=self.document_type,
+            organizational_unit=self.owner_unit,
+            receiver_unit=self.other_owner_unit,
+            receiver_user=self.reader,
+            status=ControlledCopyStatus.ACTIVE,
+            code="FOR-OYM-001",
+            date_from=date(2026, 7, 1),
+            date_to=date(2026, 7, 31),
+            date_field="delivered_at__date",
         )

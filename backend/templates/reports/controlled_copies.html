@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Reportes</p>
+    <h1>Reporte de copias controladas</h1>
+    <p class="lead">Consulta operativa de copias controladas, destinatarios, unidades, estados y fechas relevantes.</p>
+  </header>
+
+  <form class="filter-panel" method="get" aria-label="Filtros de reporte de copias controladas">
+    <div class="filter-grid">
+      <div class="form-row">
+        <label for="{{ filter_form.document_type.id_for_label }}">{{ filter_form.document_type.label }}</label>
+        {{ filter_form.document_type }}
+        {{ filter_form.document_type.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.organizational_unit.id_for_label }}">{{ filter_form.organizational_unit.label }}</label>
+        {{ filter_form.organizational_unit }}
+        {{ filter_form.organizational_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.receiver_unit.id_for_label }}">{{ filter_form.receiver_unit.label }}</label>
+        {{ filter_form.receiver_unit }}
+        {{ filter_form.receiver_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.receiver_user.id_for_label }}">{{ filter_form.receiver_user.label }}</label>
+        {{ filter_form.receiver_user }}
+        {{ filter_form.receiver_user.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
+        {{ filter_form.status }}
+        {{ filter_form.status.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.code.id_for_label }}">{{ filter_form.code.label }}</label>
+        {{ filter_form.code }}
+        {{ filter_form.code.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_from.id_for_label }}">{{ filter_form.date_from.label }}</label>
+        {{ filter_form.date_from }}
+        {{ filter_form.date_from.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_to.id_for_label }}">{{ filter_form.date_to.label }}</label>
+        {{ filter_form.date_to }}
+        {{ filter_form.date_to.errors }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="button" type="submit">Filtrar</button>
+      <a href="{% url 'app:reports:controlled_copies' %}">Limpiar filtros</a>
+    </div>
+  </form>
+
+  <section class="status-panel" aria-label="Resumen de copias controladas">
+    <div class="status-row">
+      <span class="label">Total</span>
+      <span>{{ report_summary.total }}</span>
+    </div>
+  </section>
+
+  <section class="module-grid page-section" aria-label="Totales de copias controladas">
+    <div class="module-card">
+      <h2>Totales por estado</h2>
+      <ul>
+        {% for label, total in report_summary.status_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para los filtros seleccionados.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="module-card">
+      <h2>Totales por unidad destinataria</h2>
+      <ul>
+        {% for label, total in report_summary.receiver_unit_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para los filtros seleccionados.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="table-panel page-section" aria-label="Listado de copias controladas reportadas">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo documental</th>
+          <th>Titulo</th>
+          <th>Tipo documental</th>
+          <th>Unidad responsable</th>
+          <th>Version</th>
+          <th>Destinatario</th>
+          <th>Unidad destinataria</th>
+          <th>Estado</th>
+          <th>Fecha de creacion/asignacion</th>
+          <th>Fecha de devolucion/cierre</th>
+          <th>Ultima actualizacion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for controlled_copy in controlled_copies %}
+          <tr>
+            <td>{{ controlled_copy.document.code }}</td>
+            <td>{{ controlled_copy.document.title }}</td>
+            <td>{{ controlled_copy.document.document_type.code }} - {{ controlled_copy.document.document_type.name }}</td>
+            <td>{{ controlled_copy.document.owner_unit.name }}</td>
+            <td>{{ controlled_copy.document_version.version_number }}</td>
+            <td>{{ controlled_copy.receiver_user.email|default:"-" }}</td>
+            <td>{{ controlled_copy.receiver_unit.name }}</td>
+            <td>{{ controlled_copy.get_status_display }}</td>
+            <td>
+              {% if controlled_copy.delivered_at %}
+                {{ controlled_copy.delivered_at|date:"Y-m-d H:i" }}
+              {% else %}
+                {{ controlled_copy.created_at|date:"Y-m-d H:i" }}
+              {% endif %}
+            </td>
+            <td>{{ controlled_copy.retired_at|date:"Y-m-d H:i"|default:"-" }}</td>
+            <td>{{ controlled_copy.updated_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="11">No hay copias controladas para los filtros seleccionados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

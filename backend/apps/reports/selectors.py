@@ -163,6 +163,9 @@ def get_controlled_copies_report_queryset(
         "document__document_type",
         "document__owner_unit",
         "document_version__created_by",
+        "receiver_unit",
+        "receiver_user",
+        "created_by",
     )
 
     if document_type is not None:

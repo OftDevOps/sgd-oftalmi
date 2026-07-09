@@ -176,6 +176,7 @@ F4-P02  -> Selectors base de reportes
 F4-P03  -> Vista de Libro Maestro documental
 F4-P04  -> Filtros de Libro Maestro
 F4-P05  -> Reporte mensual documental
+F4-P06  -> Reporte de copias controladas
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1427,8 +1428,8 @@ F4-P02 -> Selectors base de reportes
 F4-P03 -> Vista de Libro Maestro documental
 F4-P04 -> Filtros base del Libro Maestro
 F4-P05 -> Reporte mensual documental
-F4-P06 -> Reportes de solicitudes documentales
-F4-P07 -> Reportes de copias controladas
+F4-P06 -> Reporte de copias controladas
+F4-P07 -> Reportes de solicitudes documentales
 F4-P08 -> Reportes de implementación
 F4-P09 -> Exportación CSV/Excel base
 F4-P10 -> Auditoría de consulta/exportación de reportes
@@ -1558,6 +1559,34 @@ backend/apps/reports/forms.py
 backend/apps/reports/views.py
 backend/apps/reports/urls.py
 backend/templates/reports/monthly_documents.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P06 - Reporte de copias controladas
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista base del reporte de copias controladas en `/app/reports/controlled-copies/`.
+* Acceso protegido por login y restringido a OyM mediante `can_view_reports`.
+* Reutilizacion de `get_controlled_copies_report_queryset`.
+* Filtros GET por tipo documental, unidad responsable, unidad destinataria, usuario destinatario, estado de copia, codigo documental y rango de fecha de entrega.
+* Tabla con codigo documental, titulo, tipo documental, unidad responsable, version, destinatario, unidad destinataria, estado, fecha de creacion/asignacion, fecha de devolucion/cierre y ultima actualizacion.
+* Resumen basico con total de copias, totales por estado y totales por unidad destinataria.
+* El rango de fechas usa `ControlledCopy.delivered_at` como fecha operativa real de entrega.
+* Sin exportaciones, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/forms.py
+backend/apps/reports/selectors.py
+backend/apps/reports/views.py
+backend/apps/reports/urls.py
+backend/templates/reports/controlled_copies.html
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md

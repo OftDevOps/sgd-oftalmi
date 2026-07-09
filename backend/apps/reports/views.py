@@ -7,9 +7,17 @@ from django.views.generic import ListView
 
 from config.access import ModuleAccessMixin, ModuleIndexView
 
-from .forms import MasterBookFilterForm, MonthlyDocumentReportFilterForm
+from .forms import (
+    ControlledCopiesReportFilterForm,
+    MasterBookFilterForm,
+    MonthlyDocumentReportFilterForm,
+)
 from .permissions import can_view_reports
-from .selectors import get_master_book_queryset, get_monthly_document_report_queryset
+from .selectors import (
+    get_controlled_copies_report_queryset,
+    get_master_book_queryset,
+    get_monthly_document_report_queryset,
+)
 
 
 class ReportAccessMixin(ModuleAccessMixin):
@@ -128,4 +136,51 @@ class MonthlyDocumentReportView(ReportAccessMixin, ListView):
             f"{self.report_period['year']}-{self.report_period['month']:02d}"
         )
         context["report_summary"] = self.get_summary(document_versions)
+        return context
+
+
+class ControlledCopiesReportView(ReportAccessMixin, ListView):
+    template_name = "reports/controlled_copies.html"
+    context_object_name = "controlled_copies"
+
+    def get_filter_form(self):
+        return ControlledCopiesReportFilterForm(self.request.GET or None)
+
+    def get_queryset(self):
+        self.filter_form = self.get_filter_form()
+        if not self.filter_form.is_valid():
+            return get_controlled_copies_report_queryset()
+
+        filters = {
+            key: value
+            for key, value in self.filter_form.cleaned_data.items()
+            if value not in (None, "")
+        }
+        if "date_from" in filters or "date_to" in filters:
+            filters["date_field"] = "delivered_at__date"
+        return get_controlled_copies_report_queryset(**filters)
+
+    def get_summary(self, controlled_copies):
+        return {
+            "total": len(controlled_copies),
+            "status_totals": sorted(
+                Counter(
+                    controlled_copy.get_status_display()
+                    for controlled_copy in controlled_copies
+                ).items()
+            ),
+            "receiver_unit_totals": sorted(
+                Counter(
+                    controlled_copy.receiver_unit.name
+                    for controlled_copy in controlled_copies
+                ).items()
+            ),
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        controlled_copies = list(context["controlled_copies"])
+        context["controlled_copies"] = controlled_copies
+        context["filter_form"] = getattr(self, "filter_form", self.get_filter_form())
+        context["report_summary"] = self.get_summary(controlled_copies)
         return context

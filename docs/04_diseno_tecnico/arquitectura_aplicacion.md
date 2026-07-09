@@ -365,7 +365,9 @@ F4-P04 agrega filtros GET al Libro Maestro usando un formulario de validacion si
 
 F4-P05 agrega la vista `/app/reports/monthly-documents/` para el reporte mensual documental. La consulta usa `get_monthly_document_report_queryset` y filtra el periodo por `DocumentVersion.published_at__date`, con mes y ano actuales como valor por defecto. La vista permite filtros simples por tipo documental, unidad responsable y estado, y calcula un resumen liviano sobre el resultado filtrado: total, totales por estado y totales por tipo documental. Las versiones sin `published_at` no forman parte del reporte mensual hasta que el flujo funcional publique la version correspondiente.
 
-F4-P05 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
+F4-P06 agrega la vista `/app/reports/controlled-copies/` para el reporte de copias controladas. La consulta usa `get_controlled_copies_report_queryset` y permite filtros simples por tipo documental, unidad responsable, unidad destinataria, usuario destinatario, estado, codigo documental y rango de fecha de entrega mediante `ControlledCopy.delivered_at__date`. La vista calcula resumen liviano de total, estados y unidades destinatarias, sin exponer archivos documentales ni rutas de medios.
+
+F4-P06 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
 
 ---
 

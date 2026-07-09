@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import MasterBookView, MonthlyDocumentReportView, ReportIndexView
+from .views import (
+    ControlledCopiesReportView,
+    MasterBookView,
+    MonthlyDocumentReportView,
+    ReportIndexView,
+)
 
 
 app_name = "reports"
@@ -12,5 +17,10 @@ urlpatterns = [
         "monthly-documents/",
         MonthlyDocumentReportView.as_view(),
         name="monthly_documents",
+    ),
+    path(
+        "controlled-copies/",
+        ControlledCopiesReportView.as_view(),
+        name="controlled_copies",
     ),
 ]

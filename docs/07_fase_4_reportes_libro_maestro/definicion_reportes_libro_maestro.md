@@ -216,8 +216,8 @@ Puntos propuestos para Fase 4:
 | F4-P03 | Vista de Libro Maestro documental | Consulta web base y protegida del inventario documental. |
 | F4-P04 | Filtros base del Libro Maestro | Filtros iniciales por tipo, unidad, estado, vigencia y fechas. |
 | F4-P05 | Reporte mensual documental | Actividad documental publicada por periodo mensual. |
-| F4-P06 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
-| F4-P07 | Reportes de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
+| F4-P06 | Reporte de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
+| F4-P07 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P08 | Reportes de implementacion | Pendientes, leidos, aceptados, implementados y vencidos. |
 | F4-P09 | Exportacion CSV/Excel base | Exportadores controlados, inicialmente CSV y Excel cuando se agregue dependencia justificada. |
 | F4-P10 | Auditoria de consulta/exportacion de reportes | Registro `REPORT_GENERATED` con metadata de reporte, filtros y formato. |
@@ -353,5 +353,43 @@ Limitaciones registradas:
 * El periodo mensual usa `DocumentVersion.published_at__date`.
 * Las versiones sin fecha de publicacion no aparecen en este reporte mensual.
 * No se recalculan estados, vigencias ni vencimientos.
+* No se implementan exportaciones CSV/Excel en este punto.
+* No se crean modelos ni migraciones.
+
+## 18. Reporte de copias controladas
+
+F4-P06 implementa la vista base del reporte de copias controladas.
+
+Alcance implementado:
+
+* Ruta interna `/app/reports/controlled-copies/`.
+* Acceso protegido por login.
+* Acceso funcional restringido a usuarios OyM mediante `can_view_reports`.
+* Filtros GET por tipo documental, unidad responsable, unidad destinataria, usuario destinatario, estado de copia, codigo documental y rango de fecha de entrega.
+* Reutilizacion de `get_controlled_copies_report_queryset`.
+* Resumen basico con total de copias, totales por estado y totales por unidad destinataria.
+* Pruebas de acceso, render, filtros, parametros invalidos y llamada al selector.
+
+Mapeo de campos visibles:
+
+| Columna | Fuente actual |
+| --- | --- |
+| Codigo documental | `ControlledCopy.document.code` |
+| Titulo | `ControlledCopy.document.title` |
+| Tipo documental | `ControlledCopy.document.document_type` |
+| Unidad responsable | `ControlledCopy.document.owner_unit` |
+| Version | `ControlledCopy.document_version.version_number` |
+| Destinatario | `ControlledCopy.receiver_user.email`; si no existe, `-` |
+| Unidad destinataria | `ControlledCopy.receiver_unit.name` |
+| Estado | `ControlledCopy.status` con su display Django |
+| Fecha de creacion/asignacion | `ControlledCopy.delivered_at`; si no existe, `ControlledCopy.created_at` |
+| Fecha de devolucion/cierre | `ControlledCopy.retired_at`; si no existe, `-` |
+| Ultima actualizacion | `ControlledCopy.updated_at` |
+
+Limitaciones registradas:
+
+* El rango de fechas usa `ControlledCopy.delivered_at__date`.
+* Las copias sin fecha de entrega no aparecen cuando se filtra por rango de entrega.
+* No se implementa workflow de entrega, retiro ni cierre.
 * No se implementan exportaciones CSV/Excel en este punto.
 * No se crean modelos ni migraciones.
