@@ -377,6 +377,8 @@ F4-P09 refuerza permisos y auditoria de reportes sin crear modelos ni migracione
 
 F4-P10 consolida pruebas integradas del modulo de reportes. La suite `apps.reports` valida vistas HTML, filtros, exportaciones CSV, permisos por rol, auditoria de consultas/exportaciones y no exposicion de archivos documentales. No agrega modelos, migraciones, reportes nuevos, Excel ni cambios de reglas funcionales.
 
+F4-P11 cierra documentalmente Fase 4 en `docs/07_fase_4_reportes_libro_maestro/cierre_fase_4.md`. El cierre consolida rutas, componentes, permisos, auditoria, validaciones, limitaciones, riesgos residuales y pendientes. No introduce cambios de arquitectura en codigo, modelos, migraciones, vistas, templates, URLs ni piloto tecnico.
+
 ---
 
 ## 10. Impacto DevOps

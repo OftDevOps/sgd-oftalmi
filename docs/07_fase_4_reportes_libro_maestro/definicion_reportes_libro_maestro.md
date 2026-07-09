@@ -580,3 +580,29 @@ Pendientes documentados:
 * Excel `.xlsx` sigue pendiente como objetivo MVP con dependencia justificada.
 * Reportes de solicitudes documentales quedan pendientes para un punto posterior si OyM los prioriza.
 * Cierre documental completo de Fase 4 queda para F4-P11.
+
+## 23. Cierre documental de Fase 4
+
+F4-P11 cierra documentalmente la Fase 4.
+
+Documento de cierre:
+
+```text
+docs/07_fase_4_reportes_libro_maestro/cierre_fase_4.md
+```
+
+El cierre consolida:
+
+* Estado final de Fase 4.
+* Rutas HTML y CSV.
+* Componentes tecnicos implementados.
+* Reportes disponibles.
+* Filtros por reporte.
+* Exportacion CSV controlada.
+* Permisos por rol.
+* Auditoria de consulta/exportacion.
+* Validaciones finales.
+* Limitaciones y riesgos residuales.
+* Pendientes y recomendacion para preparacion piloto posterior.
+
+F4-P11 no crea codigo funcional, modelos, migraciones, vistas, templates, URLs ni reportes nuevos. Tampoco inicia piloto tecnico.

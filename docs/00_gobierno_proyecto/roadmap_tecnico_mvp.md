@@ -180,6 +180,8 @@ F4-P06  -> Reporte de copias controladas
 F4-P07  -> Reporte de implementación/lectura
 F4-P08  -> Exportación controlada CSV de reportes
 F4-P09  -> Permisos y auditoría de reportes
+F4-P10  -> Pruebas integradas de reportes
+F4-P11  -> Documentación técnica de cierre de Fase 4
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1714,6 +1716,33 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 
 ```text
 backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P11 - Documentación técnica de cierre de Fase 4
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Cierre documental formal de Fase 4.
+* Consolidacion de reportes implementados, rutas HTML y rutas CSV.
+* Consolidacion de componentes tecnicos: forms, selectors, views, urls, exporters, services, templates y pruebas.
+* Consolidacion de filtros por reporte.
+* Consolidacion de exportacion CSV controlada.
+* Consolidacion de permisos por `can_view_reports`.
+* Consolidacion de auditoria con `AuditAction.REPORT_GENERATED` y metadata `REPORT_VIEWED` / `REPORT_EXPORTED`.
+* Registro de validaciones finales.
+* Documentacion de limitaciones, riesgos residuales y pendientes.
+* Recomendacion para preparacion piloto posterior.
+* Confirmacion de que no se creo codigo funcional, modelos ni migraciones.
+* Confirmacion de que no se inicio piloto tecnico.
+
+**Evidencia:**
+
+```text
+docs/07_fase_4_reportes_libro_maestro/cierre_fase_4.md
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```
