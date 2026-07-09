@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Reportes</p>
+    <h1>Reporte mensual documental</h1>
+    <p class="lead">Actividad documental publicada durante el periodo {{ report_period_label }}.</p>
+  </header>
+
+  <form class="filter-panel" method="get" aria-label="Filtros de reporte mensual documental">
+    <div class="filter-grid">
+      <div class="form-row">
+        <label for="{{ filter_form.month.id_for_label }}">{{ filter_form.month.label }}</label>
+        {{ filter_form.month }}
+        {{ filter_form.month.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.year.id_for_label }}">{{ filter_form.year.label }}</label>
+        {{ filter_form.year }}
+        {{ filter_form.year.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.document_type.id_for_label }}">{{ filter_form.document_type.label }}</label>
+        {{ filter_form.document_type }}
+        {{ filter_form.document_type.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.organizational_unit.id_for_label }}">{{ filter_form.organizational_unit.label }}</label>
+        {{ filter_form.organizational_unit }}
+        {{ filter_form.organizational_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
+        {{ filter_form.status }}
+        {{ filter_form.status.errors }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="button" type="submit">Filtrar</button>
+      <a href="{% url 'app:reports:monthly_documents' %}">Limpiar filtros</a>
+    </div>
+  </form>
+
+  <section class="status-panel" aria-label="Resumen del reporte mensual">
+    <div class="status-row">
+      <span class="label">Periodo</span>
+      <span>{{ report_period_label }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Total</span>
+      <span>{{ report_summary.total }}</span>
+    </div>
+  </section>
+
+  <section class="module-grid page-section" aria-label="Totales del reporte mensual">
+    <div class="module-card">
+      <h2>Totales por estado</h2>
+      <ul>
+        {% for label, total in report_summary.status_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para el periodo.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="module-card">
+      <h2>Totales por tipo documental</h2>
+      <ul>
+        {% for label, total in report_summary.document_type_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para el periodo.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="table-panel page-section" aria-label="Listado del reporte mensual documental">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo documental</th>
+          <th>Titulo</th>
+          <th>Tipo documental</th>
+          <th>Unidad responsable</th>
+          <th>Estado</th>
+          <th>Version</th>
+          <th>Fecha de creacion/emision</th>
+          <th>Ultima actualizacion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for version in document_versions %}
+          <tr>
+            <td>{{ version.document.code }}</td>
+            <td>{{ version.document.title }}</td>
+            <td>{{ version.document.document_type.code }} - {{ version.document.document_type.name }}</td>
+            <td>{{ version.document.owner_unit.name }}</td>
+            <td>{{ version.get_status_display }}</td>
+            <td>{{ version.version_number }}</td>
+            <td>
+              {% if version.issue_date %}
+                {{ version.issue_date|date:"Y-m-d" }}
+              {% else %}
+                {{ version.created_at|date:"Y-m-d" }}
+              {% endif %}
+            </td>
+            <td>{{ version.document.updated_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8">No hay actividad documental publicada para el periodo seleccionado.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

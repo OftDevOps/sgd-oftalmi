@@ -175,6 +175,7 @@ F4-P01  -> Definición técnica y funcional de reportes y Libro Maestro
 F4-P02  -> Selectors base de reportes
 F4-P03  -> Vista de Libro Maestro documental
 F4-P04  -> Filtros de Libro Maestro
+F4-P05  -> Reporte mensual documental
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1425,7 +1426,7 @@ F4-P01 -> Definición técnica y funcional de reportes y Libro Maestro
 F4-P02 -> Selectors base de reportes
 F4-P03 -> Vista de Libro Maestro documental
 F4-P04 -> Filtros base del Libro Maestro
-F4-P05 -> Reportes documentales por estado y vigencia
+F4-P05 -> Reporte mensual documental
 F4-P06 -> Reportes de solicitudes documentales
 F4-P07 -> Reportes de copias controladas
 F4-P08 -> Reportes de implementación
@@ -1529,6 +1530,34 @@ backend/apps/reports/forms.py
 backend/apps/reports/selectors.py
 backend/apps/reports/views.py
 backend/templates/reports/master_book.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P05 - Reporte mensual documental
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista base del reporte mensual documental en `/app/reports/monthly-documents/`.
+* Acceso protegido por login y restringido a OyM mediante `can_view_reports`.
+* Reutilizacion de `get_monthly_document_report_queryset`.
+* Periodo por defecto basado en mes y ano actuales.
+* Filtros GET por mes, ano, tipo documental, unidad responsable y estado.
+* Tabla de actividad con codigo documental, titulo, tipo documental, unidad responsable, estado, version, fecha de creacion/emision y ultima actualizacion del documento.
+* Resumen basico con total del periodo, totales por estado y totales por tipo documental.
+* El periodo mensual usa `DocumentVersion.published_at` como campo real de actividad publicada.
+* Sin exportaciones, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/forms.py
+backend/apps/reports/views.py
+backend/apps/reports/urls.py
+backend/templates/reports/monthly_documents.html
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md

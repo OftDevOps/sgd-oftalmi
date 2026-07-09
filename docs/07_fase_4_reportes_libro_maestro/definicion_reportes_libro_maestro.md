@@ -215,7 +215,7 @@ Puntos propuestos para Fase 4:
 | F4-P02 | Selectors base de reportes | Consultas reutilizables para Libro Maestro y reportes principales. |
 | F4-P03 | Vista de Libro Maestro documental | Consulta web base y protegida del inventario documental. |
 | F4-P04 | Filtros base del Libro Maestro | Filtros iniciales por tipo, unidad, estado, vigencia y fechas. |
-| F4-P05 | Reportes documentales por estado y vigencia | Vigentes, vencidos, por vencer, obsoletos y archivados segun datos disponibles. |
+| F4-P05 | Reporte mensual documental | Actividad documental publicada por periodo mensual. |
 | F4-P06 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P07 | Reportes de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
 | F4-P08 | Reportes de implementacion | Pendientes, leidos, aceptados, implementados y vencidos. |
@@ -318,4 +318,40 @@ Limitaciones registradas:
 * El rango de fechas aplica sobre fecha de creacion del documento, no sobre emision, vigencia o vencimiento.
 * No se implementan filtros avanzados por fechas de version documental en este punto.
 * No se implementa exportacion CSV/Excel.
+* No se crean modelos ni migraciones.
+
+## 17. Reporte mensual documental
+
+F4-P05 implementa la primera vista del reporte mensual documental.
+
+Alcance implementado:
+
+* Ruta interna `/app/reports/monthly-documents/`.
+* Acceso protegido por login.
+* Acceso funcional restringido a usuarios OyM mediante `can_view_reports`.
+* Periodo por defecto con mes y ano actuales.
+* Filtros GET por mes, ano, tipo documental, unidad responsable y estado.
+* Reutilizacion de `get_monthly_document_report_queryset`.
+* Resumen basico con total del periodo, totales por estado y totales por tipo documental.
+* Pruebas de acceso, render, filtros, parametros invalidos y llamada al selector.
+
+Mapeo de campos visibles:
+
+| Columna | Fuente actual |
+| --- | --- |
+| Codigo documental | `DocumentVersion.document.code` |
+| Titulo | `DocumentVersion.document.title` |
+| Tipo documental | `DocumentVersion.document.document_type` |
+| Unidad responsable | `DocumentVersion.document.owner_unit` |
+| Estado | `DocumentVersion.status` con su display Django |
+| Version | `DocumentVersion.version_number` |
+| Fecha de creacion/emision | `DocumentVersion.issue_date`; si no existe, `DocumentVersion.created_at` |
+| Ultima actualizacion | `DocumentVersion.document.updated_at` |
+
+Limitaciones registradas:
+
+* El periodo mensual usa `DocumentVersion.published_at__date`.
+* Las versiones sin fecha de publicacion no aparecen en este reporte mensual.
+* No se recalculan estados, vigencias ni vencimientos.
+* No se implementan exportaciones CSV/Excel en este punto.
 * No se crean modelos ni migraciones.

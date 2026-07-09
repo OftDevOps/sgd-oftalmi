@@ -56,3 +56,35 @@ class MasterBookFilterForm(forms.Form):
         required=False,
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+
+
+class MonthlyDocumentReportFilterForm(forms.Form):
+    MONTH_CHOICES = tuple((month, f"{month:02d}") for month in range(1, 13))
+
+    month = forms.TypedChoiceField(
+        label="Mes",
+        choices=MONTH_CHOICES,
+        coerce=int,
+    )
+    year = forms.IntegerField(
+        label="Ano",
+        min_value=2000,
+        max_value=2100,
+    )
+    document_type = forms.ModelChoiceField(
+        label="Tipo documental",
+        queryset=DocumentType.objects.all(),
+        required=False,
+        empty_label="Todos",
+    )
+    organizational_unit = forms.ModelChoiceField(
+        label="Unidad responsable",
+        queryset=OrganizationalUnit.objects.all(),
+        required=False,
+        empty_label="Todas",
+    )
+    status = forms.ChoiceField(
+        label="Estado documental",
+        choices=(("", "Todos"), *DocumentStatus.choices),
+        required=False,
+    )

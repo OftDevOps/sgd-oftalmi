@@ -363,7 +363,9 @@ F4-P03 expone la primera vista operativa del Libro Maestro en `/app/reports/mast
 
 F4-P04 agrega filtros GET al Libro Maestro usando un formulario de validacion simple y manteniendo la consulta en `get_master_book_queryset`. Los filtros cubren tipo documental, unidad responsable, estado, vigencia, codigo, titulo y rango de fecha de creacion. La vigencia se basa en grupos de estado existentes y no recalcula vencimientos por fecha sin regla funcional aprobada. Los parametros invalidos no rompen la vista y no se exponen archivos documentales.
 
-F4-P04 no implementa exportaciones, reportes nuevos, modelos, migraciones, exportadores ni APIs.
+F4-P05 agrega la vista `/app/reports/monthly-documents/` para el reporte mensual documental. La consulta usa `get_monthly_document_report_queryset` y filtra el periodo por `DocumentVersion.published_at__date`, con mes y ano actuales como valor por defecto. La vista permite filtros simples por tipo documental, unidad responsable y estado, y calcula un resumen liviano sobre el resultado filtrado: total, totales por estado y totales por tipo documental. Las versiones sin `published_at` no forman parte del reporte mensual hasta que el flujo funcional publique la version correspondiente.
+
+F4-P05 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
 
 ---
 
