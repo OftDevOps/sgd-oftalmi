@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Reportes</p>
+    <h1>Libro Maestro documental</h1>
+    <p class="lead">Inventario base de documentos controlados administrados por Organizacion y Metodos.</p>
+  </header>
+
+  <section class="table-panel" aria-label="Libro Maestro documental">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo documental</th>
+          <th>Titulo</th>
+          <th>Tipo documental</th>
+          <th>Unidad responsable</th>
+          <th>Estado</th>
+          <th>Version vigente o actual</th>
+          <th>Fecha de emision/creacion</th>
+          <th>Fecha de vigencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document in documents %}
+          <tr>
+            <td>{{ document.code }}</td>
+            <td>{{ document.title }}</td>
+            <td>{{ document.document_type.code }} - {{ document.document_type.name }}</td>
+            <td>{{ document.owner_unit.name }}</td>
+            <td>{{ document.get_status_display }}</td>
+            <td>{{ document.current_version.version_number|default:"-" }}</td>
+            <td>
+              {% if document.current_version.issue_date %}
+                {{ document.current_version.issue_date|date:"Y-m-d" }}
+              {% else %}
+                {{ document.created_at|date:"Y-m-d" }}
+              {% endif %}
+            </td>
+            <td>{{ document.current_version.effective_date|date:"Y-m-d"|default:"-" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8">No hay documentos registrados en el Libro Maestro.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

@@ -359,7 +359,9 @@ Los filtros esperados son tipo documental, unidad ejecutora, estado, vigencia, f
 
 F4-P02 materializa la primera capa reutilizable de esa arquitectura en `apps.reports.selectors`, centralizando consultas para Libro Maestro, reporte mensual, copias controladas e implementacion. Estos selectors deben mantenerse sin dependencia de `request` y sin logica de presentacion para que las vistas y exportadores futuros consuman el mismo criterio de datos.
 
-F4-P01 no implementa vistas, templates, URLs, modelos, migraciones, exportadores ni APIs.
+F4-P03 expone la primera vista operativa del Libro Maestro en `/app/reports/master-book/`. La vista es de solo lectura, usa `get_master_book_queryset`, aplica `can_view_reports` y no expone archivos documentales ni rutas de `MEDIA_URL`. Los campos visibles se mapean a `Document.code`, `Document.title`, `Document.document_type`, `Document.owner_unit`, `Document.status`, `Document.current_version.version_number`, `DocumentVersion.issue_date` con respaldo en `Document.created_at`, y `DocumentVersion.effective_date` cuando exista.
+
+F4-P03 no implementa exportaciones, filtros avanzados, modelos, migraciones, exportadores ni APIs.
 
 ---
 

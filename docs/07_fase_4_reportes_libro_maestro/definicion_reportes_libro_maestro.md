@@ -213,8 +213,8 @@ Puntos propuestos para Fase 4:
 | --- | --- | --- |
 | F4-P01 | Definicion tecnica y funcional de reportes y Libro Maestro | Documento base de alcance, fuentes, permisos, filtros, auditoria y riesgos. |
 | F4-P02 | Selectors base de reportes | Consultas reutilizables para Libro Maestro y reportes principales. |
-| F4-P03 | Vista base de modulo de reportes | Pantalla protegida para OyM con listado de reportes disponibles. |
-| F4-P04 | Libro Maestro en pantalla | Consulta web del Libro Maestro con filtros base. |
+| F4-P03 | Vista de Libro Maestro documental | Consulta web base y protegida del inventario documental. |
+| F4-P04 | Filtros base del Libro Maestro | Filtros iniciales por tipo, unidad, estado, vigencia y fechas. |
 | F4-P05 | Reportes documentales por estado y vigencia | Vigentes, vencidos, por vencer, obsoletos y archivados segun datos disponibles. |
 | F4-P06 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P07 | Reportes de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
@@ -258,3 +258,31 @@ Propiedades esperadas:
 * Sirven como base para reportes, Libro Maestro y futuras vistas de Fase 4.
 
 F4-P02 no crea modelos ni migraciones. Cualquier selector nuevo debe documentar de forma explicita su fuente de datos y su criterio de filtro.
+
+## 15. Vista de Libro Maestro documental
+
+F4-P03 crea la primera vista web de solo lectura del Libro Maestro documental.
+
+Alcance implementado:
+
+* Ruta interna `/app/reports/master-book/`.
+* Acceso protegido por login.
+* Acceso funcional restringido a usuarios OyM mediante `can_view_reports`.
+* Reutilizacion directa de `get_master_book_queryset`.
+* Template tabular sin enlaces a archivos documentales ni exposicion de rutas `MEDIA_URL`.
+* Pruebas de acceso, render y uso del selector.
+
+Mapeo de campos visibles:
+
+| Columna | Fuente actual |
+| --- | --- |
+| Codigo documental | `Document.code` |
+| Titulo | `Document.title` |
+| Tipo documental | `Document.document_type.code` y `Document.document_type.name` |
+| Unidad responsable | `Document.owner_unit.name` |
+| Estado | `Document.status` con su display Django |
+| Version vigente o actual | `Document.current_version.version_number` |
+| Fecha de emision/creacion | `DocumentVersion.issue_date`; si no existe, `Document.created_at` |
+| Fecha de vigencia | `DocumentVersion.effective_date`; si no existe, se muestra vacio funcional `-` |
+
+F4-P03 no implementa filtros avanzados, exportaciones, reportes analiticos, auditoria de consulta, modelos nuevos ni migraciones.

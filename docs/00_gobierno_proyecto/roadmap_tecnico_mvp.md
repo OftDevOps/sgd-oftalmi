@@ -1420,8 +1420,8 @@ Puntos propuestos:
 ```text
 F4-P01 -> Definición técnica y funcional de reportes y Libro Maestro
 F4-P02 -> Selectors base de reportes
-F4-P03 -> Vista base de módulo de reportes
-F4-P04 -> Libro Maestro en pantalla
+F4-P03 -> Vista de Libro Maestro documental
+F4-P04 -> Filtros base del Libro Maestro
 F4-P05 -> Reportes documentales por estado y vigencia
 F4-P06 -> Reportes de solicitudes documentales
 F4-P07 -> Reportes de copias controladas
@@ -1475,6 +1475,31 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```text
 backend/apps/reports/selectors.py
 backend/apps/reports/tests/test_selectors.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P03 - Vista de Libro Maestro documental
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista web base de solo lectura para el Libro Maestro documental.
+* Ruta interna protegida `/app/reports/master-book/`.
+* Reutilizacion directa de `get_master_book_queryset`.
+* Acceso restringido a roles OyM mediante `can_view_reports`.
+* Tabla con codigo documental, titulo, tipo documental, unidad responsable, estado, version vigente o actual, fecha de emision/creacion y fecha de vigencia.
+* Sin exportaciones, filtros avanzados, exposicion de archivos, modelos nuevos ni migraciones.
+* Pruebas de login requerido, acceso autorizado, acceso denegado, render de documentos y uso del selector.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/views.py
+backend/apps/reports/urls.py
+backend/templates/reports/master_book.html
+backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```
