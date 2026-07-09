@@ -1435,8 +1435,8 @@ F4-P06 -> Reporte de copias controladas
 F4-P07 -> Reporte de implementación/lectura
 F4-P08 -> Exportación controlada CSV de reportes
 F4-P09 -> Permisos y auditoría de reportes
-F4-P10 -> Reportes de solicitudes documentales
-F4-P11 -> Pruebas y cierre documental de Fase 4
+F4-P10 -> Pruebas integradas de reportes
+F4-P11 -> Cierre documental de Fase 4 y pendientes
 ```
 
 #### F4-P01 - Definición técnica y funcional de reportes y Libro Maestro
@@ -1686,6 +1686,33 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```text
 backend/apps/reports/services.py
 backend/apps/reports/views.py
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P10 - Pruebas integradas de reportes
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Cobertura integrada reforzada para reportes de Fase 4.
+* Validacion de vistas HTML de Libro Maestro, reporte mensual, copias controladas e implementacion/lectura.
+* Validacion de exportaciones CSV de los cuatro reportes.
+* Validacion transversal de permisos por rol: login requerido, acceso autorizado y 403 para usuarios autenticados sin permiso.
+* Validacion de filtros GET principales y parametros invalidos.
+* Validacion de encabezados CSV completos por reporte.
+* Validacion de CSV con UTF-8/BOM y textos con acentos.
+* Validacion de auditoria `REPORT_VIEWED` y `REPORT_EXPORTED` mediante `AuditAction.REPORT_GENERATED`.
+* Validacion de eventos denegados con resultado `denied` para usuario autenticado sin permiso.
+* Validacion de no exposicion de PDFs, adjuntos, rutas `MEDIA_URL`, rutas fisicas ni visor documental desde reportes HTML o CSV.
+* Suite `apps.reports` consolidada en 69 pruebas.
+* Sin cambios funcionales, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md

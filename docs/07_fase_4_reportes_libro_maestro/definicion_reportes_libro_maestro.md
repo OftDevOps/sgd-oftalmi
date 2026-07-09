@@ -220,8 +220,8 @@ Puntos propuestos para Fase 4:
 | F4-P07 | Reporte de implementacion/lectura | Pendientes, leidos, aceptados, implementados y vencidos. |
 | F4-P08 | Exportacion controlada CSV de reportes | Exportadores CSV para los reportes base ya implementados. |
 | F4-P09 | Permisos y auditoria de reportes | Registro `REPORT_GENERATED` con metadata de consulta/exportacion, filtros y formato. |
-| F4-P10 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
-| F4-P11 | Pruebas y cierre documental de Fase 4 | Pruebas integradas, validacion de permisos/exportacion y cierre tecnico. |
+| F4-P10 | Pruebas integradas de reportes | Cobertura de vistas, filtros, exportaciones, permisos, auditoria y seguridad documental. |
+| F4-P11 | Cierre documental de Fase 4 y pendientes | Cierre tecnico, pendientes y siguiente fase. |
 
 El orden puede ajustarse si OyM prioriza un reporte especifico, pero cualquier cambio debe documentarse.
 
@@ -540,3 +540,43 @@ Limitaciones registradas:
 * No se implementan reportes nuevos.
 * No se modifica visor documental, documentos, copias controladas ni registros de implementacion.
 * No se crean modelos ni migraciones.
+
+## 22. Pruebas integradas de reportes
+
+F4-P10 consolida la cobertura integrada del modulo de reportes sin crear funcionalidad nueva.
+
+Cobertura reforzada:
+
+* Acceso HTML a los cuatro reportes de Fase 4.
+* Exportacion CSV de los cuatro reportes.
+* Redireccion a login para usuarios no autenticados.
+* Respuesta 403 para usuarios autenticados sin permiso.
+* Acceso autorizado para roles OyM.
+* Filtros GET principales por reporte.
+* Parametros invalidos sin ruptura de vistas ni exportaciones.
+* Headers CSV `Content-Type` y `Content-Disposition`.
+* Encabezados CSV completos por reporte.
+* Preservacion de UTF-8 con acentos en CSV.
+* Auditoria `REPORT_VIEWED` y `REPORT_EXPORTED` mediante `AuditAction.REPORT_GENERATED`.
+* Auditoria de intentos denegados con resultado `denied`.
+* Ausencia de PDFs, adjuntos, rutas `MEDIA_URL`, rutas fisicas y visor documental en reportes HTML y CSV.
+
+Resultado tecnico:
+
+```text
+apps.reports -> 69 tests OK
+```
+
+Controles confirmados:
+
+* Los reportes no exponen archivos documentales.
+* Las exportaciones contienen solo metadata reportable.
+* Los filtros invalidos no interrumpen la respuesta.
+* La auditoria no registra contenido documental sensible.
+* Las exportaciones no implementan Excel ni descargan adjuntos.
+
+Pendientes documentados:
+
+* Excel `.xlsx` sigue pendiente como objetivo MVP con dependencia justificada.
+* Reportes de solicitudes documentales quedan pendientes para un punto posterior si OyM los prioriza.
+* Cierre documental completo de Fase 4 queda para F4-P11.

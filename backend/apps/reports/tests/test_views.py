@@ -1,4 +1,6 @@
+import csv
 from datetime import date, datetime
+from io import StringIO
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -194,6 +196,21 @@ class MasterBookViewTests(TestCase):
 
     def csv_content(self, response):
         return response.content.decode("utf-8-sig")
+
+    def csv_rows(self, response):
+        return list(csv.reader(StringIO(self.csv_content(response))))
+
+    def assert_no_document_file_exposure(self, content):
+        forbidden_fragments = (
+            "/media/",
+            "MEDIA_URL",
+            "document-viewer",
+            "file_view",
+            ".pdf",
+            "documents/202",
+        )
+        for fragment in forbidden_fragments:
+            self.assertNotIn(fragment, content)
 
     def assert_single_report_audit_event(
         self,
@@ -1196,6 +1213,170 @@ class MasterBookViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, "Exportar CSV")
                 self.assertNotContains(response, "/media/")
+
+    def test_report_pages_do_not_expose_document_file_routes(self):
+        report_routes = (
+            "app:reports:master_book",
+            "app:reports:monthly_documents",
+            "app:reports:controlled_copies",
+            "app:reports:implementation_records",
+        )
+
+        self.client.force_login(self.oym_admin)
+        for route in report_routes:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+
+                self.assertEqual(response.status_code, 200)
+                self.assert_no_document_file_exposure(response.content.decode())
+
+    def test_report_csv_exports_have_expected_headers(self):
+        export_routes = (
+            (
+                "app:reports:master_book_export",
+                [
+                    "Codigo documental",
+                    "Titulo",
+                    "Tipo documental",
+                    "Unidad responsable",
+                    "Estado",
+                    "Version",
+                    "Fecha creacion/emision",
+                    "Fecha vigencia",
+                    "Ultima actualizacion",
+                ],
+            ),
+            (
+                "app:reports:monthly_documents_export",
+                [
+                    "Codigo documental",
+                    "Titulo",
+                    "Tipo documental",
+                    "Unidad responsable",
+                    "Estado",
+                    "Version",
+                    "Fecha creacion/emision",
+                    "Ultima actualizacion",
+                    "Periodo reportado",
+                ],
+            ),
+            (
+                "app:reports:controlled_copies_export",
+                [
+                    "Codigo documental",
+                    "Titulo",
+                    "Tipo documental",
+                    "Unidad responsable",
+                    "Version",
+                    "Destinatario",
+                    "Unidad destinataria",
+                    "Estado copia",
+                    "Fecha entrega/asignacion",
+                    "Fecha cierre/devolucion",
+                    "Ultima actualizacion",
+                ],
+            ),
+            (
+                "app:reports:implementation_records_export",
+                [
+                    "Codigo documental",
+                    "Titulo",
+                    "Tipo documental",
+                    "Unidad responsable",
+                    "Version",
+                    "Unidad destinataria/ejecutora",
+                    "Usuario",
+                    "Estado implementacion/lectura",
+                    "Fecha asignacion",
+                    "Fecha implementacion/confirmacion",
+                    "Ultima actualizacion",
+                ],
+            ),
+        )
+
+        self.client.force_login(self.oym_admin)
+        for route, expected_headers in export_routes:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route), {"month": "7", "year": "2026"})
+
+                self.assert_csv_export_response(response, "sgd-oftalmi")
+                self.assertEqual(self.csv_rows(response)[0], expected_headers)
+
+    def test_report_csv_exports_do_not_expose_document_files(self):
+        export_routes = (
+            "app:reports:master_book_export",
+            "app:reports:monthly_documents_export",
+            "app:reports:controlled_copies_export",
+            "app:reports:implementation_records_export",
+        )
+
+        self.client.force_login(self.oym_admin)
+        for route in export_routes:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route), {"month": "7", "year": "2026"})
+
+                self.assertEqual(response.status_code, 200)
+                self.assert_no_document_file_exposure(self.csv_content(response))
+
+    def test_invalid_filters_do_not_break_csv_exports(self):
+        export_requests = (
+            (
+                "app:reports:master_book_export",
+                {"document_type": "999999", "status": "invalid", "date_from": "bad"},
+            ),
+            (
+                "app:reports:monthly_documents_export",
+                {"month": "13", "year": "invalid", "status": "invalid"},
+            ),
+            (
+                "app:reports:controlled_copies_export",
+                {"receiver_user": "invalid", "status": "invalid", "date_from": "bad"},
+            ),
+            (
+                "app:reports:implementation_records_export",
+                {"user": "invalid", "status": "invalid", "date_from": "bad"},
+            ),
+        )
+
+        self.client.force_login(self.oym_admin)
+        for route, filters in export_requests:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route), filters)
+
+                self.assert_csv_export_response(response, "sgd-oftalmi")
+                self.assertIn("Codigo documental", self.csv_content(response))
+                self.assert_no_document_file_exposure(self.csv_content(response))
+
+    def test_report_csv_exports_preserve_utf8_text(self):
+        accented_document = Document.objects.create(
+            code="POL-OYM-001",
+            title="Política de gestión farmacéutica",
+            document_type=self.document_type,
+            owner_unit=self.owner_unit,
+            created_by=self.oym_admin,
+            status=DocumentStatus.ACTIVE,
+        )
+        accented_version = DocumentVersion.objects.create(
+            document=accented_document,
+            version_number="01",
+            status=DocumentStatus.ACTIVE,
+            issue_date=date(2026, 7, 9),
+            effective_date=date(2026, 7, 10),
+            created_by=self.oym_admin,
+        )
+        Document.objects.filter(pk=accented_document.pk).update(
+            current_version_id=accented_version.pk,
+        )
+
+        self.client.force_login(self.oym_admin)
+        response = self.client.get(
+            reverse("app:reports:master_book_export"),
+            {"code": "POL-OYM-001"},
+        )
+
+        self.assert_csv_export_response(response, "sgd-oftalmi-libro-maestro")
+        self.assertIn("Política de gestión farmacéutica", self.csv_content(response))
+        self.assert_no_document_file_exposure(self.csv_content(response))
 
     def test_authorized_report_views_create_success_audit_events(self):
         report_routes = (

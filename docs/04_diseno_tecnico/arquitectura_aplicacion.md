@@ -375,6 +375,8 @@ F4-P08 no implementa Excel `.xlsx`, modelos, migraciones ni APIs. Excel queda co
 
 F4-P09 refuerza permisos y auditoria de reportes sin crear modelos ni migraciones. Las vistas HTML y exportaciones CSV siguen usando `can_view_reports`; usuarios no autenticados redirigen al login y usuarios autenticados sin permiso reciben 403. La auditoria reutiliza `AuditEvent` y `AuditAction.REPORT_GENERATED`; los eventos especificos `REPORT_VIEWED` y `REPORT_EXPORTED` se guardan como metadata textual en `after_data.report_event` para evitar cambiar enums y generar migraciones. Cada evento registra usuario, reporte, filtros GET, formato, resultado, IP y user agent, sin contenido documental, PDFs, adjuntos ni rutas `MEDIA_URL`.
 
+F4-P10 consolida pruebas integradas del modulo de reportes. La suite `apps.reports` valida vistas HTML, filtros, exportaciones CSV, permisos por rol, auditoria de consultas/exportaciones y no exposicion de archivos documentales. No agrega modelos, migraciones, reportes nuevos, Excel ni cambios de reglas funcionales.
+
 ---
 
 ## 10. Impacto DevOps
