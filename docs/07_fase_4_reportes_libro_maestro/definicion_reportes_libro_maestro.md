@@ -153,11 +153,11 @@ Decision tecnica inicial:
 * Excel (`.xlsx`) debe implementarse como objetivo del MVP cuando se agregue una dependencia justificada, por ejemplo `openpyxl` o alternativa equivalente.
 * La incorporacion de dependencia para Excel debe hacerse en un punto tecnico especifico y quedar registrada en requirements, pruebas y documentacion.
 
-Toda exportacion debe:
+La exportacion controlada final de Fase 4 debe:
 
 * Respetar permisos de reportes.
 * Aplicar los filtros seleccionados.
-* Registrar auditoria de generacion/exportacion.
+* Registrar auditoria de generacion/exportacion cuando se implemente el punto especifico de auditoria de reportes.
 * Evitar incluir campos sensibles no necesarios.
 * Mantener encabezados claros y consistentes.
 
@@ -218,8 +218,8 @@ Puntos propuestos para Fase 4:
 | F4-P05 | Reporte mensual documental | Actividad documental publicada por periodo mensual. |
 | F4-P06 | Reporte de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
 | F4-P07 | Reporte de implementacion/lectura | Pendientes, leidos, aceptados, implementados y vencidos. |
-| F4-P08 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
-| F4-P09 | Exportacion CSV/Excel base | Exportadores controlados, inicialmente CSV y Excel cuando se agregue dependencia justificada. |
+| F4-P08 | Exportacion controlada CSV de reportes | Exportadores CSV para los reportes base ya implementados. |
+| F4-P09 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P10 | Auditoria de consulta/exportacion de reportes | Registro `REPORT_GENERATED` con metadata de reporte, filtros y formato. |
 | F4-P11 | Pruebas y cierre documental de Fase 4 | Pruebas integradas, validacion de permisos/exportacion y cierre tecnico. |
 
@@ -432,4 +432,53 @@ Limitaciones registradas:
 * "Implementados" se calcula con estado `IMPLEMENTED`; los demas estados quedan agrupados como no implementados para resumen operativo.
 * No se modifica el flujo funcional de lectura, aceptacion o implementacion.
 * No se implementan exportaciones CSV/Excel en este punto.
+* No se crean modelos ni migraciones.
+
+## 20. Exportacion controlada CSV de reportes
+
+F4-P08 implementa la primera salida controlada de reportes, usando CSV como formato tecnico simple.
+
+Rutas implementadas:
+
+| Reporte | Ruta CSV |
+| --- | --- |
+| Libro Maestro | `/app/reports/master-book/export.csv` |
+| Reporte mensual documental | `/app/reports/monthly-documents/export.csv` |
+| Reporte de copias controladas | `/app/reports/controlled-copies/export.csv` |
+| Reporte de implementacion/lectura | `/app/reports/implementation-records/export.csv` |
+
+Alcance implementado:
+
+* Acceso protegido por login.
+* Acceso funcional restringido a usuarios OyM mediante `can_view_reports`.
+* Reutilizacion de los formularios GET existentes para sanitizar parametros.
+* Reutilizacion de los selectors de reportes como fuente de datos.
+* Enlaces `Exportar CSV` en las pantallas de reportes.
+* Respuesta `text/csv; charset=utf-8` con BOM UTF-8.
+* `Content-Disposition: attachment` aplicado al CSV generado.
+* Nombres de archivo fechados con prefijo `sgd-oftalmi`.
+* Pruebas de acceso, headers, contenido, filtros y ausencia de rutas `MEDIA_URL`.
+
+Campos exportados:
+
+| Reporte | Fuente |
+| --- | --- |
+| Libro Maestro | `Document`, `Document.current_version`, `DocumentType`, `OrganizationalUnit` |
+| Reporte mensual | `DocumentVersion` y su `Document` asociado |
+| Copias controladas | `ControlledCopy`, `Document`, `DocumentVersion`, destinatario y unidad receptora |
+| Implementacion/lectura | `ImplementationRecord`, `Document`, `DocumentVersion`, usuario y unidad del usuario |
+
+Controles aplicados:
+
+* La exportacion respeta los mismos filtros de la pantalla.
+* No exporta PDFs, adjuntos ni contenido documental.
+* No incluye rutas fisicas, rutas `MEDIA_URL` ni enlaces de descarga.
+* No expone visor documental ni entrega controlada de archivos.
+* No crea snapshots ni tablas analiticas.
+
+Limitaciones registradas:
+
+* Excel `.xlsx` queda pendiente como objetivo MVP con dependencia justificada.
+* No se agrego dependencia nueva para F4-P08.
+* La auditoria especifica de exportacion queda pendiente para el punto de auditoria de reportes.
 * No se crean modelos ni migraciones.

@@ -62,6 +62,7 @@
     </div>
     <div class="form-actions">
       <button class="button" type="submit">Filtrar</button>
+      <a class="button" href="{% url 'app:reports:implementation_records_export' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Exportar CSV</a>
       <a href="{% url 'app:reports:implementation_records' %}">Limpiar filtros</a>
     </div>
   </form>

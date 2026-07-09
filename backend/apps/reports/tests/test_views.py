@@ -183,6 +183,17 @@ class MasterBookViewTests(TestCase):
             status=ImplementationRecordStatus.IMPLEMENTED,
         )
 
+    def assert_csv_export_response(self, response, filename_part):
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/csv", response["Content-Type"])
+        self.assertIn("attachment", response["Content-Disposition"])
+        self.assertIn(filename_part, response["Content-Disposition"])
+        self.assertTrue(response["Content-Disposition"].endswith('.csv"'))
+        self.assertTrue(response.content.startswith("\ufeff".encode("utf-8")))
+
+    def csv_content(self, response):
+        return response.content.decode("utf-8-sig")
+
     def test_master_book_requires_login(self):
         response = self.client.get(reverse("app:reports:master_book"))
 
@@ -1022,3 +1033,139 @@ class MasterBookViewTests(TestCase):
             confirmation_date_to=date(2026, 7, 31),
             date_field="assigned_at__date",
         )
+
+    def test_report_exports_require_login(self):
+        export_routes = (
+            "app:reports:master_book_export",
+            "app:reports:monthly_documents_export",
+            "app:reports:controlled_copies_export",
+            "app:reports:implementation_records_export",
+        )
+
+        for route in export_routes:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+
+                self.assertEqual(response.status_code, 302)
+                self.assertIn(reverse("login"), response["Location"])
+
+    def test_disallowed_roles_cannot_export_reports(self):
+        export_routes = (
+            "app:reports:master_book_export",
+            "app:reports:monthly_documents_export",
+            "app:reports:controlled_copies_export",
+            "app:reports:implementation_records_export",
+        )
+
+        for route in export_routes:
+            with self.subTest(route=route):
+                self.client.logout()
+                self.client.force_login(self.reader)
+
+                response = self.client.get(reverse(route))
+
+                self.assertEqual(response.status_code, 403)
+
+    def test_authorized_user_exports_master_book_csv(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(reverse("app:reports:master_book_export"))
+
+        self.assert_csv_export_response(response, "sgd-oftalmi-libro-maestro")
+        content = self.csv_content(response)
+        self.assertIn("Codigo documental,Titulo,Tipo documental", content)
+        self.assertIn("FOR-OYM-001", content)
+        self.assertIn("PRO-ADM-001", content)
+        self.assertIn("Fecha vigencia", content)
+        self.assertNotIn("/media/", content)
+
+    def test_master_book_csv_export_respects_filters(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:master_book_export"),
+            {"document_type": self.document_type.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        content = self.csv_content(response)
+        self.assertIn("FOR-OYM-001", content)
+        self.assertNotIn("PRO-ADM-001", content)
+
+    def test_authorized_user_exports_monthly_documents_csv(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:monthly_documents_export"),
+            {"month": "7", "year": "2026"},
+        )
+
+        self.assert_csv_export_response(
+            response,
+            "sgd-oftalmi-reporte-mensual-documental",
+        )
+        content = self.csv_content(response)
+        self.assertIn("Codigo documental,Titulo,Tipo documental", content)
+        self.assertIn("Periodo reportado", content)
+        self.assertIn("2026-07", content)
+        self.assertIn("MEN-OYM-001", content)
+        self.assertIn("MEN-ADM-001", content)
+        self.assertNotIn("MEN-OYM-002", content)
+        self.assertNotIn("/media/", content)
+
+    def test_authorized_user_exports_controlled_copies_csv(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:controlled_copies_export"),
+            {"status": ControlledCopyStatus.ACTIVE},
+        )
+
+        self.assert_csv_export_response(
+            response,
+            "sgd-oftalmi-reporte-copias-controladas",
+        )
+        content = self.csv_content(response)
+        self.assertIn("Codigo documental,Titulo,Tipo documental", content)
+        self.assertIn("Estado copia", content)
+        self.assertIn("FOR-OYM-001", content)
+        self.assertIn(self.reader.email, content)
+        self.assertNotIn("PRO-ADM-001", content)
+        self.assertNotIn("/media/", content)
+
+    def test_authorized_user_exports_implementation_records_csv(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records_export"),
+            {"code": "PRO-ADM-001"},
+        )
+
+        self.assert_csv_export_response(
+            response,
+            "sgd-oftalmi-reporte-implementacion-lectura",
+        )
+        content = self.csv_content(response)
+        self.assertIn("Codigo documental,Titulo,Tipo documental", content)
+        self.assertIn("Estado implementacion/lectura", content)
+        self.assertIn("PRO-ADM-001", content)
+        self.assertIn(self.executing_unit.email, content)
+        self.assertNotIn("FOR-OYM-001", content)
+        self.assertNotIn("/media/", content)
+
+    def test_export_links_are_visible_on_report_pages(self):
+        report_routes = (
+            "app:reports:master_book",
+            "app:reports:monthly_documents",
+            "app:reports:controlled_copies",
+            "app:reports:implementation_records",
+        )
+
+        self.client.force_login(self.oym_admin)
+        for route in report_routes:
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "Exportar CSV")
+                self.assertNotContains(response, "/media/")

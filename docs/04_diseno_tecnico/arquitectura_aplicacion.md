@@ -369,7 +369,9 @@ F4-P06 agrega la vista `/app/reports/controlled-copies/` para el reporte de copi
 
 F4-P07 agrega la vista `/app/reports/implementation-records/` para el reporte de implementacion/lectura. La consulta usa `get_implementation_records_report_queryset` y permite filtros por tipo documental, unidad responsable, unidad destinataria derivada del usuario, usuario, estado, codigo documental, rango de asignacion e implementacion mediante campos reales de `ImplementationRecord`. La vista calcula un resumen liviano de total, implementados, no implementados, estados y unidades de usuario, sin modificar reglas de lectura, aceptacion o implementacion.
 
-F4-P07 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
+F4-P08 agrega exportacion CSV controlada para Libro Maestro, reporte mensual documental, copias controladas e implementacion/lectura. Las rutas `/app/reports/master-book/export.csv`, `/app/reports/monthly-documents/export.csv`, `/app/reports/controlled-copies/export.csv` y `/app/reports/implementation-records/export.csv` reutilizan los mismos formularios GET, permisos `can_view_reports` y selectors de las vistas. La respuesta CSV usa `Content-Disposition: attachment` solo para el archivo generado, `text/csv; charset=utf-8`, BOM UTF-8 y no incluye PDFs, adjuntos, rutas `MEDIA_URL` ni enlaces a archivos documentales.
+
+F4-P08 no implementa Excel `.xlsx`, modelos, migraciones, APIs ni auditoria especifica de exportacion. Excel queda como objetivo MVP con dependencia justificada y la auditoria de exportacion queda pendiente para el punto especifico de auditoria de reportes.
 
 ---
 

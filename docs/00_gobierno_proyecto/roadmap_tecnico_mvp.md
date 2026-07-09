@@ -1431,8 +1431,8 @@ F4-P04 -> Filtros base del Libro Maestro
 F4-P05 -> Reporte mensual documental
 F4-P06 -> Reporte de copias controladas
 F4-P07 -> Reporte de implementación/lectura
-F4-P08 -> Reportes de solicitudes documentales
-F4-P09 -> Exportación CSV/Excel base
+F4-P08 -> Exportación controlada CSV de reportes
+F4-P09 -> Reportes de solicitudes documentales
 F4-P10 -> Auditoría de consulta/exportación de reportes
 F4-P11 -> Pruebas y cierre documental de Fase 4
 ```
@@ -1615,6 +1615,44 @@ backend/apps/reports/forms.py
 backend/apps/reports/selectors.py
 backend/apps/reports/views.py
 backend/apps/reports/urls.py
+backend/templates/reports/implementation_records.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P08 - Exportación controlada CSV de reportes
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Exportadores CSV controlados para los reportes base de Fase 4.
+* Rutas internas protegidas:
+  * `/app/reports/master-book/export.csv`
+  * `/app/reports/monthly-documents/export.csv`
+  * `/app/reports/controlled-copies/export.csv`
+  * `/app/reports/implementation-records/export.csv`
+* Acceso protegido por login y restringido a OyM mediante `can_view_reports`.
+* Reutilizacion de los mismos formularios GET y selectors usados por las vistas.
+* Encabezados CSV con metadatos reportables, sin archivos documentales ni rutas `MEDIA_URL`.
+* `Content-Disposition: attachment` aplicado solo al CSV generado.
+* `Content-Type: text/csv; charset=utf-8` y salida UTF-8 con BOM para compatibilidad basica con hojas de calculo.
+* Enlaces de exportacion agregados en las pantallas de reportes.
+* Pruebas de login requerido, acceso denegado, headers, contenido, filtros y ausencia de rutas de archivos.
+* Excel queda pendiente como objetivo MVP con dependencia justificada.
+* Auditoria de exportacion queda pendiente para el punto especifico de auditoria de reportes.
+* Sin modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/exporters.py
+backend/apps/reports/views.py
+backend/apps/reports/urls.py
+backend/templates/reports/master_book.html
+backend/templates/reports/monthly_documents.html
+backend/templates/reports/controlled_copies.html
 backend/templates/reports/implementation_records.html
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
