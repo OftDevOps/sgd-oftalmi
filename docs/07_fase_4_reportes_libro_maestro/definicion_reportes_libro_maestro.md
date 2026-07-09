@@ -286,3 +286,36 @@ Mapeo de campos visibles:
 | Fecha de vigencia | `DocumentVersion.effective_date`; si no existe, se muestra vacio funcional `-` |
 
 F4-P03 no implementa filtros avanzados, exportaciones, reportes analiticos, auditoria de consulta, modelos nuevos ni migraciones.
+
+## 16. Filtros de Libro Maestro
+
+F4-P04 agrega filtros funcionales de consulta a la vista del Libro Maestro documental.
+
+Alcance implementado:
+
+* Filtros GET en `/app/reports/master-book/`.
+* Formulario Django `MasterBookFilterForm` para validacion simple de parametros.
+* Reutilizacion de `get_master_book_queryset` como unica fuente de consulta.
+* Conservacion visual de filtros seleccionados.
+* Manejo tolerante de filtros invalidos sin romper la vista.
+* Pruebas de filtros por tipo documental, unidad, estado, vigencia, codigo y titulo.
+
+Filtros disponibles:
+
+| Filtro | Fuente o criterio |
+| --- | --- |
+| Tipo documental | `Document.document_type` |
+| Unidad responsable | `Document.owner_unit` |
+| Estado documental | `Document.status` |
+| Vigencia | Grupos de estado existentes en `get_master_book_queryset` |
+| Codigo documental | `Document.code` exacto |
+| Titulo | `Document.title__icontains` |
+| Rango de fechas | `Document.created_at__date` |
+
+Limitaciones registradas:
+
+* La vigencia actual no recalcula vencimientos a partir de fechas; usa estados documentales disponibles.
+* El rango de fechas aplica sobre fecha de creacion del documento, no sobre emision, vigencia o vencimiento.
+* No se implementan filtros avanzados por fechas de version documental en este punto.
+* No se implementa exportacion CSV/Excel.
+* No se crean modelos ni migraciones.

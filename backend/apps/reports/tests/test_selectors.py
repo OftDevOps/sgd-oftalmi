@@ -122,6 +122,7 @@ class ReportsSelectorsTests(TestCase):
             organizational_unit=self.owner_unit,
             status=DocumentStatus.ACTIVE,
             code=self.master_document.code,
+            title="principal",
             version_number=self.master_version.version_number,
             responsible_user=self.oym_user,
             date_field="updated_at",

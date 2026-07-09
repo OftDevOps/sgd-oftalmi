@@ -35,6 +35,7 @@ def get_master_book_queryset(
     organizational_unit=None,
     status=None,
     code=None,
+    title=None,
     version_number=None,
     responsible_user=None,
     date_field="created_at",
@@ -52,6 +53,8 @@ def get_master_book_queryset(
         queryset = queryset.filter(status=status)
     if code is not None:
         queryset = queryset.filter(code=code)
+    if title is not None:
+        queryset = queryset.filter(title__icontains=title)
     if version_number is not None:
         queryset = queryset.filter(current_version__version_number=version_number)
     if responsible_user is not None:

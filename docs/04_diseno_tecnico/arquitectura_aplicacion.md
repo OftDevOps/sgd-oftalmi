@@ -361,7 +361,9 @@ F4-P02 materializa la primera capa reutilizable de esa arquitectura en `apps.rep
 
 F4-P03 expone la primera vista operativa del Libro Maestro en `/app/reports/master-book/`. La vista es de solo lectura, usa `get_master_book_queryset`, aplica `can_view_reports` y no expone archivos documentales ni rutas de `MEDIA_URL`. Los campos visibles se mapean a `Document.code`, `Document.title`, `Document.document_type`, `Document.owner_unit`, `Document.status`, `Document.current_version.version_number`, `DocumentVersion.issue_date` con respaldo en `Document.created_at`, y `DocumentVersion.effective_date` cuando exista.
 
-F4-P03 no implementa exportaciones, filtros avanzados, modelos, migraciones, exportadores ni APIs.
+F4-P04 agrega filtros GET al Libro Maestro usando un formulario de validacion simple y manteniendo la consulta en `get_master_book_queryset`. Los filtros cubren tipo documental, unidad responsable, estado, vigencia, codigo, titulo y rango de fecha de creacion. La vigencia se basa en grupos de estado existentes y no recalcula vencimientos por fecha sin regla funcional aprobada. Los parametros invalidos no rompen la vista y no se exponen archivos documentales.
+
+F4-P04 no implementa exportaciones, reportes nuevos, modelos, migraciones, exportadores ni APIs.
 
 ---
 

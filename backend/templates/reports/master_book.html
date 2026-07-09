@@ -7,6 +7,55 @@
     <p class="lead">Inventario base de documentos controlados administrados por Organizacion y Metodos.</p>
   </header>
 
+  <form class="filter-panel" method="get" aria-label="Filtros de Libro Maestro documental">
+    <div class="filter-grid">
+      <div class="form-row">
+        <label for="{{ filter_form.document_type.id_for_label }}">{{ filter_form.document_type.label }}</label>
+        {{ filter_form.document_type }}
+        {{ filter_form.document_type.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.organizational_unit.id_for_label }}">{{ filter_form.organizational_unit.label }}</label>
+        {{ filter_form.organizational_unit }}
+        {{ filter_form.organizational_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
+        {{ filter_form.status }}
+        {{ filter_form.status.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.vigency.id_for_label }}">{{ filter_form.vigency.label }}</label>
+        {{ filter_form.vigency }}
+        {{ filter_form.vigency.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.code.id_for_label }}">{{ filter_form.code.label }}</label>
+        {{ filter_form.code }}
+        {{ filter_form.code.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.title.id_for_label }}">{{ filter_form.title.label }}</label>
+        {{ filter_form.title }}
+        {{ filter_form.title.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_from.id_for_label }}">{{ filter_form.date_from.label }}</label>
+        {{ filter_form.date_from }}
+        {{ filter_form.date_from.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_to.id_for_label }}">{{ filter_form.date_to.label }}</label>
+        {{ filter_form.date_to }}
+        {{ filter_form.date_to.errors }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="button" type="submit">Filtrar</button>
+      <a href="{% url 'app:reports:master_book' %}">Limpiar filtros</a>
+    </div>
+  </form>
+
   <section class="table-panel" aria-label="Libro Maestro documental">
     <table class="data-table">
       <thead>

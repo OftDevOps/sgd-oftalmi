@@ -172,6 +172,9 @@ F3-P08  -> Marca de agua o identificación de usuario
 F3-P09  -> Pruebas de seguridad del visor
 F3-P10  -> Documentación de limitaciones reales del visor
 F4-P01  -> Definición técnica y funcional de reportes y Libro Maestro
+F4-P02  -> Selectors base de reportes
+F4-P03  -> Vista de Libro Maestro documental
+F4-P04  -> Filtros de Libro Maestro
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1498,6 +1501,33 @@ docs/04_diseno_tecnico/arquitectura_aplicacion.md
 ```text
 backend/apps/reports/views.py
 backend/apps/reports/urls.py
+backend/templates/reports/master_book.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P04 - Filtros de Libro Maestro
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Filtros GET agregados a `/app/reports/master-book/`.
+* Validacion simple de filtros mediante formulario Django de solo lectura.
+* Reutilizacion de `get_master_book_queryset` sin duplicar consultas en la vista.
+* Filtros por tipo documental, unidad responsable, estado documental, vigencia, codigo documental, titulo y rango de fecha de creacion.
+* La vigencia se interpreta con los grupos de estado ya definidos en el selector; no recalcula vencimientos ni inventa reglas de corte.
+* Filtros invalidos no rompen la vista y devuelven el Libro Maestro sin aplicar criterios invalidos.
+* Filtros seleccionados se conservan en pantalla.
+* Sin exportaciones, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/forms.py
+backend/apps/reports/selectors.py
+backend/apps/reports/views.py
 backend/templates/reports/master_book.html
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
