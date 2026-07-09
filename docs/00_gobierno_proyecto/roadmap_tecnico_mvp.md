@@ -177,6 +177,7 @@ F4-P03  -> Vista de Libro Maestro documental
 F4-P04  -> Filtros de Libro Maestro
 F4-P05  -> Reporte mensual documental
 F4-P06  -> Reporte de copias controladas
+F4-P07  -> Reporte de implementación/lectura
 ```
 
 Último commit técnico conocido en `develop`:
@@ -1429,8 +1430,8 @@ F4-P03 -> Vista de Libro Maestro documental
 F4-P04 -> Filtros base del Libro Maestro
 F4-P05 -> Reporte mensual documental
 F4-P06 -> Reporte de copias controladas
-F4-P07 -> Reportes de solicitudes documentales
-F4-P08 -> Reportes de implementación
+F4-P07 -> Reporte de implementación/lectura
+F4-P08 -> Reportes de solicitudes documentales
 F4-P09 -> Exportación CSV/Excel base
 F4-P10 -> Auditoría de consulta/exportación de reportes
 F4-P11 -> Pruebas y cierre documental de Fase 4
@@ -1587,6 +1588,34 @@ backend/apps/reports/selectors.py
 backend/apps/reports/views.py
 backend/apps/reports/urls.py
 backend/templates/reports/controlled_copies.html
+backend/apps/reports/tests/test_views.py
+docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
+docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### F4-P07 - Reporte de implementación/lectura
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Vista base del reporte de implementación/lectura en `/app/reports/implementation-records/`.
+* Acceso protegido por login y restringido a OyM mediante `can_view_reports`.
+* Reutilización de `get_implementation_records_report_queryset`.
+* Filtros GET por tipo documental, unidad responsable, unidad destinataria del usuario, usuario destinatario, estado del registro, código documental, rango de fecha de asignación y rango de fecha de implementación.
+* Tabla con código documental, título, tipo documental, unidad responsable, versión, unidad destinataria, usuario, estado, fecha de asignación, fecha de confirmación y última actualización.
+* Resumen básico con total de registros, implementados, no implementados, totales por estado y totales por unidad destinataria.
+* La unidad destinataria se obtiene desde `User.organizational_unit`; no existe una unidad destinataria directa en `ImplementationRecord`.
+* Sin exportaciones, modelos nuevos ni migraciones.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/forms.py
+backend/apps/reports/selectors.py
+backend/apps/reports/views.py
+backend/apps/reports/urls.py
+backend/templates/reports/implementation_records.html
 backend/apps/reports/tests/test_views.py
 docs/07_fase_4_reportes_libro_maestro/definicion_reportes_libro_maestro.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md

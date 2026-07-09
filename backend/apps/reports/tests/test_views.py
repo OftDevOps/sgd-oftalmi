@@ -10,6 +10,10 @@ from apps.accounts.models import UserRole
 from apps.controlled_copies.models import ControlledCopy, ControlledCopyStatus
 from apps.document_types.models import DocumentType
 from apps.documents.models import Document, DocumentStatus, DocumentVersion
+from apps.implementation_records.models import (
+    ImplementationRecord,
+    ImplementationRecordStatus,
+)
 from apps.organizational_units.models import OrganizationalUnit
 
 
@@ -38,6 +42,10 @@ class MasterBookViewTests(TestCase):
             name="Administracion",
             code="ADM",
         )
+        self.reader.organizational_unit = self.other_owner_unit
+        self.reader.save(update_fields=["organizational_unit"])
+        self.executing_unit.organizational_unit = self.owner_unit
+        self.executing_unit.save(update_fields=["organizational_unit"])
         self.document = Document.objects.create(
             code="FOR-OYM-001",
             title="Registro principal",
@@ -156,6 +164,23 @@ class MasterBookViewTests(TestCase):
             retired_at=timezone.make_aware(datetime(2026, 6, 15, 17, 0)),
             status=ControlledCopyStatus.RETIRED,
             created_by=self.oym_admin,
+        )
+        self.pending_implementation_record = ImplementationRecord.objects.create(
+            user=self.reader,
+            document=self.document,
+            document_version=self.version,
+            assigned_at=timezone.make_aware(datetime(2026, 7, 1, 8, 0)),
+            status=ImplementationRecordStatus.PENDING,
+        )
+        self.implemented_record = ImplementationRecord.objects.create(
+            user=self.executing_unit,
+            document=self.other_document,
+            document_version=self.other_version,
+            assigned_at=timezone.make_aware(datetime(2026, 6, 1, 8, 0)),
+            read_at=timezone.make_aware(datetime(2026, 6, 5, 9, 0)),
+            accepted_at=timezone.make_aware(datetime(2026, 6, 10, 9, 0)),
+            implemented_at=timezone.make_aware(datetime(2026, 6, 20, 10, 0)),
+            status=ImplementationRecordStatus.IMPLEMENTED,
         )
 
     def test_master_book_requires_login(self):
@@ -760,4 +785,240 @@ class MasterBookViewTests(TestCase):
             date_from=date(2026, 7, 1),
             date_to=date(2026, 7, 31),
             date_field="delivered_at__date",
+        )
+
+    def test_implementation_records_report_requires_login(self):
+        response = self.client.get(reverse("app:reports:implementation_records"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response["Location"])
+
+    def test_oym_roles_can_view_implementation_records_report(self):
+        for user in (self.oym_admin, self.oym_analyst):
+            with self.subTest(user=user.email):
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(reverse("app:reports:implementation_records"))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, "reports/implementation_records.html")
+                self.assertContains(response, "Reporte de implementacion y lectura")
+
+    def test_disallowed_roles_cannot_view_implementation_records_report(self):
+        denied_users = (
+            self.reader,
+            self.executing_unit,
+            self.systems_user,
+            self.auditor,
+        )
+
+        for user in denied_users:
+            with self.subTest(user=user.email):
+                self.client.logout()
+                self.client.force_login(user)
+
+                response = self.client.get(reverse("app:reports:implementation_records"))
+
+                self.assertEqual(response.status_code, 403)
+
+    def test_implementation_records_report_renders_rows_and_summary(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(reverse("app:reports:implementation_records"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertContains(response, self.reader.email)
+        self.assertContains(response, self.executing_unit.email)
+        self.assertEqual(response.context["report_summary"]["total"], 2)
+        self.assertEqual(response.context["report_summary"]["implemented"], 1)
+        self.assertEqual(response.context["report_summary"]["not_implemented"], 1)
+        self.assertIn(("Pending", 1), response.context["report_summary"]["status_totals"])
+        self.assertIn(
+            ("Implemented", 1),
+            response.context["report_summary"]["status_totals"],
+        )
+        self.assertNotContains(response, "/media/")
+
+    def test_implementation_records_report_filters_by_status(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {"status": ImplementationRecordStatus.PENDING},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertNotContains(response, "PRO-ADM-001")
+
+    def test_implementation_records_report_filters_by_code(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {"code": "PRO-ADM-001"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_implementation_records_report_filters_by_document_type(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {"document_type": self.document_type.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertNotContains(response, "PRO-ADM-001")
+
+    def test_implementation_records_report_filters_by_owner_unit(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {"organizational_unit": self.other_owner_unit.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_implementation_records_report_filters_by_user_unit_and_user(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {
+                "user_organizational_unit": self.owner_unit.pk,
+                "user": self.executing_unit.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_implementation_records_report_filters_by_assigned_and_confirmation_dates(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {
+                "date_from": "2026-06-01",
+                "date_to": "2026-06-30",
+                "confirmation_date_from": "2026-06-01",
+                "confirmation_date_to": "2026-06-30",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-ADM-001")
+        self.assertNotContains(response, "FOR-OYM-001")
+
+    def test_invalid_implementation_records_filters_do_not_break_view(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {
+                "document_type": "999999",
+                "user": "invalid",
+                "status": "invalid",
+                "date_from": "not-a-date",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reporte de implementacion y lectura")
+        self.assertContains(response, "FOR-OYM-001")
+        self.assertContains(response, "PRO-ADM-001")
+
+    def test_implementation_records_selected_filters_are_kept_in_template(self):
+        self.client.force_login(self.oym_admin)
+
+        response = self.client.get(
+            reverse("app:reports:implementation_records"),
+            {
+                "document_type": self.document_type.pk,
+                "organizational_unit": self.owner_unit.pk,
+                "user_organizational_unit": self.other_owner_unit.pk,
+                "user": self.reader.pk,
+                "status": ImplementationRecordStatus.PENDING,
+                "code": "FOR-OYM-001",
+                "date_from": "2026-07-01",
+                "date_to": "2026-07-31",
+                "confirmation_date_from": "2026-07-01",
+                "confirmation_date_to": "2026-07-31",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<option value="{self.document_type.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.owner_unit.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.other_owner_unit.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{self.reader.pk}" selected>',
+            html=False,
+        )
+        self.assertContains(response, '<option value="pending" selected>', html=False)
+        self.assertContains(response, 'value="FOR-OYM-001"', html=False)
+        self.assertContains(response, 'value="2026-07-01"', html=False)
+        self.assertContains(response, 'value="2026-07-31"', html=False)
+
+    def test_implementation_records_report_passes_clean_filters_to_selector(self):
+        self.client.force_login(self.oym_admin)
+
+        with patch(
+            "apps.reports.views.get_implementation_records_report_queryset",
+            return_value=ImplementationRecord.objects.none(),
+        ) as selector:
+            response = self.client.get(
+                reverse("app:reports:implementation_records"),
+                {
+                    "document_type": self.document_type.pk,
+                    "organizational_unit": self.owner_unit.pk,
+                    "user_organizational_unit": self.other_owner_unit.pk,
+                    "user": self.reader.pk,
+                    "status": ImplementationRecordStatus.PENDING,
+                    "code": "FOR-OYM-001",
+                    "date_from": "2026-07-01",
+                    "date_to": "2026-07-31",
+                    "confirmation_date_from": "2026-07-01",
+                    "confirmation_date_to": "2026-07-31",
+                },
+            )
+
+        self.assertEqual(response.status_code, 200)
+        selector.assert_called_once_with(
+            document_type=self.document_type,
+            organizational_unit=self.owner_unit,
+            user_organizational_unit=self.other_owner_unit,
+            user=self.reader,
+            status=ImplementationRecordStatus.PENDING,
+            code="FOR-OYM-001",
+            date_from=date(2026, 7, 1),
+            date_to=date(2026, 7, 31),
+            confirmation_date_from=date(2026, 7, 1),
+            confirmation_date_to=date(2026, 7, 31),
+            date_field="assigned_at__date",
         )

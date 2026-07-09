@@ -5,16 +5,19 @@ from datetime import date
 from django.utils import timezone
 from django.views.generic import ListView
 
+from apps.implementation_records.models import ImplementationRecordStatus
 from config.access import ModuleAccessMixin, ModuleIndexView
 
 from .forms import (
     ControlledCopiesReportFilterForm,
+    ImplementationRecordsReportFilterForm,
     MasterBookFilterForm,
     MonthlyDocumentReportFilterForm,
 )
 from .permissions import can_view_reports
 from .selectors import (
     get_controlled_copies_report_queryset,
+    get_implementation_records_report_queryset,
     get_master_book_queryset,
     get_monthly_document_report_queryset,
 )
@@ -183,4 +186,60 @@ class ControlledCopiesReportView(ReportAccessMixin, ListView):
         context["controlled_copies"] = controlled_copies
         context["filter_form"] = getattr(self, "filter_form", self.get_filter_form())
         context["report_summary"] = self.get_summary(controlled_copies)
+        return context
+
+
+class ImplementationRecordsReportView(ReportAccessMixin, ListView):
+    template_name = "reports/implementation_records.html"
+    context_object_name = "implementation_records"
+
+    def get_filter_form(self):
+        return ImplementationRecordsReportFilterForm(self.request.GET or None)
+
+    def get_queryset(self):
+        self.filter_form = self.get_filter_form()
+        if not self.filter_form.is_valid():
+            return get_implementation_records_report_queryset()
+
+        filters = {
+            key: value
+            for key, value in self.filter_form.cleaned_data.items()
+            if value not in (None, "")
+        }
+        if "date_from" in filters or "date_to" in filters:
+            filters["date_field"] = "assigned_at__date"
+        return get_implementation_records_report_queryset(**filters)
+
+    def get_summary(self, implementation_records):
+        implemented_count = sum(
+            1
+            for implementation_record in implementation_records
+            if implementation_record.status == ImplementationRecordStatus.IMPLEMENTED
+        )
+        return {
+            "total": len(implementation_records),
+            "implemented": implemented_count,
+            "not_implemented": len(implementation_records) - implemented_count,
+            "status_totals": sorted(
+                Counter(
+                    implementation_record.get_status_display()
+                    for implementation_record in implementation_records
+                ).items()
+            ),
+            "user_unit_totals": sorted(
+                Counter(
+                    implementation_record.user.organizational_unit.name
+                    if implementation_record.user.organizational_unit
+                    else "Sin unidad"
+                    for implementation_record in implementation_records
+                ).items()
+            ),
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        implementation_records = list(context["implementation_records"])
+        context["implementation_records"] = implementation_records
+        context["filter_form"] = getattr(self, "filter_form", self.get_filter_form())
+        context["report_summary"] = self.get_summary(implementation_records)
         return context

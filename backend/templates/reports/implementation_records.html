@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="page-header">
+    <p class="eyebrow">Reportes</p>
+    <h1>Reporte de implementacion y lectura</h1>
+    <p class="lead">Consulta operativa de cumplimiento documental por documento, usuario, unidad, estado y fechas relevantes.</p>
+  </header>
+
+  <form class="filter-panel" method="get" aria-label="Filtros de reporte de implementacion y lectura">
+    <div class="filter-grid">
+      <div class="form-row">
+        <label for="{{ filter_form.document_type.id_for_label }}">{{ filter_form.document_type.label }}</label>
+        {{ filter_form.document_type }}
+        {{ filter_form.document_type.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.organizational_unit.id_for_label }}">{{ filter_form.organizational_unit.label }}</label>
+        {{ filter_form.organizational_unit }}
+        {{ filter_form.organizational_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.user_organizational_unit.id_for_label }}">{{ filter_form.user_organizational_unit.label }}</label>
+        {{ filter_form.user_organizational_unit }}
+        {{ filter_form.user_organizational_unit.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.user.id_for_label }}">{{ filter_form.user.label }}</label>
+        {{ filter_form.user }}
+        {{ filter_form.user.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.status.id_for_label }}">{{ filter_form.status.label }}</label>
+        {{ filter_form.status }}
+        {{ filter_form.status.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.code.id_for_label }}">{{ filter_form.code.label }}</label>
+        {{ filter_form.code }}
+        {{ filter_form.code.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_from.id_for_label }}">{{ filter_form.date_from.label }}</label>
+        {{ filter_form.date_from }}
+        {{ filter_form.date_from.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.date_to.id_for_label }}">{{ filter_form.date_to.label }}</label>
+        {{ filter_form.date_to }}
+        {{ filter_form.date_to.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.confirmation_date_from.id_for_label }}">{{ filter_form.confirmation_date_from.label }}</label>
+        {{ filter_form.confirmation_date_from }}
+        {{ filter_form.confirmation_date_from.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ filter_form.confirmation_date_to.id_for_label }}">{{ filter_form.confirmation_date_to.label }}</label>
+        {{ filter_form.confirmation_date_to }}
+        {{ filter_form.confirmation_date_to.errors }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="button" type="submit">Filtrar</button>
+      <a href="{% url 'app:reports:implementation_records' %}">Limpiar filtros</a>
+    </div>
+  </form>
+
+  <section class="status-panel" aria-label="Resumen de implementacion y lectura">
+    <div class="status-row">
+      <span class="label">Total</span>
+      <span>{{ report_summary.total }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Implementados</span>
+      <span>{{ report_summary.implemented }}</span>
+    </div>
+    <div class="status-row">
+      <span class="label">No implementados</span>
+      <span>{{ report_summary.not_implemented }}</span>
+    </div>
+  </section>
+
+  <section class="module-grid page-section" aria-label="Totales de implementacion y lectura">
+    <div class="module-card">
+      <h2>Totales por estado</h2>
+      <ul>
+        {% for label, total in report_summary.status_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para los filtros seleccionados.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="module-card">
+      <h2>Totales por unidad destinataria</h2>
+      <ul>
+        {% for label, total in report_summary.user_unit_totals %}
+          <li>{{ label }}: {{ total }}</li>
+        {% empty %}
+          <li>Sin datos para los filtros seleccionados.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="table-panel page-section" aria-label="Listado de registros de implementacion y lectura reportados">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo documental</th>
+          <th>Titulo</th>
+          <th>Tipo documental</th>
+          <th>Unidad responsable</th>
+          <th>Version</th>
+          <th>Unidad destinataria</th>
+          <th>Usuario destinatario</th>
+          <th>Estado</th>
+          <th>Fecha de asignacion</th>
+          <th>Fecha de confirmacion</th>
+          <th>Ultima actualizacion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for implementation_record in implementation_records %}
+          <tr>
+            <td>{{ implementation_record.document.code }}</td>
+            <td>{{ implementation_record.document.title }}</td>
+            <td>{{ implementation_record.document.document_type.code }} - {{ implementation_record.document.document_type.name }}</td>
+            <td>{{ implementation_record.document.owner_unit.name }}</td>
+            <td>{{ implementation_record.document_version.version_number }}</td>
+            <td>{{ implementation_record.user.organizational_unit.name|default:"-" }}</td>
+            <td>{{ implementation_record.user.email }}</td>
+            <td>{{ implementation_record.get_status_display }}</td>
+            <td>{{ implementation_record.assigned_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if implementation_record.implemented_at %}
+                {{ implementation_record.implemented_at|date:"Y-m-d H:i" }}
+              {% elif implementation_record.accepted_at %}
+                {{ implementation_record.accepted_at|date:"Y-m-d H:i" }}
+              {% elif implementation_record.interpreted_at %}
+                {{ implementation_record.interpreted_at|date:"Y-m-d H:i" }}
+              {% elif implementation_record.read_at %}
+                {{ implementation_record.read_at|date:"Y-m-d H:i" }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>{{ implementation_record.updated_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="11">No hay registros de implementacion o lectura para los filtros seleccionados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

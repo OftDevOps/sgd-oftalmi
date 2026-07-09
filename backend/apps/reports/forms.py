@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from apps.controlled_copies.models import ControlledCopyStatus
 from apps.document_types.models import DocumentType
 from apps.documents.models import DocumentStatus
+from apps.implementation_records.models import ImplementationRecordStatus
 from apps.organizational_units.models import OrganizationalUnit
 
 
@@ -134,6 +135,63 @@ class ControlledCopiesReportFilterForm(forms.Form):
     )
     date_to = forms.DateField(
         label="Entregada hasta",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+
+class ImplementationRecordsReportFilterForm(forms.Form):
+    document_type = forms.ModelChoiceField(
+        label="Tipo documental",
+        queryset=DocumentType.objects.all(),
+        required=False,
+        empty_label="Todos",
+    )
+    organizational_unit = forms.ModelChoiceField(
+        label="Unidad responsable",
+        queryset=OrganizationalUnit.objects.all(),
+        required=False,
+        empty_label="Todas",
+    )
+    user_organizational_unit = forms.ModelChoiceField(
+        label="Unidad destinataria",
+        queryset=OrganizationalUnit.objects.all(),
+        required=False,
+        empty_label="Todas",
+    )
+    user = forms.ModelChoiceField(
+        label="Usuario destinatario",
+        queryset=get_user_model().objects.all(),
+        required=False,
+        empty_label="Todos",
+    )
+    status = forms.ChoiceField(
+        label="Estado de implementacion",
+        choices=(("", "Todos"), *ImplementationRecordStatus.choices),
+        required=False,
+    )
+    code = forms.CharField(
+        label="Codigo documental",
+        required=False,
+        max_length=100,
+    )
+    date_from = forms.DateField(
+        label="Asignado desde",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    date_to = forms.DateField(
+        label="Asignado hasta",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    confirmation_date_from = forms.DateField(
+        label="Confirmado desde",
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    confirmation_date_to = forms.DateField(
+        label="Confirmado hasta",
         required=False,
         widget=forms.DateInput(attrs={"type": "date"}),
     )

@@ -216,21 +216,28 @@ def get_implementation_records_report_queryset(
     code=None,
     version_number=None,
     user=None,
+    user_organizational_unit=None,
     responsible_user=None,
     date_field="assigned_at",
     date_from=None,
     date_to=None,
+    confirmation_date_field="implemented_at__date",
+    confirmation_date_from=None,
+    confirmation_date_to=None,
     vigency=None,
 ):
     queryset = implementation_record_list().select_related(
         "document__document_type",
         "document__owner_unit",
         "document_version__created_by",
+        "user__organizational_unit",
     )
 
     effective_user = responsible_user if responsible_user is not None else user
     if effective_user is not None:
         queryset = queryset.filter(user=effective_user)
+    if user_organizational_unit is not None:
+        queryset = queryset.filter(user__organizational_unit=user_organizational_unit)
     if document_type is not None:
         queryset = queryset.filter(document__document_type=document_type)
     if organizational_unit is not None:
@@ -262,9 +269,15 @@ def get_implementation_records_report_queryset(
             "cancelled": {ImplementationRecordStatus.CANCELLED},
         },
     )
-    return _apply_date_range(
+    queryset = _apply_date_range(
         queryset,
         field_name=date_field,
         date_from=date_from,
         date_to=date_to,
+    )
+    return _apply_date_range(
+        queryset,
+        field_name=confirmation_date_field,
+        date_from=confirmation_date_from,
+        date_to=confirmation_date_to,
     )

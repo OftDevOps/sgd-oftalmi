@@ -367,7 +367,9 @@ F4-P05 agrega la vista `/app/reports/monthly-documents/` para el reporte mensual
 
 F4-P06 agrega la vista `/app/reports/controlled-copies/` para el reporte de copias controladas. La consulta usa `get_controlled_copies_report_queryset` y permite filtros simples por tipo documental, unidad responsable, unidad destinataria, usuario destinatario, estado, codigo documental y rango de fecha de entrega mediante `ControlledCopy.delivered_at__date`. La vista calcula resumen liviano de total, estados y unidades destinatarias, sin exponer archivos documentales ni rutas de medios.
 
-F4-P06 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
+F4-P07 agrega la vista `/app/reports/implementation-records/` para el reporte de implementacion/lectura. La consulta usa `get_implementation_records_report_queryset` y permite filtros por tipo documental, unidad responsable, unidad destinataria derivada del usuario, usuario, estado, codigo documental, rango de asignacion e implementacion mediante campos reales de `ImplementationRecord`. La vista calcula un resumen liviano de total, implementados, no implementados, estados y unidades de usuario, sin modificar reglas de lectura, aceptacion o implementacion.
+
+F4-P07 no implementa exportaciones, modelos, migraciones, exportadores ni APIs.
 
 ---
 

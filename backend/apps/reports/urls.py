@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     ControlledCopiesReportView,
+    ImplementationRecordsReportView,
     MasterBookView,
     MonthlyDocumentReportView,
     ReportIndexView,
@@ -22,5 +23,10 @@ urlpatterns = [
         "controlled-copies/",
         ControlledCopiesReportView.as_view(),
         name="controlled_copies",
+    ),
+    path(
+        "implementation-records/",
+        ImplementationRecordsReportView.as_view(),
+        name="implementation_records",
     ),
 ]

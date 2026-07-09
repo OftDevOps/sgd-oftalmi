@@ -217,8 +217,8 @@ Puntos propuestos para Fase 4:
 | F4-P04 | Filtros base del Libro Maestro | Filtros iniciales por tipo, unidad, estado, vigencia y fechas. |
 | F4-P05 | Reporte mensual documental | Actividad documental publicada por periodo mensual. |
 | F4-P06 | Reporte de copias controladas | Activas, entregadas, retiradas y agrupaciones por unidad/documento. |
-| F4-P07 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
-| F4-P08 | Reportes de implementacion | Pendientes, leidos, aceptados, implementados y vencidos. |
+| F4-P07 | Reporte de implementacion/lectura | Pendientes, leidos, aceptados, implementados y vencidos. |
+| F4-P08 | Reportes de solicitudes documentales | Pendientes, cerradas, observadas y estadisticas basicas. |
 | F4-P09 | Exportacion CSV/Excel base | Exportadores controlados, inicialmente CSV y Excel cuando se agregue dependencia justificada. |
 | F4-P10 | Auditoria de consulta/exportacion de reportes | Registro `REPORT_GENERATED` con metadata de reporte, filtros y formato. |
 | F4-P11 | Pruebas y cierre documental de Fase 4 | Pruebas integradas, validacion de permisos/exportacion y cierre tecnico. |
@@ -391,5 +391,45 @@ Limitaciones registradas:
 * El rango de fechas usa `ControlledCopy.delivered_at__date`.
 * Las copias sin fecha de entrega no aparecen cuando se filtra por rango de entrega.
 * No se implementa workflow de entrega, retiro ni cierre.
+* No se implementan exportaciones CSV/Excel en este punto.
+* No se crean modelos ni migraciones.
+
+## 19. Reporte de implementacion/lectura
+
+F4-P07 implementa la vista base del reporte de implementacion y lectura.
+
+Alcance implementado:
+
+* Ruta interna `/app/reports/implementation-records/`.
+* Acceso protegido por login.
+* Acceso funcional restringido a usuarios OyM mediante `can_view_reports`.
+* Filtros GET por tipo documental, unidad responsable, unidad destinataria del usuario, usuario destinatario, estado, codigo documental, fecha de asignacion y fecha de implementacion.
+* Reutilizacion de `get_implementation_records_report_queryset`.
+* Resumen basico con total de registros, implementados, no implementados, totales por estado y totales por unidad destinataria.
+* Pruebas de acceso, render, filtros, parametros invalidos y llamada al selector.
+
+Mapeo de campos visibles:
+
+| Columna | Fuente actual |
+| --- | --- |
+| Codigo documental | `ImplementationRecord.document.code` |
+| Titulo | `ImplementationRecord.document.title` |
+| Tipo documental | `ImplementationRecord.document.document_type` |
+| Unidad responsable | `ImplementationRecord.document.owner_unit` |
+| Version | `ImplementationRecord.document_version.version_number` |
+| Unidad destinataria | `ImplementationRecord.user.organizational_unit`; si no existe, `-` |
+| Usuario destinatario | `ImplementationRecord.user.email` |
+| Estado | `ImplementationRecord.status` con su display Django |
+| Fecha de asignacion | `ImplementationRecord.assigned_at` |
+| Fecha de confirmacion | `implemented_at`, `accepted_at`, `interpreted_at` o `read_at`, en ese orden |
+| Ultima actualizacion | `ImplementationRecord.updated_at` |
+
+Limitaciones registradas:
+
+* `ImplementationRecord` no tiene unidad destinataria directa; se usa la unidad asociada al usuario.
+* El rango de asignacion usa `ImplementationRecord.assigned_at__date`.
+* El rango de confirmacion usa `ImplementationRecord.implemented_at__date` como criterio operativo.
+* "Implementados" se calcula con estado `IMPLEMENTED`; los demas estados quedan agrupados como no implementados para resumen operativo.
+* No se modifica el flujo funcional de lectura, aceptacion o implementacion.
 * No se implementan exportaciones CSV/Excel en este punto.
 * No se crean modelos ni migraciones.
