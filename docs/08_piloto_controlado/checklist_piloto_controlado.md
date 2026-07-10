@@ -172,3 +172,27 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] Acciones correctivas priorizadas.
 - [ ] Decision de continuar, corregir o rechazar documentada.
 - [ ] Recomendacion sobre despliegue interno documentada.
+
+## 14. Evidencia tecnica local PILOTO-P04
+
+Resultado de la ejecucion controlada local:
+
+- [x] `seed_base_catalogs` ejecutado.
+- [x] `seed_pilot_demo_data --dry-run` ejecutado.
+- [x] `seed_pilot_demo_data` ejecutado.
+- [x] `seed_pilot_demo_data` reejecutado para validar idempotencia.
+- [x] Usuarios, unidades, tipos, documentos, versiones, PDFs demo, copias y registros validados.
+- [x] Selectors de reportes devuelven datos demo.
+- [x] Vistas de reportes cargan con 200.
+- [x] Exportaciones CSV cargan con 200 y `attachment`.
+- [x] CSV no expone `/media/` ni `MEDIA_URL`.
+- [x] Auditoria de consulta/exportacion de reportes validada.
+- [x] Visor documental permitido y denegado validado.
+- [x] No se inicio piloto real con OyM.
+- [x] No se usaron datos productivos.
+
+Evidencia:
+
+```text
+docs/08_piloto_controlado/evidencia_seed_demo_local.md
+```

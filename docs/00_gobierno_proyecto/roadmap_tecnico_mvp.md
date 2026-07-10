@@ -185,6 +185,7 @@ F4-P11  -> Documentación técnica de cierre de Fase 4
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
+PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
 ```
 
 Último commit conocido antes de PILOTO-P03 en `develop`:
@@ -1764,6 +1765,7 @@ Puntos propuestos:
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
+PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
 ```
 
 #### PILOTO-P01 - Definición del plan técnico de piloto controlado
@@ -1850,6 +1852,33 @@ docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md
 docs/08_piloto_controlado/checklist_piloto_controlado.md
 ```
 
+#### PILOTO-P04 - Ejecución controlada del seed demo en ambiente local
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Ejecucion de `seed_base_catalogs`.
+* Ejecucion de `seed_pilot_demo_data --dry-run`.
+* Ejecucion real de `seed_pilot_demo_data`.
+* Segunda ejecucion de `seed_pilot_demo_data` para validar idempotencia.
+* Validacion de usuarios, unidades, tipos documentales, documentos, versiones, archivos PDF demo, copias controladas y registros de implementacion.
+* Validacion de selectors de reportes.
+* Validacion de vistas HTML de reportes.
+* Validacion de exportaciones CSV.
+* Validacion de ausencia de `/media/` y `MEDIA_URL` en CSV.
+* Validacion de auditoria `REPORT_VIEWED`, `REPORT_EXPORTED` y `DOCUMENT_VIEWED`.
+* Validacion de visor documental permitido y denegado.
+* Confirmacion de que no se inicio piloto real con OyM.
+* Confirmacion de que no se usaron datos reales ni productivos.
+
+**Evidencia:**
+
+```text
+docs/08_piloto_controlado/evidencia_seed_demo_local.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+```
+
 ---
 
 ### Fase 5 - Notificaciones
@@ -1900,7 +1929,7 @@ Fase 1: cerrada
 Fase 2: cerrada
 Fase 3: cerrada
 Fase 4: cerrada
-Preparacion piloto controlado: PILOTO-P01, PILOTO-P02 y PILOTO-P03 documentados
+Preparacion piloto controlado: PILOTO-P01, PILOTO-P02, PILOTO-P03 y PILOTO-P04 documentados
 Rama activa de trabajo: develop
 Rama estable: main
 ```
