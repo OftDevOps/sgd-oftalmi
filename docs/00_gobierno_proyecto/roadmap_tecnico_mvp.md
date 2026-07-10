@@ -187,12 +187,13 @@ PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
 PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
 PILOTO-P05 -> Guion de validación funcional OyM
+PILOTO-P06 -> Preparación operativa para ejecutar piloto OyM
 ```
 
-Último commit conocido antes de PILOTO-P05 en `develop`:
+Último commit conocido antes de PILOTO-P06 en `develop`:
 
 ```text
-167a455 docs: record local pilot demo seed evidence
+a27b504 docs: add functional validation script for OyM
 ```
 
 Estado de ramas conocido:
@@ -1768,6 +1769,7 @@ PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
 PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
 PILOTO-P05 -> Guion de validación funcional OyM
+PILOTO-P06 -> Preparación operativa para ejecutar piloto OyM
 ```
 
 #### PILOTO-P01 - Definición del plan técnico de piloto controlado
@@ -1907,6 +1909,39 @@ docs/08_piloto_controlado/checklist_piloto_controlado.md
 docs/08_piloto_controlado/plan_piloto_controlado.md
 ```
 
+#### PILOTO-P06 - Preparación operativa para ejecutar piloto OyM
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Instructivo operativo para ejecutar el piloto controlado cuando sea autorizado.
+* Definicion de responsables: OyM funcional, Sistemas tecnico, soporte y observador/auditor si aplica.
+* Definicion de ambiente objetivo no productivo.
+* Definicion de URLs esperadas de acceso.
+* Procedimiento de preparacion del ambiente.
+* Procedimiento de carga o recarga del seed demo.
+* Reglas de manejo seguro de credenciales demo sin exponer credenciales reales.
+* Checklist de arranque.
+* Checklist de cierre.
+* Procedimiento de respaldo previo.
+* Procedimiento de restauracion o rollback.
+* Formato de observaciones e incidencias.
+* Clasificacion de hallazgos: bloqueo, alto, medio, bajo y mejora.
+* Criterios para aprobar piloto.
+* Criterios para suspender piloto.
+* Comunicacion de cierre.
+* Confirmacion de que no se inicio piloto real, no se convoco usuarios, no se creo codigo funcional, no se crearon modelos ni migraciones y no se usaron datos productivos.
+
+**Evidencia:**
+
+```text
+docs/08_piloto_controlado/instructivo_operativo_piloto_oym.md
+docs/08_piloto_controlado/formato_observaciones_piloto.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+docs/08_piloto_controlado/plan_piloto_controlado.md
+```
+
 ---
 
 ### Fase 5 - Notificaciones
@@ -1957,7 +1992,7 @@ Fase 1: cerrada
 Fase 2: cerrada
 Fase 3: cerrada
 Fase 4: cerrada
-Preparacion piloto controlado: PILOTO-P01, PILOTO-P02, PILOTO-P03, PILOTO-P04 y PILOTO-P05 documentados
+Preparacion piloto controlado: PILOTO-P01, PILOTO-P02, PILOTO-P03, PILOTO-P04, PILOTO-P05 y PILOTO-P06 documentados
 Rama activa de trabajo: develop
 Rama estable: main
 ```

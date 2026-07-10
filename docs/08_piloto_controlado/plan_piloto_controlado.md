@@ -65,8 +65,8 @@ Antes de iniciar el piloto se deben crear usuarios demo, no usuarios productivos
 | --- | --- | --- |
 | `oym.admin.demo@oftalmi.test` | OyM Administrador | Administracion funcional y reportes. |
 | `oym.analista.demo@oftalmi.test` | Analista OyM | Gestion operativa documental. |
-| `unidad.demo@oftalmi.test` | Unidad Ejecutora | Solicitudes y consulta segun unidad. |
-| `lector.demo@oftalmi.test` | Usuario Lector | Consulta controlada e implementacion. |
+| `unidad.produccion.demo@oftalmi.test` | Unidad Ejecutora | Solicitudes y consulta segun unidad. |
+| `lector.produccion.demo@oftalmi.test` | Usuario Lector | Consulta controlada e implementacion. |
 | `sistemas.demo@oftalmi.test` | Sistemas Tecnico | Validacion tecnica y soporte. |
 | `auditor.demo@oftalmi.test` | Auditor | Revision de eventos de auditoria. |
 | `sin.permiso.demo@oftalmi.test` | Usuario sin permiso documental | Validacion de accesos denegados por ausencia de relacion documental. |
@@ -144,6 +144,19 @@ docs/08_piloto_controlado/guion_validacion_funcional_oym.md
 ```
 
 Ese documento corresponde a PILOTO-P05 y no inicia por si mismo la validacion funcional.
+
+## 8.1 Instructivo operativo de ejecucion
+
+La preparacion operativa final para ejecutar el piloto se registra en:
+
+```text
+docs/08_piloto_controlado/instructivo_operativo_piloto_oym.md
+docs/08_piloto_controlado/formato_observaciones_piloto.md
+```
+
+Estos documentos corresponden a PILOTO-P06. Definen responsables, ambiente objetivo, URLs, carga del seed demo, respaldo, restauracion, formato de observaciones, checklist de arranque y checklist de cierre.
+
+PILOTO-P06 no inicia el piloto real. La ejecucion requiere una autorizacion posterior y explicita.
 
 ## 9. Validaciones de seguridad
 

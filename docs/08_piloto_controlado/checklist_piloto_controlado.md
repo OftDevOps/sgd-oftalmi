@@ -178,7 +178,25 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] Decision de continuar, corregir o rechazar documentada.
 - [ ] Recomendacion sobre despliegue interno documentada.
 
-## 14. Evidencia tecnica local PILOTO-P04
+## 14. Preparacion operativa PILOTO-P06
+
+- [ ] `docs/08_piloto_controlado/instructivo_operativo_piloto_oym.md` revisado.
+- [ ] `docs/08_piloto_controlado/formato_observaciones_piloto.md` disponible.
+- [ ] Responsables OyM y Sistemas identificados.
+- [ ] Ambiente objetivo no productivo definido.
+- [ ] Ventana de prueba sugerida definida.
+- [ ] URLs de acceso esperadas revisadas.
+- [ ] Procedimiento de carga o recarga seed demo revisado.
+- [ ] Manejo seguro de credenciales demo definido fuera del repositorio.
+- [ ] Respaldo previo definido.
+- [ ] Restauracion o rollback definido.
+- [ ] Checklist de arranque revisado.
+- [ ] Checklist de cierre revisado.
+- [ ] Criterios para aprobar piloto revisados.
+- [ ] Criterios para suspender piloto revisados.
+- [ ] Confirmado que PILOTO-P06 no inicia el piloto real.
+
+## 15. Evidencia tecnica local PILOTO-P04
 
 Resultado de la ejecucion controlada local:
 
