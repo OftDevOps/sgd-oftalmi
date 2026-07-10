@@ -140,6 +140,10 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 
 ## 11. Guion funcional OyM
 
+- [ ] `docs/08_piloto_controlado/guion_validacion_funcional_oym.md` revisado por OyM.
+- [ ] Escenarios por modulo revisados antes de convocar usuarios.
+- [ ] Evidencias requeridas definidas.
+- [ ] Formato de observaciones aprobado.
 - [ ] OyM valida acceso por rol.
 - [ ] OyM valida catalogos.
 - [ ] OyM valida documentos y versiones demo.
@@ -150,6 +154,7 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] OyM valida reportes.
 - [ ] OyM valida exportacion CSV como salida temporal.
 - [ ] OyM registra observaciones funcionales.
+- [ ] OyM emite resultado: aprobado, aprobado con observaciones o rechazado.
 
 ## 12. Criterios de bloqueo
 

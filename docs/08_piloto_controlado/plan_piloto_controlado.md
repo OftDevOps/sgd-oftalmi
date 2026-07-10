@@ -137,6 +137,14 @@ Organizacion y Metodos debe validar:
 * Reportes que se revisaran.
 * Criterios de aprobacion o rechazo del piloto.
 
+El guion funcional detallado para esta validacion se registra en:
+
+```text
+docs/08_piloto_controlado/guion_validacion_funcional_oym.md
+```
+
+Ese documento corresponde a PILOTO-P05 y no inicia por si mismo la validacion funcional.
+
 ## 9. Validaciones de seguridad
 
 El piloto debe validar:

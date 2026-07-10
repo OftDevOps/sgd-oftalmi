@@ -186,12 +186,13 @@ PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
 PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
+PILOTO-P05 -> Guion de validación funcional OyM
 ```
 
-Último commit conocido antes de PILOTO-P03 en `develop`:
+Último commit conocido antes de PILOTO-P05 en `develop`:
 
 ```text
-79c95a1 docs: define pilot demo data and test users
+167a455 docs: record local pilot demo seed evidence
 ```
 
 Estado de ramas conocido:
@@ -1766,6 +1767,7 @@ PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 PILOTO-P03 -> Implementación de seed controlado para datos demo
 PILOTO-P04 -> Ejecución controlada del seed demo en ambiente local
+PILOTO-P05 -> Guion de validación funcional OyM
 ```
 
 #### PILOTO-P01 - Definición del plan técnico de piloto controlado
@@ -1879,6 +1881,32 @@ docs/08_piloto_controlado/evidencia_seed_demo_local.md
 docs/08_piloto_controlado/checklist_piloto_controlado.md
 ```
 
+#### PILOTO-P05 - Guion de validación funcional OyM
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Guion funcional de validacion para Organizacion y Metodos.
+* Escenarios por modulo: login, dashboard, catalogos, documentos, solicitudes, visor, copias, implementacion, auditoria, Libro Maestro, reportes y CSV.
+* Pasos por escenario.
+* Resultado esperado por escenario.
+* Evidencia requerida.
+* Criterios de aceptacion.
+* Criterios de rechazo o bloqueo.
+* Matriz de trazabilidad caso -> modulo -> rol -> resultado esperado.
+* Formato de observaciones.
+* Reglas de cierre del piloto funcional.
+* Confirmacion de que no se inicio piloto real, no se creo codigo funcional, no se crearon modelos ni migraciones y no se usaron datos productivos.
+
+**Evidencia:**
+
+```text
+docs/08_piloto_controlado/guion_validacion_funcional_oym.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+docs/08_piloto_controlado/plan_piloto_controlado.md
+```
+
 ---
 
 ### Fase 5 - Notificaciones
@@ -1929,7 +1957,7 @@ Fase 1: cerrada
 Fase 2: cerrada
 Fase 3: cerrada
 Fase 4: cerrada
-Preparacion piloto controlado: PILOTO-P01, PILOTO-P02, PILOTO-P03 y PILOTO-P04 documentados
+Preparacion piloto controlado: PILOTO-P01, PILOTO-P02, PILOTO-P03, PILOTO-P04 y PILOTO-P05 documentados
 Rama activa de trabajo: develop
 Rama estable: main
 ```
