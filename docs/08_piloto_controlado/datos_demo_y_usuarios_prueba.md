@@ -244,3 +244,54 @@ Para PILOTO-P03 debe quedar listo:
 * Criterios de auditoria esperada.
 * Decision sobre si PILOTO-P03 sera fixture, comando seed controlado o carga manual guiada.
 * Confirmacion de que no se usaran datos productivos.
+
+## 18. Implementacion tecnica PILOTO-P03
+
+PILOTO-P03 implementa el set demo mediante un comando de management Django:
+
+```bash
+cd backend
+python manage.py seed_pilot_demo_data
+```
+
+Con Docker:
+
+```bash
+docker compose exec backend python manage.py seed_pilot_demo_data
+```
+
+Precondicion obligatoria:
+
+```bash
+cd backend
+python manage.py seed_base_catalogs
+```
+
+Con Docker:
+
+```bash
+docker compose exec backend python manage.py seed_base_catalogs
+```
+
+El comando falla de forma controlada si faltan los grupos base de roles creados por `seed_base_catalogs`.
+
+Modo de revision sin escritura:
+
+```bash
+cd backend
+python manage.py seed_pilot_demo_data --dry-run
+```
+
+El comando es idempotente: ejecutarlo varias veces no debe duplicar usuarios, documentos, versiones, archivos, copias controladas ni registros de implementacion.
+
+La contrasena por defecto para usuarios demo nuevos es:
+
+```text
+DemoPilot2026!
+```
+
+Esta contrasena es solo para ambiente local o piloto controlado. No debe usarse en produccion ni con usuarios reales.
+
+El comando crea archivos PDF ficticios en el almacenamiento configurado por `MEDIA_ROOT`. Esos archivos no contienen informacion productiva y no deben versionarse en el repositorio.
+
+PILOTO-P03 no inicia el piloto. Solo deja disponible el mecanismo repetible para cargar datos demo cuando exista autorizacion.

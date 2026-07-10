@@ -23,6 +23,8 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] `make healthcheck` con respuesta `200`.
 - [ ] El commit de referencia del piloto esta identificado.
 - [ ] `docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md` revisado y aprobado antes de crear datos.
+- [ ] `seed_base_catalogs` ejecutado antes de `seed_pilot_demo_data`.
+- [ ] `seed_pilot_demo_data --dry-run` revisado antes de escribir datos demo.
 
 ## 3. Entorno tecnico
 
@@ -35,6 +37,8 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] Healthcheck disponible.
 - [ ] Logs accesibles para diagnostico.
 - [ ] No hay exposicion directa de `MEDIA_URL` para documentos controlados.
+- [ ] El comando `seed_pilot_demo_data` esta disponible en el backend.
+- [ ] La contrasena demo local fue comunicada solo a participantes autorizados del piloto.
 
 ## 4. Respaldo y restauracion
 
@@ -72,6 +76,8 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] Documentos demo cubren estados `active`, `published`, `under_review` y `obsolete`.
 - [ ] Copias controladas demo cubren estados `active`, `delivered`, `retired` y `registered`.
 - [ ] Registros de implementacion cubren estados `pending`, `accepted` e `implemented`.
+- [ ] El resumen de `seed_pilot_demo_data` fue revisado.
+- [ ] Reejecutar `seed_pilot_demo_data` no duplica datos demo.
 
 ## 7. Seguridad y permisos
 

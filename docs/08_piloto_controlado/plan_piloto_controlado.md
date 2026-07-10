@@ -98,6 +98,14 @@ docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md
 
 Ese documento corresponde a PILOTO-P02 y no crea datos, fixtures, seeders ni usuarios.
 
+PILOTO-P03 implementa el mecanismo tecnico controlado para cargar ese set demo mediante el comando:
+
+```bash
+python manage.py seed_pilot_demo_data
+```
+
+El comando debe ejecutarse solo en ambiente local o piloto controlado, despues de `seed_base_catalogs`, y no inicia por si mismo la prueba piloto.
+
 ## 7. Checklist tecnico previo
 
 Antes de iniciar el piloto deben validarse, como minimo:

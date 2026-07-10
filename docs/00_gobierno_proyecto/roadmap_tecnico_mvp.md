@@ -184,12 +184,13 @@ F4-P10  -> Pruebas integradas de reportes
 F4-P11  -> Documentación técnica de cierre de Fase 4
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
+PILOTO-P03 -> Implementación de seed controlado para datos demo
 ```
 
-Último commit conocido en `develop`:
+Último commit conocido antes de PILOTO-P03 en `develop`:
 
 ```text
-8af3fa8 docs: close phase 4 reports documentation
+79c95a1 docs: define pilot demo data and test users
 ```
 
 Estado de ramas conocido:
@@ -1762,6 +1763,7 @@ Puntos propuestos:
 ```text
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
 PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
+PILOTO-P03 -> Implementación de seed controlado para datos demo
 ```
 
 #### PILOTO-P01 - Definición del plan técnico de piloto controlado
@@ -1818,6 +1820,36 @@ docs/08_piloto_controlado/plan_piloto_controlado.md
 docs/08_piloto_controlado/checklist_piloto_controlado.md
 ```
 
+#### PILOTO-P03 - Implementación de seed controlado para datos demo
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Comando de management `seed_pilot_demo_data`.
+* Seed demo idempotente basado en PILOTO-P02.
+* Usuarios demo ficticios por rol.
+* Unidades y tipos documentales demo.
+* Documentos, versiones y archivos PDF ficticios.
+* Copias controladas demo.
+* Registros de implementacion/lectura demo.
+* Datos suficientes para Libro Maestro, reporte mensual, copias controladas, implementacion/lectura y exportacion CSV.
+* Precondicion controlada: ejecutar `seed_base_catalogs` antes del seed piloto.
+* Fallo controlado si faltan grupos base de roles.
+* Pruebas automatizadas del comando, idempotencia y alimentacion de selectors de reportes.
+* Confirmacion de que no se crearon modelos ni migraciones.
+* Confirmacion de que no se usaron datos reales ni productivos.
+* Confirmacion de que no se inicio piloto.
+
+**Evidencia:**
+
+```text
+backend/apps/reports/management/commands/seed_pilot_demo_data.py
+backend/apps/reports/tests/test_seed_pilot_demo_data.py
+docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
+```
+
 ---
 
 ### Fase 5 - Notificaciones
@@ -1868,7 +1900,7 @@ Fase 1: cerrada
 Fase 2: cerrada
 Fase 3: cerrada
 Fase 4: cerrada
-Preparacion piloto controlado: PILOTO-P01 y PILOTO-P02 documentados
+Preparacion piloto controlado: PILOTO-P01, PILOTO-P02 y PILOTO-P03 documentados
 Rama activa de trabajo: develop
 Rama estable: main
 ```
