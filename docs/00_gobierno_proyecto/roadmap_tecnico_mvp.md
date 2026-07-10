@@ -183,6 +183,7 @@ F4-P09  -> Permisos y auditoría de reportes
 F4-P10  -> Pruebas integradas de reportes
 F4-P11  -> Documentación técnica de cierre de Fase 4
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
+PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 ```
 
 Último commit conocido en `develop`:
@@ -1760,6 +1761,7 @@ Puntos propuestos:
 
 ```text
 PILOTO-P01 -> Definición del plan técnico de piloto controlado
+PILOTO-P02 -> Definición técnica de datos demo y usuarios de prueba
 ```
 
 #### PILOTO-P01 - Definición del plan técnico de piloto controlado
@@ -1788,6 +1790,32 @@ PILOTO-P01 -> Definición del plan técnico de piloto controlado
 docs/08_piloto_controlado/plan_piloto_controlado.md
 docs/08_piloto_controlado/checklist_piloto_controlado.md
 docs/04_diseno_tecnico/arquitectura_aplicacion.md
+```
+
+#### PILOTO-P02 - Definición técnica de datos demo y usuarios de prueba
+
+**Estado:** Completado.
+
+**Resultado:**
+
+* Definicion del set minimo de usuarios demo por rol.
+* Definicion de unidades organizativas demo.
+* Definicion de tipos documentales demo.
+* Definicion de documentos, versiones y archivos PDF demo requeridos.
+* Definicion de copias controladas demo.
+* Definicion de registros de implementacion/lectura demo.
+* Escenarios de visor documental, reportes y exportacion CSV.
+* Escenarios de auditoria esperada.
+* Matriz usuario -> rol -> unidad -> permisos esperados.
+* Criterios de aceptacion y bloqueo para avanzar a PILOTO-P03.
+* Confirmacion de que no se crearon datos, usuarios, fixtures, seeders, codigo funcional, modelos ni migraciones.
+
+**Evidencia:**
+
+```text
+docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md
+docs/08_piloto_controlado/plan_piloto_controlado.md
+docs/08_piloto_controlado/checklist_piloto_controlado.md
 ```
 
 ---
@@ -1840,7 +1868,7 @@ Fase 1: cerrada
 Fase 2: cerrada
 Fase 3: cerrada
 Fase 4: cerrada
-Preparacion piloto controlado: PILOTO-P01 documentado
+Preparacion piloto controlado: PILOTO-P01 y PILOTO-P02 documentados
 Rama activa de trabajo: develop
 Rama estable: main
 ```

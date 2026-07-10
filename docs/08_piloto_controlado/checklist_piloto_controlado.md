@@ -22,6 +22,7 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] `make test-base` aprobado.
 - [ ] `make healthcheck` con respuesta `200`.
 - [ ] El commit de referencia del piloto esta identificado.
+- [ ] `docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md` revisado y aprobado antes de crear datos.
 
 ## 3. Entorno tecnico
 
@@ -46,12 +47,14 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 
 ## 5. Usuarios demo
 
+- [ ] La matriz usuario -> rol -> unidad -> permisos esperados fue revisada.
 - [ ] Usuario demo OyM Administrador preparado.
 - [ ] Usuario demo Analista OyM preparado.
 - [ ] Usuario demo Unidad Ejecutora preparado.
 - [ ] Usuario demo Usuario Lector preparado.
 - [ ] Usuario demo Sistemas Tecnico preparado.
 - [ ] Usuario demo Auditor preparado.
+- [ ] Usuario demo sin permiso preparado para escenarios negativos.
 - [ ] Correos demo no corresponden a usuarios productivos reales.
 - [ ] Roles asignados coinciden con permisos esperados.
 
@@ -66,6 +69,9 @@ Este checklist prepara el piloto tecnico controlado. No autoriza por si solo ini
 - [ ] Copias controladas demo disponibles.
 - [ ] Registros de implementacion/lectura demo disponibles.
 - [ ] No hay documentos sensibles o productivos.
+- [ ] Documentos demo cubren estados `active`, `published`, `under_review` y `obsolete`.
+- [ ] Copias controladas demo cubren estados `active`, `delivered`, `retired` y `registered`.
+- [ ] Registros de implementacion cubren estados `pending`, `accepted` e `implemented`.
 
 ## 7. Seguridad y permisos
 

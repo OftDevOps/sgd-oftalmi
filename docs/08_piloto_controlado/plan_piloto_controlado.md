@@ -69,6 +69,7 @@ Antes de iniciar el piloto se deben crear usuarios demo, no usuarios productivos
 | `lector.demo@oftalmi.test` | Usuario Lector | Consulta controlada e implementacion. |
 | `sistemas.demo@oftalmi.test` | Sistemas Tecnico | Validacion tecnica y soporte. |
 | `auditor.demo@oftalmi.test` | Auditor | Revision de eventos de auditoria. |
+| `sin.permiso.demo@oftalmi.test` | Usuario sin permiso documental | Validacion de accesos denegados por ausencia de relacion documental. |
 
 Estos usuarios no se crean en este punto. La creacion debe realizarse solo cuando se autorice formalmente el inicio del piloto.
 
@@ -88,6 +89,14 @@ El piloto debe contar con datos demo suficientes para cubrir escenarios reales s
 * Eventos de auditoria generados por interacciones reales del piloto.
 
 No se deben cargar documentos productivos, respaldos reales ni archivos sensibles.
+
+La definicion detallada del set minimo de usuarios, roles, unidades, documentos, versiones, archivos PDF, copias controladas, registros de implementacion, reportes y auditoria se registra en:
+
+```text
+docs/08_piloto_controlado/datos_demo_y_usuarios_prueba.md
+```
+
+Ese documento corresponde a PILOTO-P02 y no crea datos, fixtures, seeders ni usuarios.
 
 ## 7. Checklist tecnico previo
 
